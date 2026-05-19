@@ -173,7 +173,15 @@
             </div>
             <table id="tabelRuang">
                 <tr><th>Ruang</th><th>Pengguna</th><th>Status Izin</th><th>Aksi Lapangan</th></tr>
-                <tr><td>Gedung Roedhiro</td><td>Acara</td><td><span class="status-badge badge-pending">Surat Diajukan</span></td><td><button style="padding: 0.4rem 1rem; font-size: 0.7rem;">Tap-In</button></td></tr>
+                <tr>
+                    <td>Gedung Roedhiro</td>
+                    <td>Acara</td>
+                    <td><span class="status-badge badge-aman">Secured (Acc)</span></td>
+                    <td>
+                        <button style="padding: 0.4rem 1rem; font-size: 0.7rem;" onclick="tapInRuang(this, 'Gedung Roedhiro')">Tap-In</button>
+                        <button style="display:none; padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--accent-green); color: var(--bg-dark);" onclick="validasiBersih(this, 'Gedung Roedhiro')">Validasi Bersih</button>
+                    </td>
+                </tr>
             </table>
         </div>
 
@@ -193,28 +201,34 @@
                 <button onclick="tambahAlat()">Proses Data</button>
             </div>
             <table id="tabelAlat">
-                <tr><th>ID Alat</th><th>Nama Barang</th><th>Peminjam Aktif</th><th>Status Stok</th></tr>
-                <tr><td>ATP-001</td><td>Kabel Rol 15M</td><td>DDD (2)</td><td><span class="status-badge badge-aman">Aman</span></td></tr>
+                <tr><th>ID Alat</th><th>Nama Barang</th><th>Peminjam Aktif</th><th>Status Stok</th><th>Aksi Lapangan</th></tr>
+                <tr>
+                    <td>ATP-001</td>
+                    <td>Kabel Rol 15M</td>
+                    <td>DDD (2)</td>
+                    <td><span class="status-badge badge-pending">Sedang Dipinjam</span></td>
+                    <td><button style="padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--accent-yellow); color: var(--bg-dark);" onclick="kembalikanAlat(this, 'Kabel Rol 15M')">Kembalikan</button></td>
+                </tr>
             </table>
         </div>
 
-        <!-- MODUL 4: MANAJEMEN KONSTRUKSI (Ditambahkan Fitur Proyek Multi) -->
+        <!-- MODUL 4: MANAJEMEN KONSTRUKSI -->
         <div id="konstruksi" class="tab-section">
             <h1 class="header-title">Manajemen Konstruksi</h1>
-            <p class="header-subtitle">Log Material & Proyek Instalasi (Gate In, Gate Out, Photobooth, dll)</p>
+            <p class="header-subtitle">Log Material & Proyek Instalasi Dinamis</p>
             <div class="form-container">
                 <div class="form-group"><label>Material/Alat Konstruksi</label><input type="text" id="inputMaterial" placeholder="Misal: Palu, Paku 5cm, Kayu"></div>
                 
-                <!-- BAGIAN BARU: Dropdown Kategori Proyek -->
                 <div class="form-group">
                     <label>Kategori Proyek</label>
-                    <select id="kategoriProyek">
-                        <option value="Gate In">Gate In</option>
-                        <option value="Gate Out">Gate Out</option>
-                        <option value="Photobooth">Photobooth</option>
-                        <option value="Panggung">Panggung</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <select id="kategoriProyek" style="flex: 1;">
+                            <option value="Gate In">Gate In</option>
+                            <option value="Gate Out">Gate Out</option>
+                            <option value="Photobooth">Photobooth</option>
+                        </select>
+                        <button onclick="kelolaKategori()" title="Tambah/Hapus Kategori" style="padding: 0.8rem; background-color: var(--border-color); color: var(--text-main);">⚙️</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -237,16 +251,13 @@
 
     <!-- LOGIKA JAVASCRIPT (FRONT-END) -->
     <script>
-        // Fungsi Navigasi Tab
         function bukaTab(idTab, elemenTombol) {
             document.querySelectorAll('.tab-section').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
-            
             document.getElementById(idTab).classList.add('active');
             elemenTombol.classList.add('active');
         }
 
-        // Fungsi Catat ke Log Aktivitas (Dashboard)
         function catatLog(tindakan, modul, warnaModul) {
             const tabelLog = document.getElementById('tabelLog');
             const waktu = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -255,7 +266,7 @@
             tabelLog.insertBefore(baris, tabelLog.rows[1]);
         }
 
-        // Fungsi Tambah Ruang
+        // --- FUNGSI MODUL RUANG ---
         function tambahRuang() {
             const nama = document.getElementById('inputRuang').value;
             const divisi = document.getElementById('divisiRuang').value;
@@ -267,14 +278,41 @@
 
             const tabel = document.getElementById('tabelRuang');
             const baris = document.createElement('tr');
-            baris.innerHTML = `<td>${nama}</td><td>${divisi}</td><td><span class="status-badge ${statusClass}">${statusText}</span></td><td><button style="padding: 0.4rem 1rem; font-size: 0.7rem;">Tap-In</button></td>`;
+            baris.innerHTML = `<td>${nama}</td><td>${divisi}</td><td><span class="status-badge ${statusClass}">${statusText}</span></td>
+            <td>
+                <button style="padding: 0.4rem 1rem; font-size: 0.7rem;" onclick="tapInRuang(this, '${nama}')">Tap-In</button>
+                <button style="display:none; padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--accent-green); color: var(--bg-dark);" onclick="validasiBersih(this, '${nama}')">Validasi Bersih</button>
+            </td>`;
             tabel.appendChild(baris);
 
             document.getElementById('inputRuang').value = '';
             catatLog(`Mendaftarkan venue ${nama} untuk ${divisi}`, 'Ruang', 'var(--accent-green)');
         }
 
-        // Fungsi Tambah Alat
+        function tapInRuang(btn, namaRuang) {
+            let row = btn.closest('tr');
+            let badge = row.querySelector('.status-badge');
+            badge.className = 'status-badge badge-kritis';
+            badge.innerText = 'Sedang Digunakan';
+            
+            btn.style.display = 'none'; // Sembunyikan Tap-in
+            btn.nextElementSibling.style.display = 'inline-block'; // Munculkan Validasi
+            
+            catatLog(`Tap-In: ${namaRuang} mulai digunakan`, 'Ruang', 'var(--accent-yellow)');
+        }
+
+        function validasiBersih(btn, namaRuang) {
+            let row = btn.closest('tr');
+            let badge = row.querySelector('.status-badge');
+            badge.className = 'status-badge badge-aman';
+            badge.innerText = 'Selesai & Bersih';
+            
+            btn.style.display = 'none'; // Sembunyikan Validasi
+            
+            catatLog(`Validasi: ${namaRuang} telah dibersihkan`, 'Ruang', 'var(--accent-green)');
+        }
+
+        // --- FUNGSI MODUL ALAT ---
         function tambahAlat() {
             const nama = document.getElementById('inputAlat').value;
             const divisi = document.getElementById('divisiAlat').value;
@@ -285,7 +323,12 @@
             const idAcak = 'ATP-' + Math.floor(Math.random() * 900 + 100);
             const tabel = document.getElementById('tabelAlat');
             const baris = document.createElement('tr');
-            baris.innerHTML = `<td>${idAcak}</td><td>${nama}</td><td>${divisi} (${jumlah})</td><td><span class="status-badge badge-aman">Aman</span></td>`;
+            
+            // Set status awal otomatis menjadi "Sedang Dipinjam"
+            baris.innerHTML = `<td>${idAcak}</td><td>${nama}</td><td>${divisi} (${jumlah})</td>
+            <td><span class="status-badge badge-pending">Sedang Dipinjam</span></td>
+            <td><button style="padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--accent-yellow); color: var(--bg-dark);" onclick="kembalikanAlat(this, '${nama}')">Kembalikan</button></td>`;
+            
             tabel.appendChild(baris);
 
             document.getElementById('inputAlat').value = '';
@@ -293,10 +336,47 @@
             catatLog(`Mencatat pinjaman ${jumlah} ${nama} untuk divisi ${divisi}`, 'Alat', 'var(--accent-yellow)');
         }
 
-        // Fungsi Tambah Material Manajemen Konstruksi
+        function kembalikanAlat(btn, namaAlat) {
+            let row = btn.closest('tr');
+            let badge = row.querySelector('.status-badge');
+            badge.className = 'status-badge badge-aman';
+            badge.innerText = 'Dikembalikan';
+            
+            btn.style.display = 'none'; // Hilangkan tombol setelah dikembalikan
+            
+            catatLog(`Alat ${namaAlat} telah dikembalikan`, 'Alat', 'var(--accent-green)');
+        }
+
+        // --- FUNGSI MODUL KONSTRUKSI ---
+        function kelolaKategori() {
+            let aksi = prompt("Ketik 'tambah' untuk membuat proyek baru, atau 'hapus' untuk menghapus proyek yang dipilih di dropdown saat ini:");
+            let select = document.getElementById('kategoriProyek');
+
+            if (aksi && aksi.toLowerCase() === 'tambah') {
+                let namaBaru = prompt("Masukkan nama kategori proyek baru:");
+                if (namaBaru) {
+                    let opt = document.createElement('option');
+                    opt.value = namaBaru;
+                    opt.innerHTML = namaBaru;
+                    select.appendChild(opt);
+                    select.value = namaBaru; // Otomatis pilih yang baru
+                    catatLog(`Menambahkan kategori proyek baru: ${namaBaru}`, 'Konstruksi', 'var(--text-main)');
+                }
+            } else if (aksi && aksi.toLowerCase() === 'hapus') {
+                if(select.options.length > 0) {
+                    let hapusNama = select.options[select.selectedIndex].text;
+                    let konfirmasi = confirm(`Apakah Anda yakin ingin menghapus proyek "${hapusNama}" dari pilihan?`);
+                    if (konfirmasi) {
+                        select.remove(select.selectedIndex);
+                        catatLog(`Menghapus kategori proyek: ${hapusNama}`, 'Konstruksi', 'var(--accent-red)');
+                    }
+                }
+            }
+        }
+
         function tambahMaterial() {
             const nama = document.getElementById('inputMaterial').value;
-            const proyek = document.getElementById('kategoriProyek').value; // Mengambil nilai dari dropdown baru
+            const proyek = document.getElementById('kategoriProyek').value;
             const selectStatus = document.getElementById('statusMaterial');
             const statusClass = selectStatus.value;
             const statusText = selectStatus.options[selectStatus.selectedIndex].text;
@@ -305,7 +385,6 @@
 
             const tabel = document.getElementById('tabelMaterial');
             const baris = document.createElement('tr');
-            // Menyisipkan kolom proyek di antara nama dan status
             baris.innerHTML = `<td>${nama}</td><td>${proyek}</td><td><span class="status-badge ${statusClass}">${statusText}</span></td>`;
             tabel.appendChild(baris);
 
