@@ -36,7 +36,7 @@
         #loginModal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-box { background: var(--surface); padding: 2.5rem; border-radius: 8px; width: 320px; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        /* Sidebar */
+        /* Sidebar Desktop */
         .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; transition: background-color 0.3s; }
         .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; color: var(--text-main); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .user-profile { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
@@ -50,7 +50,7 @@
         .theme-toggle { margin-top: auto; margin-bottom: 0.5rem; padding: 0.8rem; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold;}
         .reset-btn { padding: 0.8rem; background-color: rgba(255, 23, 68, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
 
-        /* Konten Utama */
+        /* Konten Utama Desktop */
         .main-content { flex: 1; padding: 3rem; box-sizing: border-box; overflow-y: auto; }
         .tab-section { display: none; }
         .tab-section.active { display: block; }
@@ -79,44 +79,56 @@
         .badge-pending { background-color: rgba(255, 234, 0, 0.1); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
         .badge-abu { background-color: rgba(136, 136, 136, 0.1); color: var(--text-muted); border: 1px solid var(--text-muted); }
 
-        /* --- CSS KHUSUS HP & TABLET (RESPONSIVE) --- */
+        /* =========================================
+           TAMPILAN KHUSUS HP (APP-LIKE BOTTOM NAV)
+           ========================================= */
         @media (max-width: 768px) {
-            body { flex-direction: column; height: 100vh; overflow-y: auto; }
+            body { flex-direction: column; overflow: hidden; }
             
-            /* Merubah Sidebar jadi Menu Geser Horizontal di atas layar */
+            /* Header Atas di HP */
             .sidebar { 
-                width: 100%; height: auto; padding: 1rem; 
-                border-right: none; border-bottom: 1px solid var(--border-color); 
-                display: block; overflow-x: auto; white-space: nowrap; 
+                width: 100%; height: auto; padding: 0; border-right: none; 
+                display: flex; flex-direction: column; background: var(--surface); z-index: 10;
             }
-            .logo { display: block; white-space: normal; text-align: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; }
+            .logo { padding: 1rem; margin: 0; text-align: center; border-bottom: 1px solid var(--border-color); }
             
-            /* Profil sejajar dengan tombol keluar */
-            .user-profile { display: block; white-space: normal; margin-bottom: 1rem; padding: 0.8rem; text-align: center; }
-            .user-profile label { display: inline-block; margin-right: 5px; }
-            .user-name { display: inline-block; margin-right: 15px; margin-bottom: 0; }
-            .logout-btn { display: inline-block; font-size: 0.8rem; padding: 5px 10px; background: rgba(255,255,255,0.1); border-radius: 4px; text-decoration: none; }
+            /* Box Profil dipadatkan ke atas */
+            .user-profile { margin: 10px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; padding: 0.8rem; }
+            .user-profile label { margin-bottom: 0; display: inline-block; margin-right: 10px; }
+            .user-name { margin-bottom: 0; display: inline-block; }
+            .logout-btn { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); padding: 5px 10px; border-radius: 4px; text-decoration: none; }
             
-            /* Tombol Navigasi sejajar menyamping */
-            .nav-link { display: inline-block; width: auto; margin-right: 0.5rem; margin-bottom: 0; padding: 0.6rem 1rem; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 20px; font-size: 0.85rem; }
-            .theme-toggle { display: inline-block; width: auto; padding: 0.6rem 1rem; border-radius: 20px; margin-top: 0; font-size: 0.85rem; }
+            /* Tombol Tema pindah ke pojok kanan atas layar */
+            .theme-toggle { position: absolute; top: 12px; right: 10px; margin: 0; padding: 5px 10px; width: auto; font-size: 0.7rem; }
             
-            /* Konten Utama menyesuaikan lebar layar */
-            .main-content { padding: 1rem; overflow-y: visible; flex: none; height: auto; }
+            /* BOTTOM NAVIGATION BAR (Rahasia Tampilan Aplikasi) */
+            .nav-link { 
+                position: fixed; bottom: 0; z-index: 999;
+                width: 20%; height: 65px; margin: 0; padding: 5px; 
+                font-size: 0.6rem; text-align: center; line-height: 1.3;
+                border: none; border-top: 1px solid var(--border-color); border-radius: 0;
+                background-color: var(--surface); display: flex; align-items: center; justify-content: center;
+            }
+            .nav-link.active { border-top: 3px solid var(--accent-green); color: var(--accent-green); background-color: var(--bg-dark); }
+            
+            /* Menata Posisi ke-5 Tombol Bottom Nav Berjejer */
+            .sidebar > button:nth-of-type(1) { left: 0; }
+            .sidebar > button:nth-of-type(2) { left: 20%; }
+            .sidebar > button:nth-of-type(3) { left: 40%; }
+            .sidebar > button:nth-of-type(4) { left: 60%; }
+            .sidebar > button:nth-of-type(5) { left: 80%; }
+
+            /* Konten Utama bisa discroll, ditarik ke atas agar tidak tertutup nav bawah */
+            .main-content { padding: 1rem; padding-bottom: 80px; overflow-y: auto; height: 100%; }
             .header-title { font-size: 1.5rem; }
+            .grid-container { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+            .form-container { flex-direction: column; gap: 0.8rem; align-items: stretch; }
+            .form-group { width: 100%; min-width: 100%; }
+            button.btn-primary { width: 100%; padding: 1rem; }
             
-            /* Grid Dashboard berubah jadi list vertikal */
-            .grid-container { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;}
-            
-            /* Form Input menjadi tumpukan vertikal yang nyaman diketik */
-            .form-container { flex-direction: column; align-items: stretch; gap: 1rem; }
-            .form-group { width: 100%; min-width: unset; }
-            input, select { box-sizing: border-box; width: 100%; }
-            button.btn-primary { width: 100%; padding: 1rem; margin-top: 0.5rem; }
-            
-            /* Tabel Anti-Gepeng (Bisa digeser layaknya Excel di HP) */
-            table { display: block; overflow-x: auto; white-space: nowrap; width: 100%; border: 1px solid var(--border-color); border-radius: 4px; }
-            th, td { font-size: 0.8rem; padding: 0.8rem; }
+            /* Tabel bisa digeser (swipe) kanan-kiri */
+            table { display: block; overflow-x: auto; white-space: nowrap; width: 100%; border: 1px solid var(--border-color); border-radius: 4px;}
+            th, td { padding: 0.8rem; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -135,9 +147,11 @@
         <div class="logo">ATP DIESNAT 12</div>
         
         <div class="user-profile">
-            <label>PETUGAS AKTIF:</label>
-            <div class="user-name" id="displayUserName">Memuat...</div>
-            <button class="logout-btn" onclick="keluarSistem()">Ganti Pengguna</button>
+            <div>
+                <label>PETUGAS:</label>
+                <div class="user-name" id="displayUserName">Memuat...</div>
+            </div>
+            <button class="logout-btn" onclick="keluarSistem()">Ganti</button>
         </div>
 
         <button class="nav-link active" onclick="bukaTab('dashboard', this)">Dashboard Log</button>
@@ -146,7 +160,7 @@
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
         <button class="nav-link" onclick="bukaTab('pengaturan', this)">Pengaturan</button>
 
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 Ganti Tema</button>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Tema</button>
     </div>
 
     <div class="main-content">
@@ -247,7 +261,7 @@
     </div>
 
     <script>
-        // --- KONFIGURASI FIREBASE ---
+        // --- KONFIGURASI FIREBASE CLOUD FIRESTORE ---
         const firebaseConfig = {
             apiKey: "AIzaSyCksEKeVfZ39valn9SGLFYySslqoFTczEI",
             authDomain: "atpdiesnatfmipa12.firebaseapp.com",
@@ -259,18 +273,15 @@
         firebase.initializeApp(firebaseConfig);
         const dbCloud = firebase.firestore();
 
-        // --- SISTEM DATABASE REAL-TIME ---
         let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
 
-        // Dengarkan perubahan dari cloud secara langsung
+        // Dengarkan perubahan dari cloud secara Real-Time
         dbCloud.collection("atp").doc("data").onSnapshot((doc) => {
             if (doc.exists) {
                 db = doc.data();
             } else {
-                // Jika database di cloud masih kosong, buatkan data awal
                 dbCloud.collection("atp").doc("data").set(db);
             }
-            // Update tampilan HANYA JIKA petugas sudah login
             if(document.getElementById('loginModal').style.display === 'none') {
                 renderSemua();
                 updateDashboard();
@@ -278,15 +289,16 @@
             }
         });
 
-        // Fungsi ini akan mendorong perubahan ke cloud (semua perangkat akan langsung update)
+        // Simpan ke Cloud agar semua perangkat sinkron
         function saveDB() {
             dbCloud.collection("atp").doc("data").set(db);
         }
 
-        // --- INISIALISASI ---
+        // --- SISTEM LOGIN PERMANEN LOKAL ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
+            // Jika ada user tersimpan di memori HP, langsung tembus ke dashboard
             if(savedUser) {
                 document.getElementById('loginModal').style.display = 'none';
                 document.getElementById('displayUserName').innerText = savedUser;
@@ -298,18 +310,22 @@
         function masukSistem() {
             const nama = document.getElementById('loginName').value;
             if(!nama.trim()) return alert('Nama wajib diisi!');
-            localStorage.setItem('atpUser', nama);
+            localStorage.setItem('atpUser', nama); // Menyimpan permanen di memori HP/Laptop ini
             document.getElementById('displayUserName').innerText = nama;
             document.getElementById('loginModal').style.display = 'none';
             catatLog('Sesi pengguna aktif', 'Sistem', 'var(--text-muted)');
             
-            // Pancing render saat pertama kali masuk
             renderSemua();
             updateDashboard();
             renderDropdownKategori();
         }
 
-        function keluarSistem() { localStorage.removeItem('atpUser'); location.reload(); }
+        // Tombol sakti untuk menghapus memori login HP
+        function keluarSistem() { 
+            localStorage.removeItem('atpUser'); 
+            location.reload(); 
+        }
+
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
 
         function resetDatabase() {
@@ -343,7 +359,7 @@
 
         function renderRuang() {
             const tbody = document.getElementById('tabelRuang'); tbody.innerHTML = '';
-            if(!db.ruang) return; // Proteksi jika data belum utuh
+            if(!db.ruang) return; 
             db.ruang.forEach((r, idx) => {
                 let btnTap = r.status === 'Sudah Terajukan (ACC)' && !r.tapped && !r.selesai ? `<button onclick="aksiRuang(${idx}, 'tap')" style="background:var(--text-main); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Tap-In</button>` : '';
                 let btnVal = r.tapped && !r.selesai ? `<button onclick="aksiRuang(${idx}, 'val')" style="background:var(--accent-green); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Validasi Bersih</button>` : '';
@@ -398,15 +414,12 @@
             db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; });
         }
 
-        // --- DASHBOARD MATEMATIKA ---
         function updateDashboard() {
             if(!db.ruang || !db.alat || !db.konstruksi) return;
-            // Ruang
             let aktif = db.ruang.filter(r => r.tapped && !r.selesai).length;
             document.getElementById('dashRuang').innerText = `${aktif} Aktif`;
             document.getElementById('dashRuangSub').innerText = `Total ${db.ruang.length} Ruang Terdaftar`;
 
-            // Alat
             let totalItem = 0; let totalHilang = 0;
             db.alat.forEach(a => { totalItem += Number(a.jumlah); totalHilang += Number(a.hilang || 0); });
             if(db.alat.length === 0) {
@@ -421,7 +434,6 @@
                 document.getElementById('dashAlatSub').innerText = `0 Item Kehilangan`;
             }
 
-            // Konstruksi
             let totalK = db.konstruksi.length;
             let siapK = db.konstruksi.filter(k => k.ketersediaan === 'Tersedia').length;
             let persenK = totalK === 0 ? 0 : Math.floor((siapK / totalK) * 100);
