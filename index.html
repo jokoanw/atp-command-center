@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATP COMMAND CENTER - DIESNAT FMIPA 12</title>
     <style>
-        /* Variabel Tema Gelap (Default) */
         :root {
             --bg-dark: #121212;
             --surface: #1e1e1e;
@@ -16,84 +15,55 @@
             --accent-red: #ff1744;
             --border-color: #333333;
         }
-
-        /* Variabel Tema Terang (Light Mode) */
         body.light-mode {
             --bg-dark: #f0f2f5;
             --surface: #ffffff;
             --text-main: #1a1a1a;
             --text-muted: #666666;
-            --accent-green: #00a03e; /* Disesuaikan agar kontras */
+            --accent-green: #00a03e; 
             --accent-yellow: #d4a000;
             --accent-red: #d50000;
             --border-color: #cccccc;
         }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            transition: background-color 0.3s, color 0.3s;
-        }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
 
-        /* Modal Login Layar Penuh */
-        #loginModal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-            z-index: 9999; display: flex; align-items: center; justify-content: center;
-        }
-        .login-box {
-            background: var(--surface); padding: 2.5rem; border-radius: 8px;
-            width: 320px; text-align: center; border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        /* Modal Login */
+        #loginModal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: var(--surface); padding: 2.5rem; border-radius: 8px; width: 320px; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        /* Sidebar Navigasi */
-        .sidebar {
-            width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color);
-            padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column;
-            transition: background-color 0.3s;
-        }
-
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; transition: background-color 0.3s; }
         .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; color: var(--text-main); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
-        
         .user-profile { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
         .user-profile label { font-size: 0.7rem; color: var(--accent-green); margin-bottom: 0.3rem; display: block; font-weight: bold;}
         .user-name { font-size: 1rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-main); word-wrap: break-word;}
-        .logout-btn { font-size: 0.7rem; color: var(--accent-red); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
+        .logout-btn { font-size: 0.7rem; color: var(--text-main); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
 
         .nav-link { background: none; border: none; color: var(--text-muted); text-align: left; padding: 0; margin-bottom: 1.5rem; font-size: 0.95rem; cursor: pointer; transition: color 0.3s ease; font-family: inherit; }
         .nav-link:hover, .nav-link.active { color: var(--text-main); font-weight: bold; }
 
-        .theme-toggle { margin-top: auto; padding: 0.8rem; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; cursor: pointer; text-align: center; font-size: 0.85rem; font-weight: bold;}
+        .theme-toggle { margin-top: auto; margin-bottom: 0.5rem; padding: 0.8rem; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold;}
+        .reset-btn { padding: 0.8rem; background-color: rgba(255, 23, 68, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
 
         /* Konten Utama */
         .main-content { flex: 1; padding: 3rem; box-sizing: border-box; overflow-y: auto; }
         .tab-section { display: none; }
         .tab-section.active { display: block; }
-
         .header-title { font-size: 2rem; margin: 0 0 0.5rem 0; font-weight: 400; }
         .header-subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
 
         .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 3rem; }
         .card { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; }
         .card-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
-        .card-value { font-size: 2.5rem; margin: 0; color: var(--text-main);}
-        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
-        .dot-green { background-color: var(--accent-green); }
-        .dot-yellow { background-color: var(--accent-yellow); }
-        .dot-red { background-color: var(--accent-red); }
+        .card-value { font-size: 2rem; font-weight: bold; margin: 0; color: var(--text-main);}
+        .card-subtext { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; }
 
         .form-container { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
         .form-group { display: flex; flex-direction: column; flex: 1; min-width: 130px; }
         label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;}
         select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 4px; outline: none; }
         button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
-        button.btn-primary:hover { opacity: 0.9; }
 
         table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
         th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
@@ -103,6 +73,7 @@
         .badge-aman { background-color: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
         .badge-kritis { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-pending { background-color: rgba(255, 234, 0, 0.1); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+        .badge-abu { background-color: rgba(136, 136, 136, 0.1); color: var(--text-muted); border: 1px solid var(--text-muted); }
     </style>
 </head>
 <body>
@@ -112,7 +83,7 @@
         <div class="login-box">
             <h2 style="margin-top:0; color: var(--text-main);">Identitas Petugas</h2>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Sistem akan mengingat sesi Anda di perangkat ini.</p>
-            <input type="text" id="loginName" placeholder="Masukkan Nama / Divisi Anda" style="width: 100%; box-sizing:border-box; margin-bottom: 1rem; text-align: center;">
+            <input type="text" id="loginName" placeholder="Masukkan Nama Anda" style="width: 100%; box-sizing:border-box; margin-bottom: 1rem; text-align: center;">
             <button class="btn-primary" onclick="masukSistem()" style="width: 100%;">Akses Komando</button>
         </div>
     </div>
@@ -133,23 +104,36 @@
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
 
         <button class="theme-toggle" onclick="toggleTheme()">🌓 Ganti Tema</button>
+        <button class="reset-btn" onclick="resetDatabase()">⚠️ Reset Database</button>
     </div>
 
     <div class="main-content">
-        
         <!-- DASHBOARD & LOG -->
         <div id="dashboard" class="tab-section active">
             <h1 class="header-title">Sentralisasi Presisi</h1>
             <p class="header-subtitle">Rekam Jejak Operasional Real-Time</p>
             <div class="grid-container">
-                <div class="card"><div class="card-title">Ruang (Tap-In)</div><p class="card-value"><span class="status-dot dot-yellow"></span>Aktif</p></div>
-                <div class="card"><div class="card-title">Sirkulasi Alat</div><p class="card-value"><span class="status-dot dot-green"></span>Aman</p></div>
-                <div class="card"><div class="card-title">Konstruksi</div><p class="card-value"><span class="status-dot dot-red"></span>Siaga</p></div>
+                <div class="card">
+                    <div class="card-title">Ruang (Tap-In)</div>
+                    <p class="card-value" id="dashRuang">0 Aktif</p>
+                    <p class="card-subtext" id="dashRuangSub">Total 0 Ruang Terdaftar</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">Sirkulasi Alat</div>
+                    <p class="card-value" id="dashAlat">100% Aman</p>
+                    <p class="card-subtext" id="dashAlatSub">0 Item Kehilangan</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">Konstruksi</div>
+                    <p class="card-value" id="dashKonstruksi">0% Siap</p>
+                    <p class="card-subtext" id="dashKonstruksiSub">0 dari 0 Tersedia</p>
+                </div>
             </div>
             
             <h3 style="font-weight: normal; margin-bottom: 0;">Log Aktivitas Lapangan</h3>
-            <table id="tabelLog">
-                <tr><th>Tanggal</th><th>Waktu</th><th>Oleh</th><th>Tindakan</th><th>Modul</th></tr>
+            <table>
+                <thead><tr><th>Tanggal</th><th>Waktu</th><th>Oleh</th><th>Tindakan</th><th>Modul</th></tr></thead>
+                <tbody id="tabelLog"></tbody>
             </table>
         </div>
 
@@ -157,17 +141,16 @@
         <div id="ruang" class="tab-section">
             <h1 class="header-title">Matriks Ruang</h1>
             <div class="form-container">
-                <div class="form-group"><label>Nama Ruang/Venue</label><input type="text" id="inputRuang" placeholder="Misal: Aula FMIPA"></div>
+                <div class="form-group"><label>Nama Ruang</label><input type="text" id="inputRuang"></div>
                 <div class="form-group">
                     <label>Divisi Pengguna</label>
-                    <select id="divisiRuang">
-                        <option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option>
-                    </select>
+                    <select id="divisiRuang"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select>
                 </div>
                 <button class="btn-primary" onclick="tambahRuang()">Tambah Ruang</button>
             </div>
-            <table id="tabelRuang">
-                <tr><th>Ruang</th><th>Pengguna</th><th>Status Birokrasi</th><th>Aksi Lapangan</th></tr>
+            <table>
+                <thead><tr><th>Ruang</th><th>Pengguna</th><th>Status Birokrasi</th><th>Aksi Lapangan</th></tr></thead>
+                <tbody id="tabelRuang"></tbody>
             </table>
         </div>
 
@@ -175,19 +158,18 @@
         <div id="alat" class="tab-section">
             <h1 class="header-title">Sirkulasi Alat</h1>
             <div class="form-container">
-                <div class="form-group"><label>Nama Alat</label><input type="text" id="inputAlat" placeholder="Misal: HT Baofeng"></div>
-                <div class="form-group"><label>Asal Alat</label><input type="text" id="asalAlat" placeholder="Milik BEM/Sewa/dll"></div>
+                <div class="form-group"><label>Nama Alat</label><input type="text" id="inputAlat"></div>
+                <div class="form-group"><label>Asal Alat</label><input type="text" id="asalAlat" placeholder="BEM/Sewa"></div>
                 <div class="form-group">
-                    <label>Divisi Peminjam</label>
-                    <select id="divisiAlat">
-                        <option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option>
-                    </select>
+                    <label>Peminjam</label>
+                    <select id="divisiAlat"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option></select>
                 </div>
                 <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahAlat" min="1" value="1"></div>
                 <button class="btn-primary" onclick="tambahAlat()">Catat Pinjaman</button>
             </div>
-            <table id="tabelAlat">
-                <tr><th>Kode</th><th>Nama Alat</th><th>Asal Alat</th><th>Peminjam Aktif</th><th>Status Alat</th></tr>
+            <table>
+                <thead><tr><th>Kode</th><th>Nama Alat (Jml)</th><th>Asal Alat</th><th>Peminjam</th><th>Status Alat</th></tr></thead>
+                <tbody id="tabelAlat"></tbody>
             </table>
         </div>
 
@@ -195,38 +177,42 @@
         <div id="konstruksi" class="tab-section">
             <h1 class="header-title">Manajemen Konstruksi</h1>
             <div class="form-container">
-                <div class="form-group"><label>Material Baru</label><input type="text" id="inputMaterial" placeholder="Misal: Paku, Kayu"></div>
+                <div class="form-group"><label>Material Baru</label><input type="text" id="inputMaterial"></div>
                 <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahMaterial" min="1" value="1"></div>
                 
                 <div class="form-group">
-                    <label>Filter & Kategori Proyek</label>
+                    <label>Kategori Proyek</label>
                     <div style="display: flex; gap: 0.5rem;">
-                        <select id="kategoriProyek" style="flex: 1;" onchange="filterMaterial()">
+                        <select id="kategoriProyek" style="flex: 1;" onchange="renderKonstruksi()">
                             <option value="Semua Proyek">-- Semua Proyek --</option>
                             <option value="Gate In">Gate In</option>
                             <option value="Gate Out">Gate Out</option>
-                            <option value="Photobooth">Photobooth</option>
                         </select>
                         <button onclick="kelolaKategori()" title="Kelola Kategori" style="padding: 0.8rem; background-color: var(--border-color); color: var(--text-main); border-radius:4px; cursor:pointer;">⚙️</button>
                     </div>
                 </div>
                 <button class="btn-primary" onclick="tambahMaterial()">Tambah Material</button>
             </div>
-            <table id="tabelMaterial">
-                <tr><th>Item Konstruksi</th><th>Jml</th><th>Proyek</th><th>Ketersediaan</th><th>Status Pembelian</th></tr>
+            <table>
+                <thead><tr><th>Item Konstruksi</th><th>Jml</th><th>Proyek</th><th>Ketersediaan</th><th>Status Pembelian</th></tr></thead>
+                <tbody id="tabelKonstruksi"></tbody>
             </table>
         </div>
 
     </div>
 
     <script>
-        // INISIALISASI (LOGIN & TEMA)
-        window.onload = function() {
-            // Cek Tema
-            const savedTheme = localStorage.getItem('atpTheme');
-            if(savedTheme === 'light') document.body.classList.add('light-mode');
+        // --- SISTEM DATABASE LOKAL (STATE MANAGEMENT) ---
+        let db = JSON.parse(localStorage.getItem('atpDB')) || { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
 
-            // Cek Auth
+        function saveDB() {
+            localStorage.setItem('atpDB', JSON.stringify(db));
+            updateDashboard();
+        }
+
+        // --- INISIALISASI ---
+        window.onload = function() {
+            if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
             if(savedUser) {
                 document.getElementById('loginModal').style.display = 'none';
@@ -234,218 +220,202 @@
             } else {
                 document.getElementById('loginModal').style.display = 'flex';
             }
+            renderSemua();
+            updateDashboard();
+            renderDropdownKategori();
         };
 
         function masukSistem() {
             const nama = document.getElementById('loginName').value;
-            if(nama.trim() === '') return alert('Nama tidak boleh kosong!');
+            if(!nama.trim()) return alert('Nama wajib diisi!');
             localStorage.setItem('atpUser', nama);
             document.getElementById('displayUserName').innerText = nama;
             document.getElementById('loginModal').style.display = 'none';
-            catatLog('Mengakses sistem komando', 'Sistem', 'var(--text-muted)');
+            catatLog('Sesi pengguna aktif', 'Sistem', 'var(--text-muted)');
         }
 
-        function keluarSistem() {
-            localStorage.removeItem('atpUser');
-            location.reload();
+        function keluarSistem() { localStorage.removeItem('atpUser'); location.reload(); }
+        function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
+
+        function resetDatabase() {
+            let konfirmasi = prompt("PERINGATAN! Ini akan menghapus SELURUH DATA tabel. Ketik 'RESET' untuk melanjutkan:");
+            if(konfirmasi === 'RESET') {
+                localStorage.removeItem('atpDB');
+                location.reload();
+            } else if(konfirmasi !== null) {
+                alert('Kode salah. Dibatalkan.');
+            }
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('atpTheme', isLight ? 'light' : 'dark');
-        }
-
-        // NAVIGASI
-        function bukaTab(idTab, elemenTombol) {
-            document.querySelectorAll('.tab-section').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+        function bukaTab(idTab, elemen) {
+            document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
             document.getElementById(idTab).classList.add('active');
-            elemenTombol.classList.add('active');
-            if(idTab === 'konstruksi') filterMaterial(); 
+            elemen.classList.add('active');
         }
 
-        // LOG REAL-TIME
+        function dptClass(val) {
+            val = val.toLowerCase();
+            if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc')) return 'badge-aman';
+            if(val.includes('sedang')) return 'badge-pending';
+            if(val.includes('hilang')) return 'badge-kritis';
+            return 'badge-abu';
+        }
+
+        // --- RENDER LOGIKA ---
+        function renderSemua() { renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); }
+
+        function renderRuang() {
+            const tbody = document.getElementById('tabelRuang'); tbody.innerHTML = '';
+            db.ruang.forEach((r, idx) => {
+                let btnTap = r.status === 'Sudah Terajukan (ACC)' && !r.tapped && !r.selesai ? `<button onclick="aksiRuang(${idx}, 'tap')" style="background:var(--text-main); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Tap-In</button>` : '';
+                let btnVal = r.tapped && !r.selesai ? `<button onclick="aksiRuang(${idx}, 'val')" style="background:var(--accent-green); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Validasi Bersih</button>` : '';
+                let aksiTxt = r.selesai ? `<span style="font-size:0.8rem; color:var(--accent-green); font-weight:bold;">Selesai</span>` : btnTap + btnVal;
+
+                tbody.innerHTML += `<tr><td>${r.nama}</td><td>${r.divisi}</td>
+                <td><select class="status-badge ${dptClass(r.status)}" onchange="ubahStatusRuang(${idx}, this.value)"><option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option><option value="Sedang Diajukan" ${r.status=='Sedang Diajukan'?'selected':''}>Sedang Diajukan</option><option value="Sudah Terajukan (ACC)" ${r.status=='Sudah Terajukan (ACC)'?'selected':''}>Sudah Terajukan (ACC)</option></select></td>
+                <td>${aksiTxt}</td></tr>`;
+            });
+        }
+
+        function renderAlat() {
+            const tbody = document.getElementById('tabelAlat'); tbody.innerHTML = '';
+            db.alat.forEach((a, idx) => {
+                let statusInfo = a.status === 'Hilang' ? `Hilang (${a.hilang} buah)` : a.status;
+                tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
+                <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)">
+                    <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
+                    <option value="Sedang Dipinjam" ${a.status=='Sedang Dipinjam'?'selected':''}>Sedang Dipinjam</option>
+                    <option value="Dikembalikan" ${a.status=='Dikembalikan'?'selected':''}>Dikembalikan</option>
+                    <option value="Hilang" ${a.status=='Hilang'?'selected':''}>Hilang</option>
+                </select> <br><span style="font-size:0.7rem; color:var(--accent-red);">${a.status === 'Hilang' ? a.hilang + ' Hilang' : ''}</span></td></tr>`;
+            });
+        }
+
+        function renderKonstruksi() {
+            const tbody = document.getElementById('tabelKonstruksi'); tbody.innerHTML = '';
+            const filter = document.getElementById('kategoriProyek').value;
+            db.konstruksi.forEach((k, idx) => {
+                if(filter === 'Semua Proyek' || k.proyek === filter) {
+                    tbody.innerHTML += `<tr><td>${k.nama}</td><td>${k.jumlah}</td><td>${k.proyek}</td>
+                    <td><select class="status-badge ${dptClass(k.ketersediaan)}" onchange="ubahKonstruksi(${idx}, 'ket', this.value)"><option value="Belum Tersedia" ${k.ketersediaan=='Belum Tersedia'?'selected':''}>Belum Tersedia</option><option value="Tersedia" ${k.ketersediaan=='Tersedia'?'selected':''}>Tersedia</option></select></td>
+                    <td><select class="status-badge ${dptClass(k.pembelian)}" onchange="ubahKonstruksi(${idx}, 'beli', this.value)"><option value="Belum Dibeli" ${k.pembelian=='Belum Dibeli'?'selected':''}>Belum Dibeli</option><option value="Sedang Dibeli" ${k.pembelian=='Sedang Dibeli'?'selected':''}>Sedang Dibeli</option><option value="Sudah Dibeli" ${k.pembelian=='Sudah Dibeli'?'selected':''}>Sudah Dibeli</option></select></td></tr>`;
+                }
+            });
+        }
+
+        function renderLog() {
+            const tbody = document.getElementById('tabelLog'); tbody.innerHTML = '';
+            db.log.slice(0, 30).forEach(l => {
+                tbody.innerHTML += `<tr><td>${l.tanggal}</td><td>${l.waktu}</td><td style="color:var(--accent-green); font-weight:bold;">${l.user}</td><td>${l.tindakan}</td><td><span style="color: ${l.warna};">${l.modul}</span></td></tr>`;
+            });
+        }
+
+        function renderDropdownKategori() {
+            const sel = document.getElementById('kategoriProyek');
+            sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>';
+            db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; });
+        }
+
+        // --- DASHBOARD MATEMATIKA ---
+        function updateDashboard() {
+            // Ruang
+            let aktif = db.ruang.filter(r => r.tapped && !r.selesai).length;
+            document.getElementById('dashRuang').innerText = `${aktif} Aktif`;
+            document.getElementById('dashRuangSub').innerText = `Total ${db.ruang.length} Ruang Terdaftar`;
+
+            // Alat
+            let totalItem = 0; let totalHilang = 0;
+            db.alat.forEach(a => { totalItem += Number(a.jumlah); totalHilang += Number(a.hilang || 0); });
+            if(db.alat.length === 0) {
+                document.getElementById('dashAlat').innerText = `0% (Kosong)`;
+                document.getElementById('dashAlatSub').innerText = `Belum ada data masuk`;
+            } else if (totalHilang > 0) {
+                let persentaseAman = Math.floor(((totalItem - totalHilang) / totalItem) * 100);
+                document.getElementById('dashAlat').innerHTML = `<span style="color:var(--accent-red)">${persentaseAman}% Aman</span>`;
+                document.getElementById('dashAlatSub').innerText = `${totalHilang} Item Dilaporkan Hilang!`;
+            } else {
+                document.getElementById('dashAlat').innerHTML = `<span style="color:var(--accent-green)">100% Aman</span>`;
+                document.getElementById('dashAlatSub').innerText = `0 Item Kehilangan`;
+            }
+
+            // Konstruksi
+            let totalK = db.konstruksi.length;
+            let siapK = db.konstruksi.filter(k => k.ketersediaan === 'Tersedia').length;
+            let persenK = totalK === 0 ? 0 : Math.floor((siapK / totalK) * 100);
+            document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${persenK===100?'var(--accent-green)':'var(--accent-yellow)'}">${persenK}% Siap</span>`;
+            document.getElementById('dashKonstruksiSub').innerText = `${siapK} dari ${totalK} Material Tersedia`;
+        }
+
         function catatLog(tindakan, modul, warnaModul) {
-            const tabelLog = document.getElementById('tabelLog');
-            const user = localStorage.getItem('atpUser') || 'Anonim';
             const dateObj = new Date();
-            const tanggal = dateObj.toLocaleDateString('id-ID');
-            const waktu = dateObj.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-            
-            const baris = document.createElement('tr');
-            baris.innerHTML = `<td>${tanggal}</td><td>${waktu}</td><td style="color:var(--accent-green); font-weight:bold;">${user}</td><td>${tindakan}</td><td><span style="color: ${warnaModul};">${modul}</span></td>`;
-            tabelLog.insertBefore(baris, tabelLog.rows[1]);
+            db.log.unshift({ tanggal: dateObj.toLocaleDateString('id-ID'), waktu: dateObj.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan, modul, warna: warnaModul });
+            saveDB(); renderLog();
         }
 
-        // WARNA BADGE OTOMATIS
-        function updateWarnaBadge(elemen) {
-            const val = elemen.value.toLowerCase();
-            if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc')) {
-                elemen.className = 'status-badge badge-aman';
-            } else if (val.includes('sedang')) {
-                elemen.className = 'status-badge badge-pending';
-            } else {
-                elemen.className = 'status-badge badge-kritis';
-            }
-        }
-
-        // --- MATRIKS RUANG (LOGIKA TAP-IN AMAN) ---
+        // --- AKSI DATA ---
         function tambahRuang() {
-            const nama = document.getElementById('inputRuang').value;
-            const divisi = document.getElementById('divisiRuang').value;
-            if(!nama) return alert("Isi nama ruang!");
-
-            const tabel = document.getElementById('tabelRuang');
-            const baris = document.createElement('tr');
-            // Dataset untuk melacak state tap-in/selesai
-            baris.dataset.tapped = "false";
-            baris.dataset.selesai = "false";
-
-            baris.innerHTML = `<td>${nama}</td><td>${divisi}</td>
-            <td>
-                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); cekTombolTapIn(this); catatLog('Status ${nama}: ' + this.value, 'Ruang', 'var(--accent-yellow)')">
-                    <option value="Belum Diajukan">Belum Diajukan</option>
-                    <option value="Sedang Diajukan">Sedang Diajukan</option>
-                    <option value="Sudah Terajukan (ACC)">Sudah Terajukan (ACC)</option>
-                </select>
-            </td>
-            <td>
-                <button class="btn-tap" style="display:none; padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--text-main); color: var(--bg-dark); border:none; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="tapInRuang(this, '${nama}')">Tap-In Masuk</button>
-                <button class="btn-val" style="display:none; padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--accent-green); color: var(--bg-dark); border:none; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="validasiBersih(this, '${nama}')">Validasi Bersih</button>
-            </td>`;
-            tabel.appendChild(baris);
+            let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value;
+            if(!n) return alert("Isi nama ruang!");
+            db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false });
             document.getElementById('inputRuang').value = '';
-            catatLog(`Mendaftarkan ruang ${nama}`, 'Ruang', 'var(--accent-green)');
+            catatLog(`Mendaftarkan ruang ${n}`, 'Ruang', 'var(--accent-green)');
+            saveDB(); renderRuang();
         }
 
-        function cekTombolTapIn(selectElem) {
-            let row = selectElem.closest('tr');
-            let btnTap = row.querySelector('.btn-tap');
-            let btnVal = row.querySelector('.btn-val');
-            
-            // Tombol Tap-In hanya muncul JIKA status ACC dan belum pernah di-Tap / Selesai
-            if (selectElem.value === 'Sudah Terajukan (ACC)') {
-                if (row.dataset.tapped === "false" && row.dataset.selesai === "false") {
-                    btnTap.style.display = 'inline-block';
-                }
-            } else {
-                btnTap.style.display = 'none';
-            }
+        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; catatLog(`Status Ruang ${db.ruang[idx].nama}: ${val}`, 'Ruang', 'var(--accent-yellow)'); saveDB(); renderRuang(); }
+        function aksiRuang(idx, tipe) {
+            if(tipe === 'tap') { db.ruang[idx].tapped = true; catatLog(`[Mulai] Tap-In Ruang: ${db.ruang[idx].nama}`, 'Ruang', 'var(--accent-yellow)'); }
+            if(tipe === 'val') { db.ruang[idx].selesai = true; catatLog(`[Selesai] Validasi Bersih: ${db.ruang[idx].nama}`, 'Ruang', 'var(--accent-green)'); }
+            saveDB(); renderRuang();
         }
 
-        function tapInRuang(btn, nama) {
-            let row = btn.closest('tr');
-            row.dataset.tapped = "true"; // Kunci state
-            btn.style.display = 'none';
-            btn.nextElementSibling.style.display = 'inline-block';
-            catatLog(`[Mulai] Tap-In: ${nama} digunakan`, 'Ruang', 'var(--accent-yellow)');
-        }
-
-        function validasiBersih(btn, nama) {
-            let row = btn.closest('tr');
-            row.dataset.selesai = "true"; // Kunci state
-            btn.style.display = 'none';
-            catatLog(`[Selesai] Validasi: ${nama} dibersihkan`, 'Ruang', 'var(--accent-green)');
-        }
-
-        // --- SIRKULASI ALAT ---
         function tambahAlat() {
-            const nama = document.getElementById('inputAlat').value;
-            const asal = document.getElementById('asalAlat').value || 'Tidak Diketahui';
-            const divisi = document.getElementById('divisiAlat').value;
-            const jumlah = document.getElementById('jumlahAlat').value;
-
-            if(!nama) return alert("Isi nama alat!");
-
-            const idAcak = 'ATP-' + Math.floor(Math.random() * 900 + 100);
-            const tabel = document.getElementById('tabelAlat');
-            const baris = document.createElement('tr');
-            
-            baris.innerHTML = `<td>${idAcak}</td><td>${nama} (${jumlah})</td><td>${asal}</td><td>${divisi}</td>
-            <td>
-                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Status ${nama}: ' + this.value, 'Alat', 'var(--accent-yellow)')">
-                    <option value="Belum Menyediakan">Belum Menyediakan</option>
-                    <option value="Sedang Dipinjam">Sedang Dipinjam</option>
-                    <option value="Dikembalikan">Dikembalikan</option>
-                </select>
-            </td>`;
-            tabel.appendChild(baris);
-            document.getElementById('inputAlat').value = '';
-            document.getElementById('asalAlat').value = '';
-            catatLog(`Mencatat peminjaman ${jumlah} ${nama}`, 'Alat', 'var(--accent-yellow)');
+            let n = document.getElementById('inputAlat').value; let asal = document.getElementById('asalAlat').value || 'BEM/Umum'; let div = document.getElementById('divisiAlat').value; let jml = document.getElementById('jumlahAlat').value;
+            if(!n) return alert("Isi nama alat!");
+            db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Sedang Dipinjam', hilang: 0 });
+            document.getElementById('inputAlat').value = ''; document.getElementById('jumlahAlat').value = '1'; document.getElementById('asalAlat').value = '';
+            catatLog(`Peminjaman ${jml} ${n}`, 'Alat', 'var(--accent-yellow)'); saveDB(); renderAlat();
         }
 
-        // --- MANAJEMEN KONSTRUKSI (JUMLAH & FILTER) ---
-        function kelolaKategori() {
-            let aksi = prompt("Ketik 'tambah' untuk buat proyek baru, atau 'hapus' untuk menghapus proyek:");
-            let select = document.getElementById('kategoriProyek');
-
-            if (aksi && aksi.toLowerCase() === 'tambah') {
-                let namaBaru = prompt("Nama proyek baru:");
-                if (namaBaru) {
-                    let opt = document.createElement('option');
-                    opt.value = namaBaru; opt.innerHTML = namaBaru;
-                    select.appendChild(opt); select.value = namaBaru;
-                    filterMaterial();
-                    catatLog(`Proyek baru: ${namaBaru}`, 'Konstruksi', 'var(--text-main)');
-                }
-            } else if (aksi && aksi.toLowerCase() === 'hapus') {
-                let val = select.value;
-                if(val === 'Semua Proyek') return alert('Tidak bisa menghapus opsi ini.');
-                if(confirm(`Hapus proyek "${val}"?`)) {
-                    select.remove(select.selectedIndex);
-                    select.value = 'Semua Proyek';
-                    filterMaterial();
-                    catatLog(`Hapus proyek: ${val}`, 'Konstruksi', 'var(--accent-red)');
-                }
+        function ubahStatusAlat(idx, val) {
+            let a = db.alat[idx];
+            if(val === 'Hilang') {
+                let h = prompt(`Berapa jumlah yang hilang dari total ${a.jumlah} ${a.nama}?`);
+                if(h === null || isNaN(h) || h <= 0) return renderAlat(); // Cancelled
+                a.hilang = h;
+                catatLog(`[URGENT] ${h} ${a.nama} Dinyatakan Hilang!`, 'Alat', 'var(--accent-red)');
+            } else {
+                a.hilang = 0; // Reset jika dikembalikan
+                catatLog(`Status Alat ${a.nama}: ${val}`, 'Alat', 'var(--text-main)');
             }
+            a.status = val; saveDB(); renderAlat();
         }
 
         function tambahMaterial() {
-            const nama = document.getElementById('inputMaterial').value;
-            const jumlah = document.getElementById('jumlahMaterial').value;
-            const proyek = document.getElementById('kategoriProyek').value;
-            if(!nama) return alert("Isi nama material!");
-            if(proyek === 'Semua Proyek') return alert("Pilih proyek spesifik di dropdown, bukan 'Semua Proyek' saat menambah data.");
-
-            const tabel = document.getElementById('tabelMaterial');
-            const baris = document.createElement('tr');
-            baris.className = 'data-row';
-            baris.dataset.proyek = proyek; 
-
-            baris.innerHTML = `<td>${nama}</td><td>${jumlah}</td><td>${proyek}</td>
-            <td>
-                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Ketersediaan ${nama}: ' + this.value, 'Konstruksi', 'var(--text-main)')">
-                    <option value="Belum Tersedia">Belum Tersedia</option>
-                    <option value="Tersedia">Tersedia</option>
-                </select>
-            </td>
-            <td>
-                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Pembelian ${nama}: ' + this.value, 'Konstruksi', 'var(--text-main)')">
-                    <option value="Belum Dibeli">Belum Dibeli</option>
-                    <option value="Sedang Dibeli">Sedang Dibeli</option>
-                    <option value="Sudah Dibeli">Sudah Dibeli</option>
-                </select>
-            </td>`;
-            tabel.appendChild(baris);
-            document.getElementById('inputMaterial').value = '';
-            document.getElementById('jumlahMaterial').value = '1';
-            filterMaterial(); 
-            catatLog(`Input ${jumlah} ${nama} untuk proyek ${proyek}`, 'Konstruksi', 'var(--text-main)');
+            let n = document.getElementById('inputMaterial').value; let jml = document.getElementById('jumlahMaterial').value; let p = document.getElementById('kategoriProyek').value;
+            if(!n) return alert("Isi nama material!"); if(p === 'Semua Proyek') return alert("Pilih proyek spesifik di dropdown!");
+            db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
+            document.getElementById('inputMaterial').value = ''; document.getElementById('jumlahMaterial').value = '1';
+            catatLog(`Input ${jml} ${n} ke proyek ${p}`, 'Konstruksi', 'var(--text-main)'); saveDB(); renderKonstruksi();
         }
 
-        function filterMaterial() {
-            const filterValue = document.getElementById('kategoriProyek').value;
-            const rows = document.querySelectorAll('#tabelMaterial tr.data-row');
-            
-            rows.forEach(row => {
-                if (filterValue === 'Semua Proyek' || row.dataset.proyek === filterValue) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+        function ubahKonstruksi(idx, col, val) {
+            if(col === 'ket') db.konstruksi[idx].ketersediaan = val;
+            if(col === 'beli') db.konstruksi[idx].pembelian = val;
+            catatLog(`Pembaruan status ${db.konstruksi[idx].nama}`, 'Konstruksi', 'var(--text-muted)'); saveDB(); renderKonstruksi();
+        }
+
+        function kelolaKategori() {
+            let a = prompt("Ketik 'tambah' atau 'hapus' untuk mengelola proyek:");
+            if(a && a.toLowerCase() === 'tambah') {
+                let n = prompt("Nama proyek baru:");
+                if(n && !db.kategori.includes(n)) { db.kategori.push(n); saveDB(); renderDropdownKategori(); catatLog(`Kategori baru: ${n}`, 'Konstruksi', 'var(--text-main)'); }
+            } else if(a && a.toLowerCase() === 'hapus') {
+                let v = document.getElementById('kategoriProyek').value;
+                if(v === 'Semua Proyek') return alert("Tidak bisa menghapus ini.");
+                if(confirm(`Hapus kategori ${v}?`)) { db.kategori = db.kategori.filter(k => k !== v); saveDB(); renderDropdownKategori(); catatLog(`Hapus kategori: ${v}`, 'Konstruksi', 'var(--accent-red)'); }
+            }
         }
     </script>
 </body>
