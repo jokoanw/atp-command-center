@@ -117,7 +117,7 @@
         <button class="nav-link active" onclick="bukaTab('dashboard', this)">Dashboard</button>
         <button class="nav-link" onclick="bukaTab('ruang', this)">Matriks Ruang</button>
         <button class="nav-link" onclick="bukaTab('alat', this)">Sirkulasi Alat</button>
-        <button class="nav-link" onclick="bukaTab('gatein', this)">Konstruksi Gate In</button>
+        <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
     </div>
 
     <div class="main-content">
@@ -138,7 +138,7 @@
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">0 Item Telat Kembali</p>
                 </div>
                 <div class="card">
-                    <div class="card-title">Kesiapan Gate In</div>
+                    <div class="card-title">Kesiapan Konstruksi</div>
                     <p class="card-value"><span class="status-dot dot-red"></span>20%</p>
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Kekurangan Material Kayu</p>
                 </div>
@@ -198,12 +198,25 @@
             </table>
         </div>
 
-        <!-- MODUL 4: KONSTRUKSI GATE IN -->
-        <div id="gatein" class="tab-section">
-            <h1 class="header-title">Konstruksi Gate In</h1>
-            <p class="header-subtitle">Log Material Pertukangan & Shift Pekerja</p>
+        <!-- MODUL 4: MANAJEMEN KONSTRUKSI (Ditambahkan Fitur Proyek Multi) -->
+        <div id="konstruksi" class="tab-section">
+            <h1 class="header-title">Manajemen Konstruksi</h1>
+            <p class="header-subtitle">Log Material & Proyek Instalasi (Gate In, Gate Out, Photobooth, dll)</p>
             <div class="form-container">
                 <div class="form-group"><label>Material/Alat Konstruksi</label><input type="text" id="inputMaterial" placeholder="Misal: Palu, Paku 5cm, Kayu"></div>
+                
+                <!-- BAGIAN BARU: Dropdown Kategori Proyek -->
+                <div class="form-group">
+                    <label>Kategori Proyek</label>
+                    <select id="kategoriProyek">
+                        <option value="Gate In">Gate In</option>
+                        <option value="Gate Out">Gate Out</option>
+                        <option value="Photobooth">Photobooth</option>
+                        <option value="Panggung">Panggung</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>Status Ketersediaan</label>
                     <select id="statusMaterial">
@@ -214,9 +227,9 @@
                 <button onclick="tambahMaterial()">Catat Material</button>
             </div>
             <table id="tabelMaterial">
-                <tr><th>Item Konstruksi</th><th>Status</th></tr>
-                <tr><td>Paku Triplek 2 Box</td><td><span class="status-badge badge-kritis">Harus Beli/Sewa</span></td></tr>
-                <tr><td>Tangga Lipat (Pinjam BEM)</td><td><span class="status-badge badge-aman">Tersedia</span></td></tr>
+                <tr><th>Item Konstruksi</th><th>Proyek</th><th>Status</th></tr>
+                <tr><td>Paku Triplek 2 Box</td><td>Gate In</td><td><span class="status-badge badge-kritis">Harus Beli/Sewa</span></td></tr>
+                <tr><td>Tangga Lipat (Pinjam BEM)</td><td>Photobooth</td><td><span class="status-badge badge-aman">Tersedia</span></td></tr>
             </table>
         </div>
 
@@ -280,9 +293,10 @@
             catatLog(`Mencatat pinjaman ${jumlah} ${nama} untuk divisi ${divisi}`, 'Alat', 'var(--accent-yellow)');
         }
 
-        // Fungsi Tambah Material Gate In
+        // Fungsi Tambah Material Manajemen Konstruksi
         function tambahMaterial() {
             const nama = document.getElementById('inputMaterial').value;
+            const proyek = document.getElementById('kategoriProyek').value; // Mengambil nilai dari dropdown baru
             const selectStatus = document.getElementById('statusMaterial');
             const statusClass = selectStatus.value;
             const statusText = selectStatus.options[selectStatus.selectedIndex].text;
@@ -291,11 +305,12 @@
 
             const tabel = document.getElementById('tabelMaterial');
             const baris = document.createElement('tr');
-            baris.innerHTML = `<td>${nama}</td><td><span class="status-badge ${statusClass}">${statusText}</span></td>`;
+            // Menyisipkan kolom proyek di antara nama dan status
+            baris.innerHTML = `<td>${nama}</td><td>${proyek}</td><td><span class="status-badge ${statusClass}">${statusText}</span></td>`;
             tabel.appendChild(baris);
 
             document.getElementById('inputMaterial').value = '';
-            catatLog(`Menambahkan material ${nama} ke log Gate In`, 'Gate In', 'var(--text-main)');
+            catatLog(`Menambahkan material ${nama} untuk proyek ${proyek}`, 'Konstruksi', 'var(--text-main)');
         }
     </script>
 </body>
