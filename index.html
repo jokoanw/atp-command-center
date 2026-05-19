@@ -78,6 +78,46 @@
         .badge-kritis { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-pending { background-color: rgba(255, 234, 0, 0.1); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
         .badge-abu { background-color: rgba(136, 136, 136, 0.1); color: var(--text-muted); border: 1px solid var(--text-muted); }
+
+        /* --- CSS KHUSUS HP & TABLET (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: 100vh; overflow-y: auto; }
+            
+            /* Merubah Sidebar jadi Menu Geser Horizontal di atas layar */
+            .sidebar { 
+                width: 100%; height: auto; padding: 1rem; 
+                border-right: none; border-bottom: 1px solid var(--border-color); 
+                display: block; overflow-x: auto; white-space: nowrap; 
+            }
+            .logo { display: block; white-space: normal; text-align: center; margin-bottom: 0.5rem; padding-bottom: 0.5rem; }
+            
+            /* Profil sejajar dengan tombol keluar */
+            .user-profile { display: block; white-space: normal; margin-bottom: 1rem; padding: 0.8rem; text-align: center; }
+            .user-profile label { display: inline-block; margin-right: 5px; }
+            .user-name { display: inline-block; margin-right: 15px; margin-bottom: 0; }
+            .logout-btn { display: inline-block; font-size: 0.8rem; padding: 5px 10px; background: rgba(255,255,255,0.1); border-radius: 4px; text-decoration: none; }
+            
+            /* Tombol Navigasi sejajar menyamping */
+            .nav-link { display: inline-block; width: auto; margin-right: 0.5rem; margin-bottom: 0; padding: 0.6rem 1rem; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 20px; font-size: 0.85rem; }
+            .theme-toggle { display: inline-block; width: auto; padding: 0.6rem 1rem; border-radius: 20px; margin-top: 0; font-size: 0.85rem; }
+            
+            /* Konten Utama menyesuaikan lebar layar */
+            .main-content { padding: 1rem; overflow-y: visible; flex: none; height: auto; }
+            .header-title { font-size: 1.5rem; }
+            
+            /* Grid Dashboard berubah jadi list vertikal */
+            .grid-container { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;}
+            
+            /* Form Input menjadi tumpukan vertikal yang nyaman diketik */
+            .form-container { flex-direction: column; align-items: stretch; gap: 1rem; }
+            .form-group { width: 100%; min-width: unset; }
+            input, select { box-sizing: border-box; width: 100%; }
+            button.btn-primary { width: 100%; padding: 1rem; margin-top: 0.5rem; }
+            
+            /* Tabel Anti-Gepeng (Bisa digeser layaknya Excel di HP) */
+            table { display: block; overflow-x: auto; white-space: nowrap; width: 100%; border: 1px solid var(--border-color); border-radius: 4px; }
+            th, td { font-size: 0.8rem; padding: 0.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -319,6 +359,7 @@
             const tbody = document.getElementById('tabelAlat'); tbody.innerHTML = '';
             if(!db.alat) return;
             db.alat.forEach((a, idx) => {
+                let statusInfo = a.status === 'Hilang' ? `Hilang (${a.hilang} buah)` : a.status;
                 tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
                 <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)">
                     <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
@@ -401,12 +442,14 @@
             db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false });
             document.getElementById('inputRuang').value = '';
             catatLog(`Mendaftarkan ruang ${n}`, 'Ruang', 'var(--accent-green)');
+            saveDB(); 
         }
 
-        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; catatLog(`Status Ruang ${db.ruang[idx].nama}: ${val}`, 'Ruang', 'var(--accent-yellow)'); }
+        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; catatLog(`Status Ruang ${db.ruang[idx].nama}: ${val}`, 'Ruang', 'var(--accent-yellow)'); saveDB(); }
         function aksiRuang(idx, tipe) {
             if(tipe === 'tap') { db.ruang[idx].tapped = true; catatLog(`[Mulai] Tap-In Ruang: ${db.ruang[idx].nama}`, 'Ruang', 'var(--accent-yellow)'); }
             if(tipe === 'val') { db.ruang[idx].selesai = true; catatLog(`[Selesai] Validasi Bersih: ${db.ruang[idx].nama}`, 'Ruang', 'var(--accent-green)'); }
+            saveDB(); 
         }
 
         function tambahAlat() {
@@ -414,7 +457,7 @@
             if(!n) return alert("Isi nama alat!");
             db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Sedang Dipinjam', hilang: 0 });
             document.getElementById('inputAlat').value = ''; document.getElementById('jumlahAlat').value = '1'; document.getElementById('asalAlat').value = '';
-            catatLog(`Peminjaman ${jml} ${n}`, 'Alat', 'var(--accent-yellow)');
+            catatLog(`Peminjaman ${jml} ${n}`, 'Alat', 'var(--accent-yellow)'); saveDB(); 
         }
 
         function ubahStatusAlat(idx, val) {
@@ -436,13 +479,13 @@
             if(!n) return alert("Isi nama material!"); if(p === 'Semua Proyek') return alert("Pilih proyek spesifik di dropdown!");
             db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
             document.getElementById('inputMaterial').value = ''; document.getElementById('jumlahMaterial').value = '1';
-            catatLog(`Input ${jml} ${n} ke proyek ${p}`, 'Konstruksi', 'var(--text-main)');
+            catatLog(`Input ${jml} ${n} ke proyek ${p}`, 'Konstruksi', 'var(--text-main)'); saveDB(); 
         }
 
         function ubahKonstruksi(idx, col, val) {
             if(col === 'ket') db.konstruksi[idx].ketersediaan = val;
             if(col === 'beli') db.konstruksi[idx].pembelian = val;
-            catatLog(`Pembaruan status ${db.konstruksi[idx].nama}`, 'Konstruksi', 'var(--text-muted)');
+            catatLog(`Pembaruan status ${db.konstruksi[idx].nama}`, 'Konstruksi', 'var(--text-muted)'); saveDB(); 
         }
 
         function kelolaKategori() {
