@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATP | Sirkulasi Alat</title>
+    <title>ATP COMMAND CENTER - DIESNAT FMIPA 12</title>
     <style>
+        /* Palet Warna Moody/Dark & Minimalis */
         :root {
             --bg-dark: #121212;
             --surface: #1e1e1e;
@@ -23,15 +24,19 @@
             margin: 0;
             padding: 0;
             display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
+        /* Sidebar Navigasi */
         .sidebar {
             width: 250px;
-            height: 100vh;
             background-color: var(--surface);
             border-right: 1px solid var(--border-color);
             padding: 2rem 1.5rem;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
 
         .logo {
@@ -45,11 +50,16 @@
         }
 
         .nav-link {
-            display: block;
+            background: none;
+            border: none;
             color: var(--text-muted);
-            text-decoration: none;
+            text-align: left;
+            padding: 0;
             margin-bottom: 1.5rem;
             font-size: 0.95rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            font-family: inherit;
         }
 
         .nav-link:hover, .nav-link.active {
@@ -57,159 +67,236 @@
             font-weight: bold;
         }
 
+        /* Konten Utama */
         .main-content {
             flex: 1;
             padding: 3rem;
             box-sizing: border-box;
+            overflow-y: auto;
         }
+
+        .tab-section { display: none; }
+        .tab-section.active { display: block; }
 
         .header-title { font-size: 2rem; margin: 0 0 0.5rem 0; font-weight: 400; }
         .header-subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
 
-        /* Form Peminjaman Minimalis */
-        .form-container {
-            background-color: var(--surface);
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            border-radius: 4px;
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 1rem;
-            align-items: flex-end;
-        }
+        /* Grid & Card (Dashboard) */
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 3rem; }
+        .card { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; }
+        .card-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+        .card-value { font-size: 2.5rem; margin: 0; }
+        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+        .dot-green { background-color: var(--accent-green); }
+        .dot-yellow { background-color: var(--accent-yellow); }
+        .dot-red { background-color: var(--accent-red); }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
+        /* Formulir */
+        .form-container { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
+        .form-group { display: flex; flex-direction: column; flex: 1; min-width: 150px; }
         label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;}
-        
-        select, input {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 0.8rem;
-            border-radius: 4px;
-            outline: none;
-        }
-
-        button {
-            background-color: var(--text-main);
-            color: var(--bg-dark);
-            border: none;
-            padding: 0.8rem 2rem;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
+        select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 4px; outline: none; }
+        button { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
         button:hover { background-color: #ffffff; }
 
-        /* Tabel Inventaris Kaku dan Presisi */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
+        /* Tabel */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+        th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
         th { color: var(--text-muted); font-weight: normal; text-transform: uppercase; font-size: 0.8rem;}
-
-        .status-badge {
-            padding: 0.3rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
+        .status-badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         .badge-aman { background-color: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
         .badge-kritis { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
+        .badge-pending { background-color: rgba(255, 234, 0, 0.1); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
     </style>
 </head>
 <body>
 
+    <!-- Sidebar -->
     <div class="sidebar">
-        <div class="logo">ATP COMMAND</div>
-        <a href="index.html" class="nav-link">Dashboard</a>
-        <a href="#" class="nav-link">Matriks Ruang</a>
-        <a href="#" class="nav-link active">Sirkulasi Alat</a>
-        <a href="#" class="nav-link">Konstruksi Gate In</a>
+        <div class="logo">ATP COMMAND DIESNAT FMIPA 12</div>
+        <button class="nav-link active" onclick="bukaTab('dashboard', this)">Dashboard</button>
+        <button class="nav-link" onclick="bukaTab('ruang', this)">Matriks Ruang</button>
+        <button class="nav-link" onclick="bukaTab('alat', this)">Sirkulasi Alat</button>
+        <button class="nav-link" onclick="bukaTab('gatein', this)">Konstruksi Gate In</button>
     </div>
 
     <div class="main-content">
-        <h1 class="header-title">Sirkulasi Alat</h1>
-        <p class="header-subtitle">Manajemen Inventaris & Peminjaman Lintas Divisi</p>
-
-        <!-- Formulir Input Cepat -->
-        <div class="form-container">
-            <div class="form-group">
-                <label>Nama Alat</label>
-                <input type="text" placeholder="Misal: Handy Talky">
+        
+        <!-- MODUL 1: DASHBOARD -->
+        <div id="dashboard" class="tab-section active">
+            <h1 class="header-title">Sentralisasi Presisi</h1>
+            <p class="header-subtitle">Diesnat FMIPA UNSOED ke-12 | Akses: Semua Anggota (CRUD Aktif)</p>
+            <div class="grid-container">
+                <div class="card">
+                    <div class="card-title">Status Ruang Utama</div>
+                    <p class="card-value"><span class="status-dot dot-yellow"></span>3/5</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Menunggu Acc Dekanat</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">Sirkulasi Alat</div>
+                    <p class="card-value"><span class="status-dot dot-green"></span>Aman</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">0 Item Telat Kembali</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">Kesiapan Gate In</div>
+                    <p class="card-value"><span class="status-dot dot-red"></span>20%</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Kekurangan Material Kayu</p>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Divisi Peminjam</label>
-                <select>
-                    <option value="acara">Acara</option>
-                    <option value="ddd">DDD</option>
-                    <option value="lapangan">Lapangan</option>
-                    <option value="sponsorship">Sponsorship</option>
-                    <option value="humpub">Humpub</option>
-                    <option value="usda">Usda</option>
-                    <option value="sekretaris">Sekretaris</option>
-                    <option value="bendahara">Bendahara</option>
-                </select>
-            </div>
-            <div class="form-group" style="flex: 0.5;">
-                <label>Jumlah</label>
-                <input type="number" min="1" value="1">
-            </div>
-            <button>Proses Data</button>
+            <h3 style="font-weight: normal; margin-bottom: 0;">Log Aktivitas Terakhir (Automated Audit Trail)</h3>
+            <table id="tabelLog">
+                <tr><th>Waktu</th><th>Staf</th><th>Tindakan</th><th>Modul</th></tr>
+                <tr><td>Baru saja</td><td>Sistem</td><td>Sistem Sentralisasi ATP diinisialisasi</td><td><span style="color: var(--text-muted);">Admin</span></td></tr>
+            </table>
         </div>
 
-        <!-- Tabel Database Live -->
-        <table>
-            <tr>
-                <th>ID Alat</th>
-                <th>Nama Barang</th>
-                <th>Kepemilikan</th>
-                <th>Tersedia / Total</th>
-                <th>Peminjam Aktif</th>
-                <th>Status Stok</th>
-            </tr>
-            <tr>
-                <td>HT-001</td>
-                <td>Handy Talky Baofeng</td>
-                <td>Sewa (Vendor B)</td>
-                <td>4 / 15</td>
-                <td>Lapangan (6), Acara (5)</td>
-                <td><span class="status-badge badge-kritis">Kritis</span></td>
-            </tr>
-            <tr>
-                <td>KBL-005</td>
-                <td>Kabel Rol 15 Meter</td>
-                <td>Modal ATP</td>
-                <td>8 / 10</td>
-                <td>DDD (2)</td>
-                <td><span class="status-badge badge-aman">Aman</span></td>
-            </tr>
-            <tr>
-                <td>PL-002</td>
-                <td>Palu Besi (Gate In)</td>
-                <td>Modal ATP</td>
-                <td>2 / 2</td>
-                <td>-</td>
-                <td><span class="status-badge badge-aman">Aman</span></td>
-            </tr>
-        </table>
+        <!-- MODUL 2: MATRIKS RUANG -->
+        <div id="ruang" class="tab-section">
+            <h1 class="header-title">Matriks Ruang</h1>
+            <p class="header-subtitle">Tap-In/Out & Pemantauan Izin Dekanat/Rektorat</p>
+            <div class="form-container">
+                <div class="form-group"><label>Nama Ruang/Venue</label><input type="text" id="inputRuang" placeholder="Misal: Aula FMIPA"></div>
+                <div class="form-group">
+                    <label>Divisi Pengguna</label>
+                    <select id="divisiRuang">
+                        <option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="statusRuang">
+                        <option value="badge-pending">Surat Diajukan</option>
+                        <option value="badge-aman">Secured (Acc)</option>
+                    </select>
+                </div>
+                <button onclick="tambahRuang()">Proses Ruang</button>
+            </div>
+            <table id="tabelRuang">
+                <tr><th>Ruang</th><th>Pengguna</th><th>Status Izin</th><th>Aksi Lapangan</th></tr>
+                <tr><td>Gedung Roedhiro</td><td>Acara</td><td><span class="status-badge badge-pending">Surat Diajukan</span></td><td><button style="padding: 0.4rem 1rem; font-size: 0.7rem;">Tap-In</button></td></tr>
+            </table>
+        </div>
+
+        <!-- MODUL 3: SIRKULASI ALAT -->
+        <div id="alat" class="tab-section">
+            <h1 class="header-title">Sirkulasi Alat</h1>
+            <p class="header-subtitle">Manajemen Inventaris & Peminjaman</p>
+            <div class="form-container">
+                <div class="form-group"><label>Nama Alat</label><input type="text" id="inputAlat" placeholder="Misal: HT Baofeng"></div>
+                <div class="form-group">
+                    <label>Divisi Peminjam</label>
+                    <select id="divisiAlat">
+                        <option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahAlat" min="1" value="1"></div>
+                <button onclick="tambahAlat()">Proses Data</button>
+            </div>
+            <table id="tabelAlat">
+                <tr><th>ID Alat</th><th>Nama Barang</th><th>Peminjam Aktif</th><th>Status Stok</th></tr>
+                <tr><td>ATP-001</td><td>Kabel Rol 15M</td><td>DDD (2)</td><td><span class="status-badge badge-aman">Aman</span></td></tr>
+            </table>
+        </div>
+
+        <!-- MODUL 4: KONSTRUKSI GATE IN -->
+        <div id="gatein" class="tab-section">
+            <h1 class="header-title">Konstruksi Gate In</h1>
+            <p class="header-subtitle">Log Material Pertukangan & Shift Pekerja</p>
+            <div class="form-container">
+                <div class="form-group"><label>Material/Alat Konstruksi</label><input type="text" id="inputMaterial" placeholder="Misal: Palu, Paku 5cm, Kayu"></div>
+                <div class="form-group">
+                    <label>Status Ketersediaan</label>
+                    <select id="statusMaterial">
+                        <option value="badge-aman">Tersedia (Milik ATP)</option>
+                        <option value="badge-kritis">Harus Beli/Sewa</option>
+                    </select>
+                </div>
+                <button onclick="tambahMaterial()">Catat Material</button>
+            </div>
+            <table id="tabelMaterial">
+                <tr><th>Item Konstruksi</th><th>Status</th></tr>
+                <tr><td>Paku Triplek 2 Box</td><td><span class="status-badge badge-kritis">Harus Beli/Sewa</span></td></tr>
+                <tr><td>Tangga Lipat (Pinjam BEM)</td><td><span class="status-badge badge-aman">Tersedia</span></td></tr>
+            </table>
+        </div>
+
     </div>
 
+    <!-- LOGIKA JAVASCRIPT (FRONT-END) -->
+    <script>
+        // Fungsi Navigasi Tab
+        function bukaTab(idTab, elemenTombol) {
+            document.querySelectorAll('.tab-section').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(idTab).classList.add('active');
+            elemenTombol.classList.add('active');
+        }
+
+        // Fungsi Catat ke Log Aktivitas (Dashboard)
+        function catatLog(tindakan, modul, warnaModul) {
+            const tabelLog = document.getElementById('tabelLog');
+            const waktu = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const baris = document.createElement('tr');
+            baris.innerHTML = `<td>${waktu}</td><td>Anda (Admin)</td><td>${tindakan}</td><td><span style="color: ${warnaModul};">${modul}</span></td>`;
+            tabelLog.insertBefore(baris, tabelLog.rows[1]);
+        }
+
+        // Fungsi Tambah Ruang
+        function tambahRuang() {
+            const nama = document.getElementById('inputRuang').value;
+            const divisi = document.getElementById('divisiRuang').value;
+            const selectStatus = document.getElementById('statusRuang');
+            const statusClass = selectStatus.value;
+            const statusText = selectStatus.options[selectStatus.selectedIndex].text;
+
+            if(!nama) return alert("Isi nama ruang!");
+
+            const tabel = document.getElementById('tabelRuang');
+            const baris = document.createElement('tr');
+            baris.innerHTML = `<td>${nama}</td><td>${divisi}</td><td><span class="status-badge ${statusClass}">${statusText}</span></td><td><button style="padding: 0.4rem 1rem; font-size: 0.7rem;">Tap-In</button></td>`;
+            tabel.appendChild(baris);
+
+            document.getElementById('inputRuang').value = '';
+            catatLog(`Mendaftarkan venue ${nama} untuk ${divisi}`, 'Ruang', 'var(--accent-green)');
+        }
+
+        // Fungsi Tambah Alat
+        function tambahAlat() {
+            const nama = document.getElementById('inputAlat').value;
+            const divisi = document.getElementById('divisiAlat').value;
+            const jumlah = document.getElementById('jumlahAlat').value;
+
+            if(!nama) return alert("Isi nama alat!");
+
+            const idAcak = 'ATP-' + Math.floor(Math.random() * 900 + 100);
+            const tabel = document.getElementById('tabelAlat');
+            const baris = document.createElement('tr');
+            baris.innerHTML = `<td>${idAcak}</td><td>${nama}</td><td>${divisi} (${jumlah})</td><td><span class="status-badge badge-aman">Aman</span></td>`;
+            tabel.appendChild(baris);
+
+            document.getElementById('inputAlat').value = '';
+            document.getElementById('jumlahAlat').value = '1';
+            catatLog(`Mencatat pinjaman ${jumlah} ${nama} untuk divisi ${divisi}`, 'Alat', 'var(--accent-yellow)');
+        }
+
+        // Fungsi Tambah Material Gate In
+        function tambahMaterial() {
+            const nama = document.getElementById('inputMaterial').value;
+            const selectStatus = document.getElementById('statusMaterial');
+            const statusClass = selectStatus.value;
+            const statusText = selectStatus.options[selectStatus.selectedIndex].text;
+
+            if(!nama) return alert("Isi nama material!");
+
+            const tabel = document.getElementById('tabelMaterial');
+            const baris = document.createElement('tr');
+            baris.innerHTML = `<td>${nama}</td><td><span class="status-badge ${statusClass}">${statusText}</span></td>`;
+            tabel.appendChild(baris);
+
+            document.getElementById('inputMaterial').value = '';
+            catatLog(`Menambahkan material ${nama} ke log Gate In`, 'Gate In', 'var(--text-main)');
+        }
+    </script>
 </body>
 </html>
