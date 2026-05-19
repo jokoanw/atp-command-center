@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATP COMMAND CENTER - DIESNAT FMIPA 12</title>
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
@@ -21,16 +20,19 @@
         const app = initializeApp(firebaseConfig);
         const dbCloud = getFirestore(app);
         
-        // Variabel global database
         window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
 
         // Sinkronisasi Realtime dengan Firestore
         onSnapshot(doc(dbCloud, "atp", "data"), (docSnap) => {
             if (docSnap.exists()) {
                 window.db = docSnap.data();
-                renderSemua();
-                updateDashboard();
+            } else {
+                // Inisialisasi jika database belum ada
+                window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
+                saveDB();
             }
+            renderSemua();
+            updateDashboard();
         });
 
         window.saveDB = function() {
