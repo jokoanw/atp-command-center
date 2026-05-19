@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATP COMMAND CENTER - DIESNAT FMIPA 12</title>
     <style>
+        /* Variabel Tema Gelap (Default) */
         :root {
             --bg-dark: #121212;
             --surface: #1e1e1e;
@@ -16,6 +17,18 @@
             --border-color: #333333;
         }
 
+        /* Variabel Tema Terang (Light Mode) */
+        body.light-mode {
+            --bg-dark: #f0f2f5;
+            --surface: #ffffff;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --accent-green: #00a03e; /* Disesuaikan agar kontras */
+            --accent-yellow: #d4a000;
+            --accent-red: #d50000;
+            --border-color: #cccccc;
+        }
+
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
@@ -25,27 +38,40 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
+        /* Modal Login Layar Penuh */
+        #loginModal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+        }
+        .login-box {
+            background: var(--surface); padding: 2.5rem; border-radius: 8px;
+            width: 320px; text-align: center; border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar Navigasi */
         .sidebar {
-            width: 260px;
-            background-color: var(--surface);
-            border-right: 1px solid var(--border-color);
-            padding: 2rem 1.5rem;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
+            width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column;
+            transition: background-color 0.3s;
         }
 
-        .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; color: #ffffff; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; color: var(--text-main); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         
         .user-profile { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
-        .user-profile label { font-size: 0.7rem; color: var(--accent-green); margin-bottom: 0.3rem; display: block; }
-        .user-profile input { width: 100%; background: transparent; border: none; color: white; font-weight: bold; font-size: 0.9rem; padding: 0; outline: none; border-bottom: 1px dashed var(--text-muted); }
+        .user-profile label { font-size: 0.7rem; color: var(--accent-green); margin-bottom: 0.3rem; display: block; font-weight: bold;}
+        .user-name { font-size: 1rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-main); word-wrap: break-word;}
+        .logout-btn { font-size: 0.7rem; color: var(--accent-red); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
 
         .nav-link { background: none; border: none; color: var(--text-muted); text-align: left; padding: 0; margin-bottom: 1.5rem; font-size: 0.95rem; cursor: pointer; transition: color 0.3s ease; font-family: inherit; }
-        .nav-link:hover, .nav-link.active { color: #ffffff; font-weight: bold; }
+        .nav-link:hover, .nav-link.active { color: var(--text-main); font-weight: bold; }
 
+        .theme-toggle { margin-top: auto; padding: 0.8rem; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; cursor: pointer; text-align: center; font-size: 0.85rem; font-weight: bold;}
+
+        /* Konten Utama */
         .main-content { flex: 1; padding: 3rem; box-sizing: border-box; overflow-y: auto; }
         .tab-section { display: none; }
         .tab-section.active { display: block; }
@@ -56,24 +82,23 @@
         .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 3rem; }
         .card { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; }
         .card-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
-        .card-value { font-size: 2.5rem; margin: 0; }
+        .card-value { font-size: 2.5rem; margin: 0; color: var(--text-main);}
         .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
         .dot-green { background-color: var(--accent-green); }
         .dot-yellow { background-color: var(--accent-yellow); }
         .dot-red { background-color: var(--accent-red); }
 
         .form-container { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
-        .form-group { display: flex; flex-direction: column; flex: 1; min-width: 150px; }
+        .form-group { display: flex; flex-direction: column; flex: 1; min-width: 130px; }
         label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;}
         select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 4px; outline: none; }
-        button { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
-        button:hover { background-color: #ffffff; }
+        button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        button.btn-primary:hover { opacity: 0.9; }
 
         table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
         th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
         th { color: var(--text-muted); font-weight: normal; text-transform: uppercase; font-size: 0.8rem;}
         
-        /* Dropdown Badge Styles inside Table */
         .status-badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: none; outline: none; cursor: pointer; appearance: auto; font-family: inherit; }
         .badge-aman { background-color: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
         .badge-kritis { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
@@ -82,18 +107,32 @@
 </head>
 <body>
 
+    <!-- MODAL LOGIN -->
+    <div id="loginModal">
+        <div class="login-box">
+            <h2 style="margin-top:0; color: var(--text-main);">Identitas Petugas</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Sistem akan mengingat sesi Anda di perangkat ini.</p>
+            <input type="text" id="loginName" placeholder="Masukkan Nama / Divisi Anda" style="width: 100%; box-sizing:border-box; margin-bottom: 1rem; text-align: center;">
+            <button class="btn-primary" onclick="masukSistem()" style="width: 100%;">Akses Komando</button>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="logo">ATP COMMAND DIESNAT 12</div>
+        <div class="logo">ATP DIESNAT 12</div>
         
         <div class="user-profile">
-            <label>NAMA PETUGAS AKTIF:</label>
-            <input type="text" id="currentUser" value="Afdhi (Admin)" onchange="catatLog('Mengubah identitas sesi', 'Sistem', 'var(--text-main)')">
+            <label>PETUGAS AKTIF:</label>
+            <div class="user-name" id="displayUserName">Memuat...</div>
+            <button class="logout-btn" onclick="keluarSistem()">Ganti Pengguna</button>
         </div>
 
         <button class="nav-link active" onclick="bukaTab('dashboard', this)">Dashboard Log</button>
         <button class="nav-link" onclick="bukaTab('ruang', this)">Matriks Ruang</button>
         <button class="nav-link" onclick="bukaTab('alat', this)">Sirkulasi Alat</button>
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
+
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Ganti Tema</button>
     </div>
 
     <div class="main-content">
@@ -125,11 +164,10 @@
                         <option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option>
                     </select>
                 </div>
-                <button onclick="tambahRuang()">Tambah Ruang</button>
+                <button class="btn-primary" onclick="tambahRuang()">Tambah Ruang</button>
             </div>
             <table id="tabelRuang">
                 <tr><th>Ruang</th><th>Pengguna</th><th>Status Birokrasi</th><th>Aksi Lapangan</th></tr>
-                <!-- Data akan masuk ke sini -->
             </table>
         </div>
 
@@ -146,11 +184,10 @@
                     </select>
                 </div>
                 <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahAlat" min="1" value="1"></div>
-                <button onclick="tambahAlat()">Catat Pinjaman</button>
+                <button class="btn-primary" onclick="tambahAlat()">Catat Pinjaman</button>
             </div>
             <table id="tabelAlat">
-                <tr><th>Kode</th><th>Nama Alat</th><th>Asal Alat</th><th>Peminjam Aktif</th><th>Status Alat (Ubah Sini)</th></tr>
-                <!-- Data akan masuk ke sini -->
+                <tr><th>Kode</th><th>Nama Alat</th><th>Asal Alat</th><th>Peminjam Aktif</th><th>Status Alat</th></tr>
             </table>
         </div>
 
@@ -158,59 +195,90 @@
         <div id="konstruksi" class="tab-section">
             <h1 class="header-title">Manajemen Konstruksi</h1>
             <div class="form-container">
-                <div class="form-group"><label>Material Baru</label><input type="text" id="inputMaterial" placeholder="Misal: Palu, Paku"></div>
+                <div class="form-group"><label>Material Baru</label><input type="text" id="inputMaterial" placeholder="Misal: Paku, Kayu"></div>
+                <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahMaterial" min="1" value="1"></div>
                 
                 <div class="form-group">
                     <label>Filter & Kategori Proyek</label>
                     <div style="display: flex; gap: 0.5rem;">
                         <select id="kategoriProyek" style="flex: 1;" onchange="filterMaterial()">
-                            <option value="Semua Proyek">-- Semua Proyek (Tampil Semua) --</option>
+                            <option value="Semua Proyek">-- Semua Proyek --</option>
                             <option value="Gate In">Gate In</option>
                             <option value="Gate Out">Gate Out</option>
                             <option value="Photobooth">Photobooth</option>
                         </select>
-                        <button onclick="kelolaKategori()" title="Kelola Kategori" style="padding: 0.8rem; background-color: var(--border-color); color: var(--text-main);">⚙️</button>
+                        <button onclick="kelolaKategori()" title="Kelola Kategori" style="padding: 0.8rem; background-color: var(--border-color); color: var(--text-main); border-radius:4px; cursor:pointer;">⚙️</button>
                     </div>
                 </div>
-                <button onclick="tambahMaterial()">Tambah Material</button>
+                <button class="btn-primary" onclick="tambahMaterial()">Tambah Material</button>
             </div>
             <table id="tabelMaterial">
-                <tr><th>Item Konstruksi</th><th>Proyek</th><th>Ketersediaan</th><th>Status Pembelian</th></tr>
-                <!-- Data akan masuk ke sini -->
+                <tr><th>Item Konstruksi</th><th>Jml</th><th>Proyek</th><th>Ketersediaan</th><th>Status Pembelian</th></tr>
             </table>
         </div>
 
     </div>
 
-    <!-- LOGIKA JAVASCRIPT -->
     <script>
-        // Init Log saat halaman pertama dibuka
+        // INISIALISASI (LOGIN & TEMA)
         window.onload = function() {
-            catatLog('Sistem Sentralisasi ATP diinisialisasi', 'Admin', 'var(--text-muted)');
+            // Cek Tema
+            const savedTheme = localStorage.getItem('atpTheme');
+            if(savedTheme === 'light') document.body.classList.add('light-mode');
+
+            // Cek Auth
+            const savedUser = localStorage.getItem('atpUser');
+            if(savedUser) {
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('displayUserName').innerText = savedUser;
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
         };
 
+        function masukSistem() {
+            const nama = document.getElementById('loginName').value;
+            if(nama.trim() === '') return alert('Nama tidak boleh kosong!');
+            localStorage.setItem('atpUser', nama);
+            document.getElementById('displayUserName').innerText = nama;
+            document.getElementById('loginModal').style.display = 'none';
+            catatLog('Mengakses sistem komando', 'Sistem', 'var(--text-muted)');
+        }
+
+        function keluarSistem() {
+            localStorage.removeItem('atpUser');
+            location.reload();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('atpTheme', isLight ? 'light' : 'dark');
+        }
+
+        // NAVIGASI
         function bukaTab(idTab, elemenTombol) {
             document.querySelectorAll('.tab-section').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
             document.getElementById(idTab).classList.add('active');
             elemenTombol.classList.add('active');
-            if(idTab === 'konstruksi') filterMaterial(); // Terapkan filter saat tab dibuka
+            if(idTab === 'konstruksi') filterMaterial(); 
         }
 
-        // FUNGSI LOG REAL-TIME
+        // LOG REAL-TIME
         function catatLog(tindakan, modul, warnaModul) {
             const tabelLog = document.getElementById('tabelLog');
-            const user = document.getElementById('currentUser').value || 'Anonim';
+            const user = localStorage.getItem('atpUser') || 'Anonim';
             const dateObj = new Date();
             const tanggal = dateObj.toLocaleDateString('id-ID');
             const waktu = dateObj.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
             
             const baris = document.createElement('tr');
-            baris.innerHTML = `<td>${tanggal}</td><td>${waktu}</td><td style="color:var(--accent-green);">${user}</td><td>${tindakan}</td><td><span style="color: ${warnaModul};">${modul}</span></td>`;
+            baris.innerHTML = `<td>${tanggal}</td><td>${waktu}</td><td style="color:var(--accent-green); font-weight:bold;">${user}</td><td>${tindakan}</td><td><span style="color: ${warnaModul};">${modul}</span></td>`;
             tabelLog.insertBefore(baris, tabelLog.rows[1]);
         }
 
-        // FUNGSI UPDATE WARNA DROPDOWN
+        // WARNA BADGE OTOMATIS
         function updateWarnaBadge(elemen) {
             const val = elemen.value.toLowerCase();
             if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc')) {
@@ -222,7 +290,7 @@
             }
         }
 
-        // --- MATRIKS RUANG ---
+        // --- MATRIKS RUANG (LOGIKA TAP-IN AMAN) ---
         function tambahRuang() {
             const nama = document.getElementById('inputRuang').value;
             const divisi = document.getElementById('divisiRuang').value;
@@ -230,32 +298,55 @@
 
             const tabel = document.getElementById('tabelRuang');
             const baris = document.createElement('tr');
+            // Dataset untuk melacak state tap-in/selesai
+            baris.dataset.tapped = "false";
+            baris.dataset.selesai = "false";
+
             baris.innerHTML = `<td>${nama}</td><td>${divisi}</td>
             <td>
-                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Ubah status ruang ${nama} jadi: ' + this.value, 'Ruang', 'var(--accent-yellow)')">
+                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); cekTombolTapIn(this); catatLog('Status ${nama}: ' + this.value, 'Ruang', 'var(--accent-yellow)')">
                     <option value="Belum Diajukan">Belum Diajukan</option>
                     <option value="Sedang Diajukan">Sedang Diajukan</option>
                     <option value="Sudah Terajukan (ACC)">Sudah Terajukan (ACC)</option>
                 </select>
             </td>
             <td>
-                <button style="padding: 0.4rem 1rem; font-size: 0.7rem;" onclick="tapInRuang(this, '${nama}')">Tap-In</button>
-                <button style="display:none; padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--accent-green); color: var(--bg-dark);" onclick="validasiBersih(this, '${nama}')">Validasi Bersih</button>
+                <button class="btn-tap" style="display:none; padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--text-main); color: var(--bg-dark); border:none; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="tapInRuang(this, '${nama}')">Tap-In Masuk</button>
+                <button class="btn-val" style="display:none; padding: 0.4rem 1rem; font-size: 0.7rem; background-color: var(--accent-green); color: var(--bg-dark); border:none; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="validasiBersih(this, '${nama}')">Validasi Bersih</button>
             </td>`;
             tabel.appendChild(baris);
             document.getElementById('inputRuang').value = '';
-            catatLog(`Mendaftarkan ruang ${nama} untuk ${divisi}`, 'Ruang', 'var(--accent-green)');
+            catatLog(`Mendaftarkan ruang ${nama}`, 'Ruang', 'var(--accent-green)');
+        }
+
+        function cekTombolTapIn(selectElem) {
+            let row = selectElem.closest('tr');
+            let btnTap = row.querySelector('.btn-tap');
+            let btnVal = row.querySelector('.btn-val');
+            
+            // Tombol Tap-In hanya muncul JIKA status ACC dan belum pernah di-Tap / Selesai
+            if (selectElem.value === 'Sudah Terajukan (ACC)') {
+                if (row.dataset.tapped === "false" && row.dataset.selesai === "false") {
+                    btnTap.style.display = 'inline-block';
+                }
+            } else {
+                btnTap.style.display = 'none';
+            }
         }
 
         function tapInRuang(btn, nama) {
+            let row = btn.closest('tr');
+            row.dataset.tapped = "true"; // Kunci state
             btn.style.display = 'none';
             btn.nextElementSibling.style.display = 'inline-block';
-            catatLog(`Tap-In: ${nama} mulai digunakan`, 'Ruang', 'var(--accent-yellow)');
+            catatLog(`[Mulai] Tap-In: ${nama} digunakan`, 'Ruang', 'var(--accent-yellow)');
         }
 
         function validasiBersih(btn, nama) {
+            let row = btn.closest('tr');
+            row.dataset.selesai = "true"; // Kunci state
             btn.style.display = 'none';
-            catatLog(`Validasi: ${nama} telah dibersihkan`, 'Ruang', 'var(--accent-green)');
+            catatLog(`[Selesai] Validasi: ${nama} dibersihkan`, 'Ruang', 'var(--accent-green)');
         }
 
         // --- SIRKULASI ALAT ---
@@ -273,7 +364,7 @@
             
             baris.innerHTML = `<td>${idAcak}</td><td>${nama} (${jumlah})</td><td>${asal}</td><td>${divisi}</td>
             <td>
-                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Ubah status ${nama} jadi: ' + this.value, 'Alat', 'var(--accent-yellow)')">
+                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Status ${nama}: ' + this.value, 'Alat', 'var(--accent-yellow)')">
                     <option value="Belum Menyediakan">Belum Menyediakan</option>
                     <option value="Sedang Dipinjam">Sedang Dipinjam</option>
                     <option value="Dikembalikan">Dikembalikan</option>
@@ -282,10 +373,10 @@
             tabel.appendChild(baris);
             document.getElementById('inputAlat').value = '';
             document.getElementById('asalAlat').value = '';
-            catatLog(`Mencatat ${jumlah} ${nama} (${asal}) untuk ${divisi}`, 'Alat', 'var(--accent-yellow)');
+            catatLog(`Mencatat peminjaman ${jumlah} ${nama}`, 'Alat', 'var(--accent-yellow)');
         }
 
-        // --- MANAJEMEN KONSTRUKSI ---
+        // --- MANAJEMEN KONSTRUKSI (JUMLAH & FILTER) ---
         function kelolaKategori() {
             let aksi = prompt("Ketik 'tambah' untuk buat proyek baru, atau 'hapus' untuk menghapus proyek:");
             let select = document.getElementById('kategoriProyek');
@@ -306,32 +397,32 @@
                     select.remove(select.selectedIndex);
                     select.value = 'Semua Proyek';
                     filterMaterial();
-                    catatLog(`Menghapus proyek: ${val}`, 'Konstruksi', 'var(--accent-red)');
+                    catatLog(`Hapus proyek: ${val}`, 'Konstruksi', 'var(--accent-red)');
                 }
             }
         }
 
         function tambahMaterial() {
             const nama = document.getElementById('inputMaterial').value;
+            const jumlah = document.getElementById('jumlahMaterial').value;
             const proyek = document.getElementById('kategoriProyek').value;
             if(!nama) return alert("Isi nama material!");
-            if(proyek === 'Semua Proyek') return alert("Pilih proyek spesifik di dropdown, bukan 'Semua Proyek' saat menambah material.");
+            if(proyek === 'Semua Proyek') return alert("Pilih proyek spesifik di dropdown, bukan 'Semua Proyek' saat menambah data.");
 
             const tabel = document.getElementById('tabelMaterial');
             const baris = document.createElement('tr');
             baris.className = 'data-row';
-            baris.dataset.proyek = proyek; // Disimpan sebagai ID sembunyi untuk filter
+            baris.dataset.proyek = proyek; 
 
-            // Dua kolom status sesuai pesanan
-            baris.innerHTML = `<td>${nama}</td><td>${proyek}</td>
+            baris.innerHTML = `<td>${nama}</td><td>${jumlah}</td><td>${proyek}</td>
             <td>
-                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Ubah Ketersediaan ${nama}: ' + this.value, 'Konstruksi', 'var(--text-main)')">
+                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Ketersediaan ${nama}: ' + this.value, 'Konstruksi', 'var(--text-main)')">
                     <option value="Belum Tersedia">Belum Tersedia</option>
                     <option value="Tersedia">Tersedia</option>
                 </select>
             </td>
             <td>
-                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Ubah Pembelian ${nama}: ' + this.value, 'Konstruksi', 'var(--text-main)')">
+                <select class="status-badge badge-kritis" onchange="updateWarnaBadge(this); catatLog('Pembelian ${nama}: ' + this.value, 'Konstruksi', 'var(--text-main)')">
                     <option value="Belum Dibeli">Belum Dibeli</option>
                     <option value="Sedang Dibeli">Sedang Dibeli</option>
                     <option value="Sudah Dibeli">Sudah Dibeli</option>
@@ -339,11 +430,11 @@
             </td>`;
             tabel.appendChild(baris);
             document.getElementById('inputMaterial').value = '';
-            filterMaterial(); // Refresh tampilan
-            catatLog(`Input material ${nama} ke proyek ${proyek}`, 'Konstruksi', 'var(--text-main)');
+            document.getElementById('jumlahMaterial').value = '1';
+            filterMaterial(); 
+            catatLog(`Input ${jumlah} ${nama} untuk proyek ${proyek}`, 'Konstruksi', 'var(--text-main)');
         }
 
-        // FUNGSI FILTER TABEL KONSTRUKSI
         function filterMaterial() {
             const filterValue = document.getElementById('kategoriProyek').value;
             const rows = document.querySelectorAll('#tabelMaterial tr.data-row');
