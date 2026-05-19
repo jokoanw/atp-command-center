@@ -102,9 +102,9 @@
         <button class="nav-link" onclick="bukaTab('ruang', this)">Matriks Ruang</button>
         <button class="nav-link" onclick="bukaTab('alat', this)">Sirkulasi Alat</button>
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
-        <button class="nav-link" onclick="bukaTab('pengaturan', this)">Pengaturan</button>
 
         <button class="theme-toggle" onclick="toggleTheme()">🌓 Ganti Tema</button>
+        <button class="reset-btn" onclick="resetDatabase()">⚠️ Reset Database</button>
     </div>
 
     <div class="main-content">
@@ -199,14 +199,6 @@
             </table>
         </div>
 
-        <!-- PENGATURAN -->
-        <div id="pengaturan" class="tab-section">
-            <h1 class="header-title">Pengaturan</h1>
-            <div class="form-container">
-                <button class="reset-btn" onclick="resetDatabase()">⚠️ Reset Semua Data (Hapus Database)</button>
-            </div>
-        </div>
-
     </div>
 
     <script>
@@ -289,6 +281,7 @@
         function renderAlat() {
             const tbody = document.getElementById('tabelAlat'); tbody.innerHTML = '';
             db.alat.forEach((a, idx) => {
+                let statusInfo = a.status === 'Hilang' ? `Hilang (${a.hilang} buah)` : a.status;
                 tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
                 <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)">
                     <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
@@ -326,10 +319,12 @@
 
         // --- DASHBOARD MATEMATIKA ---
         function updateDashboard() {
+            // Ruang
             let aktif = db.ruang.filter(r => r.tapped && !r.selesai).length;
             document.getElementById('dashRuang').innerText = `${aktif} Aktif`;
             document.getElementById('dashRuangSub').innerText = `Total ${db.ruang.length} Ruang Terdaftar`;
 
+            // Alat
             let totalItem = 0; let totalHilang = 0;
             db.alat.forEach(a => { totalItem += Number(a.jumlah); totalHilang += Number(a.hilang || 0); });
             if(db.alat.length === 0) {
@@ -344,6 +339,7 @@
                 document.getElementById('dashAlatSub').innerText = `0 Item Kehilangan`;
             }
 
+            // Konstruksi
             let totalK = db.konstruksi.length;
             let siapK = db.konstruksi.filter(k => k.ketersediaan === 'Tersedia').length;
             let persenK = totalK === 0 ? 0 : Math.floor((siapK / totalK) * 100);
@@ -386,11 +382,11 @@
             let a = db.alat[idx];
             if(val === 'Hilang') {
                 let h = prompt(`Berapa jumlah yang hilang dari total ${a.jumlah} ${a.nama}?`);
-                if(h === null || isNaN(h) || h <= 0) return renderAlat();
+                if(h === null || isNaN(h) || h <= 0) return renderAlat(); // Cancelled
                 a.hilang = h;
                 catatLog(`[URGENT] ${h} ${a.nama} Dinyatakan Hilang!`, 'Alat', 'var(--accent-red)');
             } else {
-                a.hilang = 0;
+                a.hilang = 0; // Reset jika dikembalikan
                 catatLog(`Status Alat ${a.nama}: ${val}`, 'Alat', 'var(--text-main)');
             }
             a.status = val; saveDB(); renderAlat();
