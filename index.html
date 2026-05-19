@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATP COMMAND CENTER - DIESNAT FMIPA 12</title>
-  <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
@@ -21,19 +21,28 @@
         const dbCloud = getFirestore(app);
         
         window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
+        window.isDOMReady = false; // Kunci Keamanan
 
-        // Sinkronisasi Realtime dengan Firestore
+        // Tunggu halaman siap
+        window.addEventListener('DOMContentLoaded', () => {
+            window.isDOMReady = true;
+            renderSemua();
+            updateDashboard();
+        });
+
+        // Sinkronisasi Realtime
         onSnapshot(doc(dbCloud, "atp", "data"), (docSnap) => {
             if (docSnap.exists()) {
                 window.db = docSnap.data();
             } else {
-                // INI PERBAIKANNYA: 
-                // Jika database kosong, paksa inisialisasi agar aplikasi jalan
                 window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
-                saveDB(); 
+                setDoc(doc(dbCloud, "atp", "data"), window.db);
             }
-            renderSemua();
-            updateDashboard();
+            // Hanya render jika DOM sudah siap, jika belum tunggu saja
+            if(window.isDOMReady) {
+                renderSemua();
+                updateDashboard();
+            }
         });
 
         window.saveDB = function() {
