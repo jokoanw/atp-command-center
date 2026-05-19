@@ -23,19 +23,20 @@
         window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
         window.dbCloud = dbCloud;
 
-        // REALTIME LISTENER - Selalu aktif agar sinkron otomatis
-        onSnapshot(doc(window.dbCloud, "atp", "data"), (docSnap) => {
-            if (docSnap.exists()) {
-                window.db = docSnap.data();
+        window.initCloud = function() {
+            onSnapshot(doc(window.dbCloud, "atp", "data"), (docSnap) => {
+                if (docSnap.exists()) {
+                    window.db = docSnap.data();
+                } else {
+                    window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
+                    setDoc(doc(window.dbCloud, "atp", "data"), window.db);
+                }
                 if(document.getElementById('loginModal').style.display === 'none') {
                     renderSemua();
                     updateDashboard();
                 }
-            } else {
-                window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
-                setDoc(doc(window.dbCloud, "atp", "data"), window.db);
-            }
-        });
+            });
+        };
 
         window.saveDB = function() {
             setDoc(doc(window.dbCloud, "atp", "data"), window.db);
@@ -47,17 +48,17 @@
         body.light-mode { --bg-dark: #f0f2f5; --surface: #ffffff; --text-main: #1a1a1a; --text-muted: #666666; --accent-green: #00a03e; --accent-yellow: #d4a000; --accent-red: #d50000; --border-color: #cccccc; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
         
-        /* Mobile Responsive Fix */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow-y: auto; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-color); padding: 1rem; }
             .main-content { padding: 1rem; }
             .grid-container { grid-template-columns: 1fr; }
         }
 
         #loginModal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-box { background: var(--surface); padding: 2.5rem; border-radius: 8px; width: 320px; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; transition: background-color 0.3s; }
+        .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; }
         .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; color: var(--text-main); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .user-profile { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
         .nav-link { background: none; border: none; color: var(--text-muted); text-align: left; padding: 0; margin-bottom: 1.5rem; font-size: 0.95rem; cursor: pointer; }
@@ -71,7 +72,7 @@
         label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
         select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 4px; }
         button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; } th, td { padding: 1rem; border-bottom: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; } th, td { padding: 1rem; border-bottom: 1px solid var(--border-color); text-align: left; }
         .status-badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         .badge-aman { background-color: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
         .badge-kritis { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
@@ -99,28 +100,76 @@
         <button class="nav-link" onclick="bukaTab('alat', this)">Sirkulasi Alat</button>
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
         <button class="nav-link" onclick="bukaTab('pengaturan', this)">Pengaturan</button>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Ganti Tema</button>
     </div>
     <div class="main-content">
-        <div id="dashboard" class="tab-section active">...</div>
+        <div id="dashboard" class="tab-section active">
+            <h1 class="header-title">Sentralisasi Presisi</h1>
+            <div class="grid-container">
+                <div class="card"><div class="card-title">Ruang (Tap-In)</div><p class="card-value" id="dashRuang">0 Aktif</p><p class="card-subtext" id="dashRuangSub">Total 0 Ruang</p></div>
+                <div class="card"><div class="card-title">Sirkulasi Alat</div><p class="card-value" id="dashAlat">100% Aman</p><p class="card-subtext" id="dashAlatSub">0 Item Kehilangan</p></div>
+                <div class="card"><div class="card-title">Konstruksi</div><p class="card-value" id="dashKonstruksi">0% Siap</p><p class="card-subtext" id="dashKonstruksiSub">0 dari 0 Tersedia</p></div>
+            </div>
+            <table><thead><tr><th>Tanggal</th><th>Waktu</th><th>Oleh</th><th>Tindakan</th><th>Modul</th></tr></thead><tbody id="tabelLog"></tbody></table>
         </div>
+        <div id="ruang" class="tab-section">
+            <h1 class="header-title">Matriks Ruang</h1>
+            <div class="form-container">
+                <div class="form-group"><label>Nama Ruang</label><input type="text" id="inputRuang"></div>
+                <div class="form-group"><label>Divisi</label><select id="divisiRuang"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select></div>
+                <button class="btn-primary" onclick="tambahRuang()">Tambah Ruang</button>
+            </div>
+            <table><thead><tr><th>Ruang</th><th>Pengguna</th><th>Status Birokrasi</th><th>Aksi Lapangan</th></tr></thead><tbody id="tabelRuang"></tbody></table>
+        </div>
+        <div id="alat" class="tab-section">
+            <h1 class="header-title">Sirkulasi Alat</h1>
+            <div class="form-container">
+                <div class="form-group"><label>Nama Alat</label><input type="text" id="inputAlat"></div>
+                <div class="form-group"><label>Asal</label><input type="text" id="asalAlat"></div>
+                <div class="form-group"><label>Peminjam</label><select id="divisiAlat"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option></select></div>
+                <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahAlat" min="1" value="1"></div>
+                <button class="btn-primary" onclick="tambahAlat()">Catat Pinjaman</button>
+            </div>
+            <table><thead><tr><th>Kode</th><th>Nama Alat (Jml)</th><th>Asal</th><th>Peminjam</th><th>Status Alat</th></tr></thead><tbody id="tabelAlat"></tbody></table>
+        </div>
+        <div id="konstruksi" class="tab-section">
+            <h1 class="header-title">Manajemen Konstruksi</h1>
+            <div class="form-container">
+                <div class="form-group"><label>Material</label><input type="text" id="inputMaterial"></div>
+                <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahMaterial" min="1" value="1"></div>
+                <div class="form-group"><label>Proyek</label><div style="display: flex; gap: 0.5rem;"><select id="kategoriProyek" style="flex: 1;" onchange="renderKonstruksi()"></select><button onclick="kelolaKategori()" style="padding: 0.8rem; background-color: var(--border-color); color: var(--text-main); border:none; cursor:pointer;">⚙️</button></div></div>
+                <button class="btn-primary" onclick="tambahMaterial()">Tambah Material</button>
+            </div>
+            <table><thead><tr><th>Material</th><th>Jml</th><th>Proyek</th><th>Ketersediaan</th><th>Status Pembelian</th></tr></thead><tbody id="tabelKonstruksi"></tbody></table>
+        </div>
+        <div id="pengaturan" class="tab-section">
+            <h1 class="header-title">Pengaturan</h1>
+            <div class="form-container"><button class="reset-btn" onclick="resetDatabase()">⚠️ Reset Semua Data</button></div>
+        </div>
+    </div>
     <script>
-        function masukSistem() { 
-            const n = document.getElementById('loginName').value; 
-            if(!n.trim()) return; 
-            localStorage.setItem('atpUser', n); 
-            location.reload(); 
-        }
-        window.onload = function() {
-            const user = localStorage.getItem('atpUser');
-            if(user) {
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('displayUserName').innerText = user;
-                renderSemua(); // Panggil render karena database sudah di-listen global
-            } else {
-                document.getElementById('loginModal').style.display = 'flex';
-            }
-        };
-        // ... (Fungsi render, tambah, dptClass, dll tetap sama)
+        function masukSistem() { const n = document.getElementById('loginName').value; if(!n.trim()) return; localStorage.setItem('atpUser', n); location.reload(); }
+        function keluarSistem() { localStorage.removeItem('atpUser'); location.reload(); }
+        function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
+        function resetDatabase() { if(prompt("Ketik 'RESET'") === 'RESET') { localStorage.removeItem('atpDB'); location.reload(); } }
+        function bukaTab(id, el) { document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); el.classList.add('active'); }
+        function isLogged() { return document.getElementById('loginModal').style.display === 'none'; }
+        function dptClass(val) { val = val.toLowerCase(); if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc')) return 'badge-aman'; if(val.includes('sedang')) return 'badge-pending'; if(val.includes('hilang') || val.includes('belum')) return 'badge-kritis'; return 'badge-abu'; }
+        function getModulColor(modul) { if(modul === 'Alat') return '#ff69b4'; if(modul === 'Ruang') return '#87cefa'; if(modul === 'Konstruksi') return '#dda0dd'; return 'var(--text-muted)'; }
+        function renderSemua() { if(!isLogged()) return; renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); }
+        function renderRuang() { const tbody = document.getElementById('tabelRuang'); tbody.innerHTML = ''; window.db.ruang.forEach((r, i) => { let btn = r.selesai ? `<span style="color:var(--accent-green)">Selesai</span>` : (r.tapped ? `<button onclick="aksiRuang(${i}, 'val')" style="background:var(--accent-green);border:none;padding:5px 10px;cursor:pointer;">Validasi Bersih</button>` : `<button onclick="aksiRuang(${i}, 'tap')" style="background:var(--text-main);border:none;padding:5px 10px;cursor:pointer;">Tap-In</button>`); tbody.innerHTML += `<tr><td>${r.nama}</td><td>${r.divisi}</td><td><select class="status-badge ${dptClass(r.status)}" onchange="window.db.ruang[${i}].status=this.value; catatLog('Ubah Ruang ${r.nama} ke '+this.value, 'Ruang', dptClass(this.value)); saveDB();"><option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option><option value="Sedang Diajukan" ${r.status=='Sedang Diajukan'?'selected':''}>Sedang Diajukan</option><option value="Sudah Terajukan (ACC)" ${r.status=='Sudah Terajukan (ACC)'?'selected':''}>Sudah Terajukan (ACC)</option></select></td><td>${r.status === 'Sudah Terajukan (ACC)' ? btn : '-'}</td></tr>`; }); }
+        function renderAlat() { const tbody = document.getElementById('tabelAlat'); tbody.innerHTML = ''; window.db.alat.forEach((a, i) => { tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td><td><select class="status-badge ${dptClass(a.status)}" onchange="if(this.value==='Hilang'){ let h=prompt('Berapa hilang?'); if(h){ a.hilang=h; a.status='Hilang'; } else {renderAlat(); return;} } else { a.status=this.value; a.hilang=0; } catatLog('Ubah Alat ${a.nama} ke '+a.status, 'Alat', dptClass(a.status)); saveDB();"><option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option><option value="Sedang Dipinjam" ${a.status=='Sedang Dipinjam'?'selected':''}>Sedang Dipinjam</option><option value="Dikembalikan" ${a.status=='Dikembalikan'?'selected':''}>Dikembalikan</option><option value="Hilang" ${a.status=='Hilang'?'selected':''}>Hilang</option></select> ${a.status==='Hilang' ? '<br><small style="color:red">'+a.hilang+' Hilang</small>':''}</td></tr>`; }); }
+        function renderKonstruksi() { const tbody = document.getElementById('tabelKonstruksi'); tbody.innerHTML = ''; const filter = document.getElementById('kategoriProyek').value; window.db.konstruksi.forEach((k, i) => { if(filter === 'Semua Proyek' || k.proyek === filter) { tbody.innerHTML += `<tr><td>${k.nama}</td><td>${k.jumlah}</td><td>${k.proyek}</td><td><select class="status-badge ${dptClass(k.ketersediaan)}" onchange="window.db.konstruksi[${i}].ketersediaan=this.value; catatLog('Ubah ${k.nama} ke '+this.value, 'Konstruksi', dptClass(this.value)); saveDB();"><option value="Belum Tersedia" ${k.ketersediaan=='Belum Tersedia'?'selected':''}>Belum Tersedia</option><option value="Tersedia" ${k.ketersediaan=='Tersedia'?'selected':''}>Tersedia</option></select></td><td><select class="status-badge ${dptClass(k.pembelian)}" onchange="window.db.konstruksi[${i}].pembelian=this.value; catatLog('Ubah ${k.nama} ke '+this.value, 'Konstruksi', dptClass(this.value)); saveDB();"><option value="Belum Dibeli" ${k.pembelian=='Belum Dibeli'?'selected':''}>Belum Dibeli</option><option value="Sedang Dibeli" ${k.pembelian=='Sedang Dibeli'?'selected':''}>Sedang Dibeli</option><option value="Sudah Dibeli" ${k.pembelian=='Sudah Dibeli'?'selected':''}>Sudah Dibeli</option></select></td></tr>`; } }); }
+        function renderLog() { const tbody = document.getElementById('tabelLog'); tbody.innerHTML = ''; window.db.log.slice(0, 30).forEach(l => { tbody.innerHTML += `<tr><td>${l.tanggal}</td><td>${l.waktu}</td><td style="color:var(--accent-green); font-weight:bold;">${l.user}</td><td>${l.tindakan}</td><td><span style="color: ${l.warna === 'badge-aman' ? 'var(--accent-green)' : (l.warna === 'badge-kritis' ? 'var(--accent-red)' : (l.warna === 'badge-pending' ? 'var(--accent-yellow)' : l.warna))};">${l.modul}</span></td></tr>`; }); }
+        function renderDropdownKategori() { const sel = document.getElementById('kategoriProyek'); sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>'; window.db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; }); }
+        function updateDashboard() { if(!isLogged()) return; let aktif = window.db.ruang.filter(r => r.tapped && !r.selesai).length; document.getElementById('dashRuang').innerText = `${aktif} Aktif`; document.getElementById('dashRuangSub').innerText = `Total ${window.db.ruang.length} Ruang`; let totalI = 0; let totalH = 0; window.db.alat.forEach(a => { totalI += Number(a.jumlah); totalH += Number(a.hilang || 0); }); if(window.db.alat.length > 0) { let pA = Math.floor(((totalI - totalH) / totalI) * 100); document.getElementById('dashAlat').innerHTML = `<span style="color:${pA<100?'var(--accent-red)':'var(--accent-green)'}">${pA}% Aman</span>`; document.getElementById('dashAlatSub').innerText = `${totalH} Item Hilang`; } let totalK = window.db.konstruksi.length; let siapK = window.db.konstruksi.filter(k => k.ketersediaan === 'Tersedia').length; let pK = totalK === 0 ? 0 : Math.floor((siapK / totalK) * 100); document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${pK===100?'var(--accent-green)':'var(--accent-yellow)'}">${pK}% Siap</span>`; document.getElementById('dashKonstruksiSub').innerText = `${siapK} dari ${totalK} Tersedia`; }
+        function catatLog(tindakan, modul, warnaBadge) { const d = new Date(); let warna = (warnaBadge === 'badge-aman') ? 'var(--accent-green)' : (warnaBadge === 'badge-kritis' ? 'var(--accent-red)' : (warnaBadge === 'badge-pending' ? 'var(--accent-yellow)' : getModulColor(modul))); window.db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser'), tindakan, modul, warna }); saveDB(); }
+        function tambahRuang() { let n = document.getElementById('inputRuang').value; if(!n) return; window.db.ruang.push({ nama: n, divisi: document.getElementById('divisiRuang').value, status: 'Belum Diajukan', tapped: false, selesai: false }); catatLog('Tambah Ruang: '+n, 'Ruang', ''); saveDB(); renderSemua(); }
+        function aksiRuang(i, t) { if(t==='tap') window.db.ruang[i].tapped=true; else window.db.ruang[i].selesai=true; catatLog('Tap/Val Ruang '+window.db.ruang[i].nama, 'Ruang', ''); saveDB(); renderSemua(); }
+        function tambahAlat() { let n = document.getElementById('inputAlat').value; if(!n) return; window.db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900), nama: n, asal: document.getElementById('asalAlat').value, divisi: document.getElementById('divisiAlat').value, jumlah: document.getElementById('jumlahAlat').value, status: 'Belum Menyediakan', hilang: 0 }); catatLog('Tambah Alat: '+n, 'Alat', ''); saveDB(); renderSemua(); }
+        function tambahMaterial() { let n = document.getElementById('inputMaterial').value; let p = document.getElementById('kategoriProyek').value; if(!n || p==='Semua Proyek') return; window.db.konstruksi.push({ nama: n, jumlah: document.getElementById('jumlahMaterial').value, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' }); catatLog('Tambah Material: '+n, 'Konstruksi', ''); saveDB(); renderSemua(); }
+        function kelolaKategori() { let a = prompt("Ketik 'tambah' atau 'hapus'"); if(a==='tambah'){ let n=prompt("Nama proyek?"); if(n){window.db.kategori.push(n); saveDB(); renderDropdownKategori();}} else if(a==='hapus'){ let v=document.getElementById('kategoriProyek').value; if(v!=='Semua Proyek' && confirm('Hapus?')){ window.db.kategori=window.db.kategori.filter(k=>k!==v); saveDB(); renderDropdownKategori(); } } }
+        window.onload = function() { if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode'); const user = localStorage.getItem('atpUser'); if(user) { document.getElementById('loginModal').style.display = 'none'; document.getElementById('displayUserName').innerText = user; initCloud(); } else { document.getElementById('loginModal').style.display = 'flex'; } };
     </script>
 </body>
 </html>
