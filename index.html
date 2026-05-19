@@ -21,32 +21,24 @@
         const dbCloud = getFirestore(app);
         
         window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
-        window.isDOMReady = false; // Kunci Keamanan
+        window.dbCloud = dbCloud; // Menjadikan dbCloud global
 
-        // Tunggu halaman siap
-        window.addEventListener('DOMContentLoaded', () => {
-            window.isDOMReady = true;
-            renderSemua();
-            updateDashboard();
-        });
-
-        // Sinkronisasi Realtime
-        onSnapshot(doc(dbCloud, "atp", "data"), (docSnap) => {
-            if (docSnap.exists()) {
-                window.db = docSnap.data();
-            } else {
-                window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
-                setDoc(doc(dbCloud, "atp", "data"), window.db);
-            }
-            // Hanya render jika DOM sudah siap, jika belum tunggu saja
-            if(window.isDOMReady) {
+        // Membuat fungsi initCloud bisa diakses dari mana saja
+        window.initCloud = function() {
+            onSnapshot(doc(window.dbCloud, "atp", "data"), (docSnap) => {
+                if (docSnap.exists()) {
+                    window.db = docSnap.data();
+                } else {
+                    window.db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
+                    setDoc(doc(window.dbCloud, "atp", "data"), window.db);
+                }
                 renderSemua();
                 updateDashboard();
-            }
-        });
+            });
+        };
 
         window.saveDB = function() {
-            setDoc(doc(dbCloud, "atp", "data"), window.db);
+            setDoc(doc(window.dbCloud, "atp", "data"), window.db);
             updateDashboard();
         };
     </script>
@@ -211,7 +203,19 @@
     </div>
 
 <script>
-        function masukSistem() { const n = document.getElementById('loginName').value; if(!n.trim()) return; localStorage.setItem('atpUser', n); location.reload(); }
+        function masukSistem() { 
+            const n = document.getElementById('loginName').value; 
+            if(!n.trim()) return alert('Nama wajib diisi!');
+            localStorage.setItem('atpUser', n);
+            document.getElementById('displayUserName').innerText = n;
+            document.getElementById('loginModal').style.display = 'none';
+            
+            // Panggil fungsi global yang baru kita buat
+            if(window.initCloud) {
+                window.initCloud();
+                catatLog('Sesi pengguna aktif', 'Sistem', 'var(--text-muted)');
+            }
+        }
         function keluarSistem() { localStorage.removeItem('atpUser'); location.reload(); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
         function resetDatabase() { if(prompt("Ketik 'RESET'") === 'RESET') { localStorage.removeItem('atpDB'); location.reload(); } }
