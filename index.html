@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -11,24 +10,12 @@
 
     <style>
         :root {
-            --bg-dark: #121212;
-            --surface: #1e1e1e;
-            --text-main: #e0e0e0;
-            --text-muted: #888888;
-            --accent-green: #00e676;
-            --accent-yellow: #ffea00;
-            --accent-red: #ff1744;
-            --border-color: #333333;
+            --bg-dark: #121212; --surface: #1e1e1e; --text-main: #e0e0e0; --text-muted: #888888;
+            --accent-green: #00e676; --accent-yellow: #ffea00; --accent-red: #ff1744; --border-color: #333333;
         }
         body.light-mode {
-            --bg-dark: #f0f2f5;
-            --surface: #ffffff;
-            --text-main: #1a1a1a;
-            --text-muted: #666666;
-            --accent-green: #00a03e; 
-            --accent-yellow: #d4a000;
-            --accent-red: #d50000;
-            --border-color: #cccccc;
+            --bg-dark: #f0f2f5; --surface: #ffffff; --text-main: #1a1a1a; --text-muted: #666666;
+            --accent-green: #00a03e; --accent-yellow: #d4a000; --accent-red: #d50000; --border-color: #cccccc;
         }
 
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
@@ -70,6 +57,8 @@
         select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 4px; outline: none; }
         button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
 
+        /* Tabel Responsif Desktop */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
         th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
         th { color: var(--text-muted); font-weight: normal; text-transform: uppercase; font-size: 0.8rem;}
@@ -81,45 +70,46 @@
         .badge-abu { background-color: rgba(136, 136, 136, 0.1); color: var(--text-muted); border: 1px solid var(--text-muted); }
 
         /* =========================================
-           TAMPILAN KHUSUS HP (APP-LIKE BOTTOM NAV)
+           TAMPILAN KHUSUS HP (PRESISI TINGGI)
            ========================================= */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: hidden; }
             
-            /* Header Atas di HP */
+            /* Header Atas di HP - Dibuat Flex Row Anti Tumpang Tindih */
             .sidebar { 
-                width: 100%; height: auto; padding: 0; border-right: none; 
-                display: flex; flex-direction: column; background: var(--surface); z-index: 10;
+                width: 100%; height: auto; padding: 10px 15px; border-right: none; 
+                display: flex; flex-direction: row; align-items: center; justify-content: space-between; 
+                background: var(--surface); z-index: 100; border-bottom: 1px solid var(--border-color);
             }
-            .logo { padding: 1rem; margin: 0; text-align: center; border-bottom: 1px solid var(--border-color); }
+            .logo { font-size: 1rem; margin: 0; padding: 0; border: none; }
             
-            /* Box Profil dipadatkan ke atas */
-            .user-profile { margin: 10px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; padding: 0.8rem; }
-            .user-profile label { margin-bottom: 0; display: inline-block; margin-right: 10px; }
-            .user-name { margin-bottom: 0; display: inline-block; }
-            .logout-btn { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); padding: 5px 10px; border-radius: 4px; text-decoration: none; }
+            /* Box Profil dipadatkan menyamping */
+            .user-profile { display: flex; align-items: center; margin: 0; padding: 0; background: transparent; border: none; }
+            .user-profile label { display: none; } /* Sembunyikan tulisan PETUGAS di HP agar hemat ruang */
+            .user-name { font-size: 0.8rem; margin: 0 10px 0 0; }
+            .logout-btn { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); padding: 5px 8px; border-radius: 4px; text-decoration: none; }
             
-            /* Tombol Tema pindah ke pojok kanan atas layar */
-            .theme-toggle { position: absolute; top: 12px; right: 10px; margin: 0; padding: 5px 10px; width: auto; font-size: 0.7rem; }
+            /* Tombol Tema Presisi */
+            .theme-toggle { margin: 0; padding: 5px 10px; width: auto; font-size: 0.7rem; border-radius: 4px; }
             
-            /* BOTTOM NAVIGATION BAR (Rahasia Tampilan Aplikasi) */
+            /* BOTTOM NAVIGATION BAR */
             .nav-link { 
                 position: fixed; bottom: 0; z-index: 999;
-                width: 20%; height: 65px; margin: 0; padding: 5px; 
+                width: 20%; height: 60px; margin: 0; padding: 5px; 
                 font-size: 0.6rem; text-align: center; line-height: 1.3;
                 border: none; border-top: 1px solid var(--border-color); border-radius: 0;
                 background-color: var(--surface); display: flex; align-items: center; justify-content: center;
             }
-            .nav-link.active { border-top: 3px solid var(--accent-green); color: var(--accent-green); background-color: var(--bg-dark); }
+            .nav-link.active { border-top: 3px solid var(--accent-green); color: var(--accent-green); background-color: var(--bg-dark); font-weight: bold;}
             
-            /* Menata Posisi ke-5 Tombol Bottom Nav Berjejer */
-            .sidebar > button:nth-of-type(1) { left: 0; }
-            .sidebar > button:nth-of-type(2) { left: 20%; }
-            .sidebar > button:nth-of-type(3) { left: 40%; }
-            .sidebar > button:nth-of-type(4) { left: 60%; }
-            .sidebar > button:nth-of-type(5) { left: 80%; }
+            /* Penempatan Koordinat Bottom Nav */
+            .sidebar > button.nav-link:nth-of-type(1) { left: 0; }
+            .sidebar > button.nav-link:nth-of-type(2) { left: 20%; }
+            .sidebar > button.nav-link:nth-of-type(3) { left: 40%; }
+            .sidebar > button.nav-link:nth-of-type(4) { left: 60%; }
+            .sidebar > button.nav-link:nth-of-type(5) { left: 80%; }
 
-            /* Konten Utama bisa discroll, ditarik ke atas agar tidak tertutup nav bawah */
+            /* Konten Utama ditarik ke atas agar tidak tertutup bottom nav */
             .main-content { padding: 1rem; padding-bottom: 80px; overflow-y: auto; height: 100%; }
             .header-title { font-size: 1.5rem; }
             .grid-container { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
@@ -127,8 +117,9 @@
             .form-group { width: 100%; min-width: 100%; }
             button.btn-primary { width: 100%; padding: 1rem; }
             
-            /* Tabel bisa digeser (swipe) kanan-kiri */
-            table { display: block; overflow-x: auto; white-space: nowrap; width: 100%; border: 1px solid var(--border-color); border-radius: 4px;}
+            /* FIX: Tabel bisa digeser (swipe) kanan-kiri dan tidak mentok */
+            .table-responsive { border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 2rem; }
+            table { min-width: 500px; margin-bottom: 0; border: none;}
             th, td { padding: 0.8rem; font-size: 0.8rem; }
         }
     </style>
@@ -148,20 +139,18 @@
         <div class="logo">ATP DIESNAT 12</div>
         
         <div class="user-profile">
-            <div>
-                <label>PETUGAS:</label>
-                <div class="user-name" id="displayUserName">Memuat...</div>
-            </div>
+            <label>PETUGAS:</label>
+            <div class="user-name" id="displayUserName">Memuat...</div>
             <button class="logout-btn" onclick="keluarSistem()">Ganti</button>
         </div>
+
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Tema</button>
 
         <button class="nav-link active" onclick="bukaTab('dashboard', this)">Dashboard Log</button>
         <button class="nav-link" onclick="bukaTab('ruang', this)">Matriks Ruang</button>
         <button class="nav-link" onclick="bukaTab('alat', this)">Sirkulasi Alat</button>
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
         <button class="nav-link" onclick="bukaTab('pengaturan', this)">Pengaturan</button>
-
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 Tema</button>
     </div>
 
     <div class="main-content">
@@ -171,26 +160,28 @@
             <div class="grid-container">
                 <div class="card">
                     <div class="card-title">Ruang (Tap-In)</div>
-                    <p class="card-value" id="dashRuang">0 Aktif</p>
-                    <p class="card-subtext" id="dashRuangSub">Total 0 Ruang Terdaftar</p>
+                    <p class="card-value" id="dashRuang">0% Aman</p>
+                    <p class="card-subtext" id="dashRuangSub">Belum ada data masuk</p>
                 </div>
                 <div class="card">
                     <div class="card-title">Sirkulasi Alat</div>
-                    <p class="card-value" id="dashAlat">100% Aman</p>
-                    <p class="card-subtext" id="dashAlatSub">0 Item Kehilangan</p>
+                    <p class="card-value" id="dashAlat">0% Aman</p>
+                    <p class="card-subtext" id="dashAlatSub">Belum ada data masuk</p>
                 </div>
                 <div class="card">
                     <div class="card-title">Konstruksi</div>
                     <p class="card-value" id="dashKonstruksi">0% Siap</p>
-                    <p class="card-subtext" id="dashKonstruksiSub">0 dari 0 Tersedia</p>
+                    <p class="card-subtext" id="dashKonstruksiSub">Belum ada data masuk</p>
                 </div>
             </div>
             
-            <h3 style="font-weight: normal; margin-bottom: 0;">Log Aktivitas Lapangan</h3>
-            <table>
-                <thead><tr><th>Tanggal</th><th>Waktu</th><th>Oleh</th><th>Tindakan</th><th>Modul</th></tr></thead>
-                <tbody id="tabelLog"></tbody>
-            </table>
+            <h3 style="font-weight: normal; margin-bottom: 0.5rem;">Log Aktivitas Lapangan</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Tanggal</th><th>Waktu</th><th>Oleh</th><th>Tindakan / Status Baru</th><th>Modul</th></tr></thead>
+                    <tbody id="tabelLog"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="ruang" class="tab-section">
@@ -203,10 +194,12 @@
                 </div>
                 <button class="btn-primary" onclick="tambahRuang()">Tambah Ruang</button>
             </div>
-            <table>
-                <thead><tr><th>Ruang</th><th>Pengguna</th><th>Status Birokrasi</th><th>Aksi Lapangan</th></tr></thead>
-                <tbody id="tabelRuang"></tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Ruang</th><th>Pengguna</th><th>Status Birokrasi</th><th>Aksi Lapangan</th></tr></thead>
+                    <tbody id="tabelRuang"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="alat" class="tab-section">
@@ -221,10 +214,12 @@
                 <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahAlat" min="1" value="1"></div>
                 <button class="btn-primary" onclick="tambahAlat()">Catat Pinjaman</button>
             </div>
-            <table>
-                <thead><tr><th>Kode</th><th>Nama Alat (Jml)</th><th>Asal Alat</th><th>Peminjam</th><th>Status Alat</th></tr></thead>
-                <tbody id="tabelAlat"></tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Kode</th><th>Nama Alat (Jml)</th><th>Asal Alat</th><th>Peminjam</th><th>Status Alat</th></tr></thead>
+                    <tbody id="tabelAlat"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="konstruksi" class="tab-section">
@@ -232,7 +227,6 @@
             <div class="form-container">
                 <div class="form-group"><label>Material Baru</label><input type="text" id="inputMaterial"></div>
                 <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahMaterial" min="1" value="1"></div>
-                
                 <div class="form-group">
                     <label>Kategori Proyek</label>
                     <div style="display: flex; gap: 0.5rem;">
@@ -246,23 +240,25 @@
                 </div>
                 <button class="btn-primary" onclick="tambahMaterial()">Tambah Material</button>
             </div>
-            <table>
-                <thead><tr><th>Item Konstruksi</th><th>Jml</th><th>Proyek</th><th>Ketersediaan</th><th>Status Pembelian</th></tr></thead>
-                <tbody id="tabelKonstruksi"></tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Item Konstruksi</th><th>Jml</th><th>Proyek</th><th>Ketersediaan</th><th>Status Pembelian</th></tr></thead>
+                    <tbody id="tabelKonstruksi"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="pengaturan" class="tab-section">
             <h1 class="header-title">Pengaturan</h1>
             <div class="form-container">
-                <button class="reset-btn" onclick="resetDatabase()">⚠️ Reset Semua Data (Hapus Database)</button>
+                <button class="reset-btn" onclick="resetDatabase()" style="display:block; width:100%;">⚠️ Reset Semua Data (Hapus Database di Cloud)</button>
             </div>
         </div>
 
     </div>
 
     <script>
-        // --- KONFIGURASI FIREBASE CLOUD FIRESTORE ---
+        // --- 1. KONFIGURASI FIREBASE CLOUD FIRESTORE ---
         const firebaseConfig = {
             apiKey: "AIzaSyCksEKeVfZ39valn9SGLFYySslqoFTczEI",
             authDomain: "atpdiesnatfmipa12.firebaseapp.com",
@@ -276,7 +272,7 @@
 
         let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
 
-        // Dengarkan perubahan dari cloud secara Real-Time
+        // Real-Time Listener
         dbCloud.collection("atp").doc("data").onSnapshot((doc) => {
             if (doc.exists) {
                 db = doc.data();
@@ -290,16 +286,12 @@
             }
         });
 
-        // Simpan ke Cloud agar semua perangkat sinkron
-        function saveDB() {
-            dbCloud.collection("atp").doc("data").set(db);
-        }
+        function saveDB() { dbCloud.collection("atp").doc("data").set(db); }
 
-        // --- SISTEM LOGIN PERMANEN LOKAL ---
+        // --- 2. SISTEM LOGIN PERMANEN LOKAL ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
-            // Jika ada user tersimpan di memori HP, langsung tembus ke dashboard
             if(savedUser) {
                 document.getElementById('loginModal').style.display = 'none';
                 document.getElementById('displayUserName').innerText = savedUser;
@@ -311,51 +303,46 @@
         function masukSistem() {
             const nama = document.getElementById('loginName').value;
             if(!nama.trim()) return alert('Nama wajib diisi!');
-            localStorage.setItem('atpUser', nama); // Menyimpan permanen di memori HP/Laptop ini
+            localStorage.setItem('atpUser', nama);
             document.getElementById('displayUserName').innerText = nama;
             document.getElementById('loginModal').style.display = 'none';
-            catatLog('Sesi pengguna aktif', 'Sistem', 'var(--text-muted)');
+            catatLog('Login ke sistem', 'Sistem', 'badge-aman');
             
-            renderSemua();
-            updateDashboard();
-            renderDropdownKategori();
+            renderSemua(); updateDashboard(); renderDropdownKategori();
         }
 
-        // Tombol sakti untuk menghapus memori login HP
-        function keluarSistem() { 
-            localStorage.removeItem('atpUser'); 
-            location.reload(); 
-        }
-
+        function keluarSistem() { localStorage.removeItem('atpUser'); location.reload(); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
-
         function resetDatabase() {
-            let konfirmasi = prompt("PERINGATAN! Ini akan menghapus SELURUH DATA tabel. Ketik 'RESET' untuk melanjutkan:");
-            if(konfirmasi === 'RESET') {
+            if(prompt("PERINGATAN! Ini akan menghapus SELURUH DATA tabel. Ketik 'RESET' untuk melanjutkan:") === 'RESET') {
                 db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
-                saveDB();
-                alert('Database berhasil di-reset!');
-            } else if(konfirmasi !== null) {
-                alert('Kode salah. Dibatalkan.');
+                saveDB(); alert('Database berhasil di-reset!');
             }
         }
-
         function bukaTab(idTab, elemen) {
             document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
-            document.getElementById(idTab).classList.add('active');
-            elemen.classList.add('active');
+            document.getElementById(idTab).classList.add('active'); elemen.classList.add('active');
         }
 
+        // --- 3. LOGIKA WARNA STATUS (LALU LINTAS) ---
         function dptClass(val) {
             val = val.toLowerCase();
-            if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc')) return 'badge-aman';
-            if(val.includes('sedang')) return 'badge-pending';
-            if(val.includes('hilang')) return 'badge-kritis';
+            if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai')) return 'badge-aman'; // Hijau
+            if(val.includes('sedang')) return 'badge-pending'; // Kuning
+            if(val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; // Merah
             return 'badge-abu';
         }
 
-        // --- RENDER LOGIKA ---
+        // Warna khusus Modul di tabel Log
+        function getModulColor(modul) {
+            if(modul === 'Ruang') return '#87cefa'; // Biru Muda
+            if(modul === 'Alat') return '#ff69b4';  // Merah Muda
+            if(modul === 'Konstruksi') return '#dda0dd'; // Ungu Muda
+            return 'var(--text-muted)';
+        }
+
+        // --- 4. RENDER DATA (HTML) ---
         function renderSemua() { renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); }
 
         function renderRuang() {
@@ -364,10 +351,14 @@
             db.ruang.forEach((r, idx) => {
                 let btnTap = r.status === 'Sudah Terajukan (ACC)' && !r.tapped && !r.selesai ? `<button onclick="aksiRuang(${idx}, 'tap')" style="background:var(--text-main); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Tap-In</button>` : '';
                 let btnVal = r.tapped && !r.selesai ? `<button onclick="aksiRuang(${idx}, 'val')" style="background:var(--accent-green); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Validasi Bersih</button>` : '';
-                let aksiTxt = r.selesai ? `<span style="font-size:0.8rem; color:var(--accent-green); font-weight:bold;">Selesai</span>` : btnTap + btnVal;
+                let aksiTxt = r.selesai ? `<span style="font-size:0.8rem; color:var(--accent-green); font-weight:bold;">Selesai Bersih</span>` : btnTap + btnVal;
 
                 tbody.innerHTML += `<tr><td>${r.nama}</td><td>${r.divisi}</td>
-                <td><select class="status-badge ${dptClass(r.status)}" onchange="ubahStatusRuang(${idx}, this.value)"><option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option><option value="Sedang Diajukan" ${r.status=='Sedang Diajukan'?'selected':''}>Sedang Diajukan</option><option value="Sudah Terajukan (ACC)" ${r.status=='Sudah Terajukan (ACC)'?'selected':''}>Sudah Terajukan (ACC)</option></select></td>
+                <td><select class="status-badge ${dptClass(r.status)}" onchange="ubahStatusRuang(${idx}, this.value)">
+                    <option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option>
+                    <option value="Sedang Diajukan" ${r.status=='Sedang Diajukan'?'selected':''}>Sedang Diajukan</option>
+                    <option value="Sudah Terajukan (ACC)" ${r.status=='Sudah Terajukan (ACC)'?'selected':''}>Sudah Terajukan (ACC)</option>
+                </select></td>
                 <td>${aksiTxt}</td></tr>`;
             });
         }
@@ -376,7 +367,6 @@
             const tbody = document.getElementById('tabelAlat'); tbody.innerHTML = '';
             if(!db.alat) return;
             db.alat.forEach((a, idx) => {
-                let statusInfo = a.status === 'Hilang' ? `Hilang (${a.hilang} buah)` : a.status;
                 tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
                 <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)">
                     <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
@@ -394,8 +384,15 @@
             db.konstruksi.forEach((k, idx) => {
                 if(filter === 'Semua Proyek' || k.proyek === filter) {
                     tbody.innerHTML += `<tr><td>${k.nama}</td><td>${k.jumlah}</td><td>${k.proyek}</td>
-                    <td><select class="status-badge ${dptClass(k.ketersediaan)}" onchange="ubahKonstruksi(${idx}, 'ket', this.value)"><option value="Belum Tersedia" ${k.ketersediaan=='Belum Tersedia'?'selected':''}>Belum Tersedia</option><option value="Tersedia" ${k.ketersediaan=='Tersedia'?'selected':''}>Tersedia</option></select></td>
-                    <td><select class="status-badge ${dptClass(k.pembelian)}" onchange="ubahKonstruksi(${idx}, 'beli', this.value)"><option value="Belum Dibeli" ${k.pembelian=='Belum Dibeli'?'selected':''}>Belum Dibeli</option><option value="Sedang Dibeli" ${k.pembelian=='Sedang Dibeli'?'selected':''}>Sedang Dibeli</option><option value="Sudah Dibeli" ${k.pembelian=='Sudah Dibeli'?'selected':''}>Sudah Dibeli</option></select></td></tr>`;
+                    <td><select class="status-badge ${dptClass(k.ketersediaan)}" onchange="ubahKonstruksi(${idx}, 'ket', this.value)">
+                        <option value="Belum Tersedia" ${k.ketersediaan=='Belum Tersedia'?'selected':''}>Belum Tersedia</option>
+                        <option value="Tersedia" ${k.ketersediaan=='Tersedia'?'selected':''}>Tersedia</option>
+                    </select></td>
+                    <td><select class="status-badge ${dptClass(k.pembelian)}" onchange="ubahKonstruksi(${idx}, 'beli', this.value)">
+                        <option value="Belum Dibeli" ${k.pembelian=='Belum Dibeli'?'selected':''}>Belum Dibeli</option>
+                        <option value="Sedang Dibeli" ${k.pembelian=='Sedang Dibeli'?'selected':''}>Sedang Dibeli</option>
+                        <option value="Sudah Dibeli" ${k.pembelian=='Sudah Dibeli'?'selected':''}>Sudah Dibeli</option>
+                    </select></td></tr>`;
                 }
             });
         }
@@ -404,7 +401,9 @@
             const tbody = document.getElementById('tabelLog'); tbody.innerHTML = '';
             if(!db.log) return;
             db.log.slice(0, 30).forEach(l => {
-                tbody.innerHTML += `<tr><td>${l.tanggal}</td><td>${l.waktu}</td><td style="color:var(--accent-green); font-weight:bold;">${l.user}</td><td>${l.tindakan}</td><td><span style="color: ${l.warna};">${l.modul}</span></td></tr>`;
+                // Tampilkan badge warna di kolom tindakan sesuai status lencana
+                let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.2rem 0.5rem; font-size:0.7rem;">${l.tindakan}</span>` : l.tindakan;
+                tbody.innerHTML += `<tr><td>${l.tanggal}</td><td>${l.waktu}</td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td></tr>`;
             });
         }
 
@@ -415,74 +414,114 @@
             db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; });
         }
 
+        // --- 5. DASHBOARD & PERSENTASE ---
         function updateDashboard() {
             if(!db.ruang || !db.alat || !db.konstruksi) return;
-            let aktif = db.ruang.filter(r => r.tapped && !r.selesai).length;
-            document.getElementById('dashRuang').innerText = `${aktif} Aktif`;
-            document.getElementById('dashRuangSub').innerText = `Total ${db.ruang.length} Ruang Terdaftar`;
 
-            let totalItem = 0; let totalHilang = 0;
-            db.alat.forEach(a => { totalItem += Number(a.jumlah); totalHilang += Number(a.hilang || 0); });
-            if(db.alat.length === 0) {
-                document.getElementById('dashAlat').innerText = `0% (Kosong)`;
-                document.getElementById('dashAlatSub').innerText = `Belum ada data masuk`;
-            } else if (totalHilang > 0) {
-                let persentaseAman = Math.floor(((totalItem - totalHilang) / totalItem) * 100);
-                document.getElementById('dashAlat').innerHTML = `<span style="color:var(--accent-red)">${persentaseAman}% Aman</span>`;
-                document.getElementById('dashAlatSub').innerText = `${totalHilang} Item Dilaporkan Hilang!`;
-            } else {
-                document.getElementById('dashAlat').innerHTML = `<span style="color:var(--accent-green)">100% Aman</span>`;
-                document.getElementById('dashAlatSub').innerText = `0 Item Kehilangan`;
-            }
+            // Logika Penentuan Warna Persentase
+            const penentuWarna = (persen, total) => {
+                if(total === 0) return 'var(--accent-green)'; // 0 Data tapi hijau
+                if(persen >= 80) return 'var(--accent-green)';
+                if(persen >= 60) return 'var(--accent-yellow)';
+                return 'var(--accent-red)';
+            };
 
-            let totalK = db.konstruksi.length;
-            let siapK = db.konstruksi.filter(k => k.ketersediaan === 'Tersedia').length;
-            let persenK = totalK === 0 ? 0 : Math.floor((siapK / totalK) * 100);
-            document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${persenK===100?'var(--accent-green)':'var(--accent-yellow)'}">${persenK}% Siap</span>`;
-            document.getElementById('dashKonstruksiSub').innerText = `${siapK} dari ${totalK} Material Tersedia`;
+            // 1. Dashboard Ruang
+            let tRuang = db.ruang.length;
+            let amanRuang = db.ruang.filter(r => r.status.includes('Sudah') || r.selesai).length;
+            let pRuang = tRuang === 0 ? 100 : Math.floor((amanRuang / tRuang) * 100);
+            let cRuang = penentuWarna(pRuang, tRuang);
+            let subRuang = tRuang === 0 ? 'Belum ada data masuk' : `${tRuang - amanRuang} Ruang belum ACC/Selesai`;
+            
+            document.getElementById('dashRuang').innerHTML = `<span style="color:${cRuang}">${pRuang}% Aman</span>`;
+            document.getElementById('dashRuangSub').innerText = subRuang;
+
+            // 2. Dashboard Alat
+            let tAlatItem = 0; let badAlat = 0;
+            db.alat.forEach(a => { 
+                let j = Number(a.jumlah) || 0;
+                tAlatItem += j; 
+                if(a.status.includes('Belum') || a.status === 'Hilang') {
+                    badAlat += (a.status === 'Hilang' ? Number(a.hilang || 0) : j);
+                }
+            });
+            let pAlat = tAlatItem === 0 ? 100 : Math.floor(((tAlatItem - badAlat) / tAlatItem) * 100);
+            let cAlat = penentuWarna(pAlat, tAlatItem);
+            let subAlat = tAlatItem === 0 ? 'Belum ada data masuk' : `${badAlat} Item belum tersedia/hilang`;
+
+            document.getElementById('dashAlat').innerHTML = `<span style="color:${cAlat}">${pAlat}% Aman</span>`;
+            document.getElementById('dashAlatSub').innerText = subAlat;
+
+            // 3. Dashboard Konstruksi
+            let tKonstruksi = 0; let badKonstruksi = 0;
+            db.konstruksi.forEach(k => {
+                let j = Number(k.jumlah) || 0;
+                tKonstruksi += j;
+                if(k.ketersediaan.includes('Belum')) badKonstruksi += j;
+            });
+            let pKonstruksi = tKonstruksi === 0 ? 100 : Math.floor(((tKonstruksi - badKonstruksi) / tKonstruksi) * 100);
+            let cKonstruksi = penentuWarna(pKonstruksi, tKonstruksi);
+            let subKonstruksi = tKonstruksi === 0 ? 'Belum ada data masuk' : `${badKonstruksi} Material belum tersedia`;
+
+            document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${cKonstruksi}">${pKonstruksi}% Siap</span>`;
+            document.getElementById('dashKonstruksiSub').innerText = subKonstruksi;
         }
 
-        function catatLog(tindakan, modul, warnaModul) {
+        // Modifikasi Catat Log agar menampilkan Lencana Warna
+        function catatLog(tindakan, modul, statusClass) {
             const dateObj = new Date();
-            db.log.unshift({ tanggal: dateObj.toLocaleDateString('id-ID'), waktu: dateObj.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan, modul, warna: warnaModul });
+            db.log.unshift({ 
+                tanggal: dateObj.toLocaleDateString('id-ID'), 
+                waktu: dateObj.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), 
+                user: localStorage.getItem('atpUser') || 'Anonim', 
+                tindakan, 
+                modul, 
+                statusClass 
+            });
             saveDB();
         }
 
-        // --- AKSI DATA ---
+        // --- 6. AKSI INPUT & UBAH DATA ---
         function tambahRuang() {
             let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value;
             if(!n) return alert("Isi nama ruang!");
             db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false });
             document.getElementById('inputRuang').value = '';
-            catatLog(`Mendaftarkan ruang ${n}`, 'Ruang', 'var(--accent-green)');
+            catatLog(`Didaftarkan: ${n}`, 'Ruang', dptClass('Belum Diajukan'));
             saveDB(); 
         }
 
-        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; catatLog(`Status Ruang ${db.ruang[idx].nama}: ${val}`, 'Ruang', 'var(--accent-yellow)'); saveDB(); }
+        function ubahStatusRuang(idx, val) { 
+            db.ruang[idx].status = val; 
+            catatLog(`Ubah Ruang ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); 
+            saveDB(); 
+        }
+
         function aksiRuang(idx, tipe) {
-            if(tipe === 'tap') { db.ruang[idx].tapped = true; catatLog(`[Mulai] Tap-In Ruang: ${db.ruang[idx].nama}`, 'Ruang', 'var(--accent-yellow)'); }
-            if(tipe === 'val') { db.ruang[idx].selesai = true; catatLog(`[Selesai] Validasi Bersih: ${db.ruang[idx].nama}`, 'Ruang', 'var(--accent-green)'); }
+            if(tipe === 'tap') { db.ruang[idx].tapped = true; catatLog(`Mulai Tap-In: ${db.ruang[idx].nama}`, 'Ruang', 'badge-pending'); }
+            if(tipe === 'val') { db.ruang[idx].selesai = true; catatLog(`Selesai Bersih: ${db.ruang[idx].nama}`, 'Ruang', 'badge-aman'); }
             saveDB(); 
         }
 
         function tambahAlat() {
             let n = document.getElementById('inputAlat').value; let asal = document.getElementById('asalAlat').value || 'BEM/Umum'; let div = document.getElementById('divisiAlat').value; let jml = document.getElementById('jumlahAlat').value;
             if(!n) return alert("Isi nama alat!");
-            db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Sedang Dipinjam', hilang: 0 });
+            db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Belum Menyediakan', hilang: 0 });
             document.getElementById('inputAlat').value = ''; document.getElementById('jumlahAlat').value = '1'; document.getElementById('asalAlat').value = '';
-            catatLog(`Peminjaman ${jml} ${n}`, 'Alat', 'var(--accent-yellow)'); saveDB(); 
+            catatLog(`Input ${jml} ${n}`, 'Alat', dptClass('Belum Menyediakan')); 
+            saveDB(); 
         }
 
         function ubahStatusAlat(idx, val) {
             let a = db.alat[idx];
             if(val === 'Hilang') {
                 let h = prompt(`Berapa jumlah yang hilang dari total ${a.jumlah} ${a.nama}?`);
-                if(h === null || isNaN(h) || h <= 0) return renderAlat(); // Cancelled
+                if(h === null || isNaN(h) || h <= 0) return renderAlat(); 
                 a.hilang = h;
-                catatLog(`[URGENT] ${h} ${a.nama} Dinyatakan Hilang!`, 'Alat', 'var(--accent-red)');
+                catatLog(`URGENT: ${h} ${a.nama} Hilang!`, 'Alat', 'badge-kritis');
             } else {
-                a.hilang = 0; // Reset jika dikembalikan
-                catatLog(`Status Alat ${a.nama}: ${val}`, 'Alat', 'var(--text-main)');
+                a.hilang = 0; 
+                catatLog(`Status ${a.nama} ➔ ${val}`, 'Alat', dptClass(val));
             }
             a.status = val; saveDB(); 
         }
@@ -492,24 +531,26 @@
             if(!n) return alert("Isi nama material!"); if(p === 'Semua Proyek') return alert("Pilih proyek spesifik di dropdown!");
             db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
             document.getElementById('inputMaterial').value = ''; document.getElementById('jumlahMaterial').value = '1';
-            catatLog(`Input ${jml} ${n} ke proyek ${p}`, 'Konstruksi', 'var(--text-main)'); saveDB(); 
+            catatLog(`Input ${jml} ${n} (${p})`, 'Konstruksi', dptClass('Belum Tersedia')); 
+            saveDB(); 
         }
 
         function ubahKonstruksi(idx, col, val) {
             if(col === 'ket') db.konstruksi[idx].ketersediaan = val;
             if(col === 'beli') db.konstruksi[idx].pembelian = val;
-            catatLog(`Pembaruan status ${db.konstruksi[idx].nama}`, 'Konstruksi', 'var(--text-muted)'); saveDB(); 
+            catatLog(`Update ${db.konstruksi[idx].nama} ➔ ${val}`, 'Konstruksi', dptClass(val)); 
+            saveDB(); 
         }
 
         function kelolaKategori() {
             let a = prompt("Ketik 'tambah' atau 'hapus' untuk mengelola proyek:");
             if(a && a.toLowerCase() === 'tambah') {
                 let n = prompt("Nama proyek baru:");
-                if(n && !db.kategori.includes(n)) { db.kategori.push(n); saveDB(); catatLog(`Kategori baru: ${n}`, 'Konstruksi', 'var(--text-main)'); }
+                if(n && !db.kategori.includes(n)) { db.kategori.push(n); saveDB(); catatLog(`Kategori baru: ${n}`, 'Konstruksi', 'badge-aman'); }
             } else if(a && a.toLowerCase() === 'hapus') {
                 let v = document.getElementById('kategoriProyek').value;
                 if(v === 'Semua Proyek') return alert("Tidak bisa menghapus ini.");
-                if(confirm(`Hapus kategori ${v}?`)) { db.kategori = db.kategori.filter(k => k !== v); saveDB(); catatLog(`Hapus kategori: ${v}`, 'Konstruksi', 'var(--accent-red)'); }
+                if(confirm(`Hapus kategori ${v}?`)) { db.kategori = db.kategori.filter(k => k !== v); saveDB(); catatLog(`Hapus kategori: ${v}`, 'Konstruksi', 'badge-kritis'); }
             }
         }
     </script>
