@@ -399,7 +399,7 @@
         // --- 3. LOGIKA WARNA STATUS (LALU LINTAS) ---
         function dptClass(val) {
             val = val.toLowerCase();
-            if(val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; // Merah
+            if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; // Merah
             if(val.includes('sedang')) return 'badge-pending'; // Kuning
             if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; // Hijau
             return 'badge-abu';
