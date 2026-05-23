@@ -64,6 +64,8 @@
         th { color: var(--text-muted); font-weight: normal; text-transform: uppercase; font-size: 0.8rem;}
         
         .status-badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: none; outline: none; cursor: pointer; appearance: auto; font-family: inherit; }
+        .status-badge:disabled { opacity: 0.8; cursor: not-allowed; } /* Visual untuk select yang dilock (Pemantau) */
+        
         .badge-aman { background-color: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
         .badge-kritis { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-pending { background-color: rgba(255, 234, 0, 0.1); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
@@ -107,7 +109,7 @@
             .sidebar > button.nav-link:nth-of-type(2) { left: 20%; }
             .sidebar > button.nav-link:nth-of-type(3) { left: 40%; }
             .sidebar > button.nav-link:nth-of-type(4) { left: 60%; }
-            .sidebar > button.nav-link:nth-of-type(5) { left: 80%; }
+            .sidebar > button.nav-link:nth-of-type(5) { left: 80%; display: none; } /* Pengaturan akan di-hide by script nanti jika perlu, tapi posisi 80% tetap disiapkan */
 
             /* Konten Utama ditarik ke atas agar tidak tertutup bottom nav */
             .main-content { padding: 1rem; padding-bottom: 80px; overflow-y: auto; height: 100%; }
@@ -127,11 +129,19 @@
 <body>
 
     <div id="loginModal">
-        <div class="login-box">
-            <h2 style="margin-top:0; color: var(--text-main);">Identitas Petugas</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Sistem akan mengingat sesi Anda di perangkat ini.</p>
+        <div class="login-box" id="loginStep1">
+            <h2 style="margin-top:0; color: var(--text-main);">Pilih Hak Akses</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Sistem akan menyesuaikan wewenang menu Anda.</p>
+            <button class="btn-primary" onclick="pilihRole('admin')" style="width: 100%; margin-bottom: 10px;">Masuk sebagai ATP (Akses Penuh)</button>
+            <button class="btn-primary" onclick="pilihRole('viewer')" style="width: 100%; background: var(--surface); border: 1px solid var(--border-color); color: var(--text-main);">SC/PO/Koor (Pantau Saja)</button>
+        </div>
+        
+        <div class="login-box" id="loginStep2" style="display:none;">
+            <h2 style="margin-top:0; color: var(--text-main);" id="titleStep2">Identitas Petugas</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Sistem akan mengingat sesi Anda secara permanen.</p>
             <input type="text" id="loginName" placeholder="Masukkan Nama Anda" style="width: 100%; box-sizing:border-box; margin-bottom: 1rem; text-align: center;">
-            <button class="btn-primary" onclick="masukSistem()" style="width: 100%;">Akses Komando</button>
+            <button class="btn-primary" onclick="masukSistem()" style="width: 100%; margin-bottom: 10px;">Akses Sistem</button>
+            <button onclick="batalRole()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem; text-decoration:underline;">Kembali</button>
         </div>
     </div>
 
@@ -139,7 +149,7 @@
         <div class="logo">ATP DIESNAT 12</div>
         
         <div class="user-profile">
-            <label>PETUGAS:</label>
+            <label id="roleLabel">PETUGAS:</label>
             <div class="user-name" id="displayUserName">Memuat...</div>
             <button class="logout-btn" onclick="keluarSistem()">Ganti</button>
         </div>
@@ -150,7 +160,7 @@
         <button class="nav-link" onclick="bukaTab('ruang', this)">Matriks Ruang</button>
         <button class="nav-link" onclick="bukaTab('alat', this)">Sirkulasi Alat</button>
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
-        <button class="nav-link" onclick="bukaTab('pengaturan', this)">Pengaturan</button>
+        <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">Pengaturan</button>
     </div>
 
     <div class="main-content">
@@ -235,7 +245,7 @@
                             <option value="Gate In">Gate In</option>
                             <option value="Gate Out">Gate Out</option>
                         </select>
-                        <button onclick="kelolaKategori()" title="Kelola Kategori" style="padding: 0.8rem; background-color: var(--border-color); color: var(--text-main); border-radius:4px; cursor:pointer;">⚙️</button>
+                        <button onclick="kelolaKategori()" id="btnKelolaProyek" title="Kelola Kategori" style="padding: 0.8rem; background-color: var(--border-color); color: var(--text-main); border-radius:4px; cursor:pointer;">⚙️</button>
                     </div>
                 </div>
                 <button class="btn-primary" onclick="tambahMaterial()">Tambah Material</button>
@@ -271,6 +281,9 @@
         const dbCloud = firebase.firestore();
 
         let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
+        
+        // VARIABEL GLOBAL UNTUK HAK AKSES
+        window.isViewer = false;
 
         // Real-Time Listener
         dbCloud.collection("atp").doc("data").onSnapshot((doc) => {
@@ -286,15 +299,36 @@
             }
         });
 
-        function saveDB() { dbCloud.collection("atp").doc("data").set(db); }
+        function saveDB() { 
+            if(!window.isViewer) dbCloud.collection("atp").doc("data").set(db); 
+        }
 
-        // --- 2. SISTEM LOGIN PERMANEN LOKAL ---
+        // --- 2. SISTEM LOGIN PERMANEN & HAK AKSES ---
+        let tempRole = '';
+
+        function pilihRole(role) {
+            tempRole = role;
+            document.getElementById('loginStep1').style.display = 'none';
+            document.getElementById('loginStep2').style.display = 'block';
+            document.getElementById('titleStep2').innerText = role === 'admin' ? 'Identitas ATP' : 'Identitas Pemantau';
+        }
+
+        function batalRole() {
+            tempRole = '';
+            document.getElementById('loginStep1').style.display = 'block';
+            document.getElementById('loginStep2').style.display = 'none';
+        }
+
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
-            if(savedUser) {
+            const savedRole = localStorage.getItem('atpRole');
+            
+            if(savedUser && savedRole) {
+                // Tembus langsung jika memori perangkat ada
                 document.getElementById('loginModal').style.display = 'none';
                 document.getElementById('displayUserName').innerText = savedUser;
+                terapkanHakAkses(savedRole);
             } else {
                 document.getElementById('loginModal').style.display = 'flex';
             }
@@ -303,22 +337,57 @@
         function masukSistem() {
             const nama = document.getElementById('loginName').value;
             if(!nama.trim()) return alert('Nama wajib diisi!');
+            
             localStorage.setItem('atpUser', nama);
+            localStorage.setItem('atpRole', tempRole);
+            
             document.getElementById('displayUserName').innerText = nama;
             document.getElementById('loginModal').style.display = 'none';
-            catatLog('Login ke sistem', 'Sistem', 'badge-aman');
+            
+            if(tempRole === 'admin') catatLog('Login ke sistem komando', 'Sistem', 'badge-aman');
+            terapkanHakAkses(tempRole);
             
             renderSemua(); updateDashboard(); renderDropdownKategori();
         }
 
-        function keluarSistem() { localStorage.removeItem('atpUser'); location.reload(); }
+        function terapkanHakAkses(role) {
+            window.isViewer = (role === 'viewer');
+            document.getElementById('roleLabel').innerText = window.isViewer ? 'PEMANTAU:' : 'PETUGAS (ATP):';
+            
+            if(window.isViewer) {
+                // Gaibkan semua form pengisian data
+                document.querySelectorAll('.form-container').forEach(el => el.style.display = 'none');
+                // Gaibkan tab pengaturan dari navigasi
+                document.getElementById('navPengaturan').style.display = 'none';
+                
+                // Tata ulang bottom nav HP agar sisa 4 menu rapi (jika di HP)
+                if (window.innerWidth <= 768) {
+                    let navs = document.querySelectorAll('.sidebar > button.nav-link');
+                    if(navs.length >= 5) {
+                        navs[0].style.width = '25%'; navs[0].style.left = '0';
+                        navs[1].style.width = '25%'; navs[1].style.left = '25%';
+                        navs[2].style.width = '25%'; navs[2].style.left = '50%';
+                        navs[3].style.width = '25%'; navs[3].style.left = '75%';
+                    }
+                }
+            }
+        }
+
+        function keluarSistem() { 
+            localStorage.removeItem('atpUser'); 
+            localStorage.removeItem('atpRole'); 
+            location.reload(); 
+        }
+
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
+        
         function resetDatabase() {
             if(prompt("PERINGATAN! Ini akan menghapus SELURUH DATA tabel. Ketik 'RESET' untuk melanjutkan:") === 'RESET') {
                 db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
                 saveDB(); alert('Database berhasil di-reset!');
             }
         }
+
         function bukaTab(idTab, elemen) {
             document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
@@ -328,14 +397,13 @@
         // --- 3. LOGIKA WARNA STATUS (LALU LINTAS) ---
         function dptClass(val) {
             val = val.toLowerCase();
-            // Urutan ini sangat penting agar tidak tumpang tindih
+            // Urutan logikanya dibalik agar akurat membaca kata spesifik
             if(val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; // Merah
             if(val.includes('sedang')) return 'badge-pending'; // Kuning
             if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; // Hijau
             return 'badge-abu';
         }
 
-        // Warna khusus Modul di tabel Log
         function getModulColor(modul) {
             if(modul === 'Ruang') return '#87cefa'; // Biru Muda
             if(modul === 'Alat') return '#ff69b4';  // Merah Muda
@@ -343,19 +411,23 @@
             return 'var(--text-muted)';
         }
 
-        // --- 4. RENDER DATA (HTML) ---
+        // --- 4. RENDER DATA HTML DENGAN PEMBATASAN AKSES ---
         function renderSemua() { renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); }
 
         function renderRuang() {
             const tbody = document.getElementById('tabelRuang'); tbody.innerHTML = '';
             if(!db.ruang) return; 
+            
+            let dis = window.isViewer ? 'disabled' : '';
+
             db.ruang.forEach((r, idx) => {
-                let btnTap = r.status === 'Sudah Terajukan (ACC)' && !r.tapped && !r.selesai ? `<button onclick="aksiRuang(${idx}, 'tap')" style="background:var(--text-main); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Tap-In</button>` : '';
-                let btnVal = r.tapped && !r.selesai ? `<button onclick="aksiRuang(${idx}, 'val')" style="background:var(--accent-green); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Validasi Bersih</button>` : '';
-                let aksiTxt = r.selesai ? `<span style="font-size:0.8rem; color:var(--accent-green); font-weight:bold;">Selesai Bersih</span>` : btnTap + btnVal;
+                let btnTap = r.status === 'Sudah Terajukan (ACC)' && !r.tapped && !r.selesai && !window.isViewer ? `<button onclick="aksiRuang(${idx}, 'tap')" style="background:var(--text-main); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Tap-In</button>` : '';
+                let btnVal = r.tapped && !r.selesai && !window.isViewer ? `<button onclick="aksiRuang(${idx}, 'val')" style="background:var(--accent-green); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer;">Validasi Bersih</button>` : '';
+                
+                let aksiTxt = r.selesai ? `<span style="font-size:0.8rem; color:var(--accent-green); font-weight:bold;">Selesai Bersih</span>` : (window.isViewer ? '-' : btnTap + btnVal);
 
                 tbody.innerHTML += `<tr><td>${r.nama}</td><td>${r.divisi}</td>
-                <td><select class="status-badge ${dptClass(r.status)}" onchange="ubahStatusRuang(${idx}, this.value)">
+                <td><select class="status-badge ${dptClass(r.status)}" onchange="ubahStatusRuang(${idx}, this.value)" ${dis}>
                     <option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option>
                     <option value="Sedang Diajukan" ${r.status=='Sedang Diajukan'?'selected':''}>Sedang Diajukan</option>
                     <option value="Sudah Terajukan (ACC)" ${r.status=='Sudah Terajukan (ACC)'?'selected':''}>Sudah Terajukan (ACC)</option>
@@ -367,9 +439,12 @@
         function renderAlat() {
             const tbody = document.getElementById('tabelAlat'); tbody.innerHTML = '';
             if(!db.alat) return;
+            
+            let dis = window.isViewer ? 'disabled' : '';
+
             db.alat.forEach((a, idx) => {
                 tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
-                <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)">
+                <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)" ${dis}>
                     <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
                     <option value="Tersedia" ${a.status=='Tersedia'?'selected':''}>Tersedia</option>
                     <option value="Sedang Dipinjam" ${a.status=='Sedang Dipinjam'?'selected':''}>Sedang Dipinjam</option>
@@ -383,14 +458,17 @@
             const tbody = document.getElementById('tabelKonstruksi'); tbody.innerHTML = '';
             const filter = document.getElementById('kategoriProyek').value;
             if(!db.konstruksi) return;
+            
+            let dis = window.isViewer ? 'disabled' : '';
+
             db.konstruksi.forEach((k, idx) => {
                 if(filter === 'Semua Proyek' || k.proyek === filter) {
                     tbody.innerHTML += `<tr><td>${k.nama}</td><td>${k.jumlah}</td><td>${k.proyek}</td>
-                    <td><select class="status-badge ${dptClass(k.ketersediaan)}" onchange="ubahKonstruksi(${idx}, 'ket', this.value)">
+                    <td><select class="status-badge ${dptClass(k.ketersediaan)}" onchange="ubahKonstruksi(${idx}, 'ket', this.value)" ${dis}>
                         <option value="Belum Tersedia" ${k.ketersediaan=='Belum Tersedia'?'selected':''}>Belum Tersedia</option>
                         <option value="Tersedia" ${k.ketersediaan=='Tersedia'?'selected':''}>Tersedia</option>
                     </select></td>
-                    <td><select class="status-badge ${dptClass(k.pembelian)}" onchange="ubahKonstruksi(${idx}, 'beli', this.value)">
+                    <td><select class="status-badge ${dptClass(k.pembelian)}" onchange="ubahKonstruksi(${idx}, 'beli', this.value)" ${dis}>
                         <option value="Belum Dibeli" ${k.pembelian=='Belum Dibeli'?'selected':''}>Belum Dibeli</option>
                         <option value="Sedang Dibeli" ${k.pembelian=='Sedang Dibeli'?'selected':''}>Sedang Dibeli</option>
                         <option value="Sudah Dibeli" ${k.pembelian=='Sudah Dibeli'?'selected':''}>Sudah Dibeli</option>
@@ -404,7 +482,6 @@
             const tbody = document.getElementById('tabelLog'); tbody.innerHTML = '';
             if(!db.log) return;
             db.log.slice(0, 30).forEach(l => {
-                // Tampilkan badge warna di kolom tindakan sesuai status lencana
                 let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.2rem 0.5rem; font-size:0.7rem;">${l.tindakan}</span>` : l.tindakan;
                 tbody.innerHTML += `<tr><td>${l.tanggal}</td><td>${l.waktu}</td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td></tr>`;
             });
@@ -421,15 +498,14 @@
         function updateDashboard() {
             if(!db.ruang || !db.alat || !db.konstruksi) return;
 
-            // Logika Penentuan Warna Persentase
             const penentuWarna = (persen, total) => {
-                if(total === 0) return 'var(--accent-green)'; // 0 Data tapi hijau
+                if(total === 0) return 'var(--accent-green)'; 
                 if(persen >= 80) return 'var(--accent-green)';
                 if(persen >= 60) return 'var(--accent-yellow)';
                 return 'var(--accent-red)';
             };
 
-            // 1. Dashboard Ruang (Bobot: Belum=0, Sedang=50, ACC=100)
+            // 1. Ruang (Bobot: Belum=0, Sedang=50, ACC=100)
             let totalRuangScore = 0;
             let maxRuangScore = db.ruang.length * 100;
             let belumRuang = 0;
@@ -439,44 +515,37 @@
                 else if (r.status.includes('ACC') || r.selesai) { totalRuangScore += 100; }
             });
             let pRuang = maxRuangScore === 0 ? 100 : Math.floor((totalRuangScore / maxRuangScore) * 100);
-            let cRuang = penentuWarna(pRuang, db.ruang.length);
-            let subRuang = db.ruang.length === 0 ? 'Belum ada data masuk' : `${belumRuang} Ruang belum ACC final`;
+            let subRuang = maxRuangScore === 0 ? 'Belum ada data masuk' : `${belumRuang} Ruang belum ACC final`;
             
-            document.getElementById('dashRuang').innerHTML = `<span style="color:${cRuang}">${pRuang}% Aman</span>`;
+            document.getElementById('dashRuang').innerHTML = `<span style="color:${penentuWarna(pRuang, db.ruang.length)}">${pRuang}% Aman</span>`;
             document.getElementById('dashRuangSub').innerText = subRuang;
 
-            // 2. Dashboard Alat (Belum/Hilang=0, Sisanya=100)
-            let totalAlatScore = 0;
-            let maxAlatScore = 0;
-            let badAlat = 0;
+            // 2. Alat (Belum/Hilang=0, Sisanya=100)
+            let totalAlatScore = 0; let maxAlatScore = 0; let badAlat = 0;
             db.alat.forEach(a => { 
                 let j = Number(a.jumlah) || 0;
                 maxAlatScore += (j * 100);
                 if (a.status === 'Belum Menyediakan' || a.status === 'Hilang') {
-                    totalAlatScore += 0;
                     badAlat += (a.status === 'Hilang' ? Number(a.hilang || 0) : j);
                 } else {
                     totalAlatScore += (j * 100);
                 }
             });
             let pAlat = maxAlatScore === 0 ? 100 : Math.floor((totalAlatScore / maxAlatScore) * 100);
-            let cAlat = penentuWarna(pAlat, maxAlatScore);
             let subAlat = maxAlatScore === 0 ? 'Belum ada data masuk' : `${badAlat} Item belum tersedia/hilang`;
 
-            document.getElementById('dashAlat').innerHTML = `<span style="color:${cAlat}">${pAlat}% Aman</span>`;
+            document.getElementById('dashAlat').innerHTML = `<span style="color:${penentuWarna(pAlat, maxAlatScore)}">${pAlat}% Aman</span>`;
             document.getElementById('dashAlatSub').innerText = subAlat;
 
-            // 3. Dashboard Konstruksi (Pembelian=Max 30, Ketersediaan=Max 70, Tersedia=Mutlak 100)
-            let totalKScore = 0;
-            let maxKScore = 0;
-            let cK = 0;
+            // 3. Konstruksi (Pembelian=Max 30, Ketersediaan=Max 70, Tersedia=Mutlak 100)
+            let totalKScore = 0; let maxKScore = 0; let cK = 0;
             db.konstruksi.forEach(k => {
                 let j = Number(k.jumlah) || 0;
                 maxKScore += (j * 100);
                 let itemScore = 0;
                 
                 if (k.ketersediaan === 'Tersedia') {
-                    itemScore = 100; // Mutlak 100 jika barang fisik sudah ada
+                    itemScore = 100; 
                     cK++;
                 } else {
                     if (k.pembelian === 'Sedang Dibeli') itemScore += 15;
@@ -485,23 +554,21 @@
                 totalKScore += (j * itemScore);
             });
             let pKonstruksi = maxKScore === 0 ? 100 : Math.floor((totalKScore / maxKScore) * 100);
-            let cKonstruksi = penentuWarna(pKonstruksi, maxKScore);
-            let subKonstruksi = maxKScore === 0 ? 'Belum ada data masuk' : `${cK} dari ${db.konstruksi.length} Material Tersedia`;
+            let subKonstruksi = maxKScore === 0 ? 'Belum ada data masuk' : `${cK} dari ${db.konstruksi.length} Material fisik Tersedia`;
 
-            document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${cKonstruksi}">${pKonstruksi}% Siap</span>`;
+            document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${penentuWarna(pKonstruksi, maxKScore)}">${pKonstruksi}% Siap</span>`;
             document.getElementById('dashKonstruksiSub').innerText = subKonstruksi;
         }
 
-        // --- 6. AKSI INPUT & UBAH DATA ---
+        // --- 6. AKSI INPUT & UBAH DATA (HANYA ATP) ---
         function catatLog(tindakan, modul, statusClass) {
+            if(window.isViewer) return;
             const dateObj = new Date();
             db.log.unshift({ 
                 tanggal: dateObj.toLocaleDateString('id-ID'), 
                 waktu: dateObj.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), 
                 user: localStorage.getItem('atpUser') || 'Anonim', 
-                tindakan, 
-                modul, 
-                statusClass 
+                tindakan, modul, statusClass 
             });
             saveDB();
         }
@@ -512,13 +579,11 @@
             db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false });
             document.getElementById('inputRuang').value = '';
             catatLog(`Didaftarkan: ${n}`, 'Ruang', dptClass('Belum Diajukan'));
-            saveDB(); 
         }
 
         function ubahStatusRuang(idx, val) { 
             db.ruang[idx].status = val; 
             catatLog(`Ubah Ruang ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); 
-            saveDB(); 
         }
 
         function aksiRuang(idx, tipe) {
@@ -533,7 +598,6 @@
             db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Belum Menyediakan', hilang: 0 });
             document.getElementById('inputAlat').value = ''; document.getElementById('jumlahAlat').value = '1'; document.getElementById('asalAlat').value = '';
             catatLog(`Input ${jml} ${n}`, 'Alat', dptClass('Belum Menyediakan')); 
-            saveDB(); 
         }
 
         function ubahStatusAlat(idx, val) {
@@ -556,14 +620,12 @@
             db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
             document.getElementById('inputMaterial').value = ''; document.getElementById('jumlahMaterial').value = '1';
             catatLog(`Input ${jml} ${n} (${p})`, 'Konstruksi', dptClass('Belum Tersedia')); 
-            saveDB(); 
         }
 
         function ubahKonstruksi(idx, col, val) {
             if(col === 'ket') db.konstruksi[idx].ketersediaan = val;
             if(col === 'beli') db.konstruksi[idx].pembelian = val;
             catatLog(`Update ${db.konstruksi[idx].nama} ➔ ${val}`, 'Konstruksi', dptClass(val)); 
-            saveDB(); 
         }
 
         function kelolaKategori() {
