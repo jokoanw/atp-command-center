@@ -85,7 +85,7 @@
             
             /* Box Profil dipadatkan menyamping */
             .user-profile { display: flex; align-items: center; margin: 0; padding: 0; background: transparent; border: none; }
-            .user-profile label { display: none; } /* Sembunyikan tulisan PETUGAS di HP agar hemat ruang */
+            .user-profile label { display: none; } 
             .user-name { font-size: 0.8rem; margin: 0 10px 0 0; }
             .logout-btn { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); padding: 5px 8px; border-radius: 4px; text-decoration: none; }
             
@@ -328,9 +328,10 @@
         // --- 3. LOGIKA WARNA STATUS (LALU LINTAS) ---
         function dptClass(val) {
             val = val.toLowerCase();
-            if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai')) return 'badge-aman'; // Hijau
-            if(val.includes('sedang')) return 'badge-pending'; // Kuning
+            // Urutan ini sangat penting agar tidak tumpang tindih
             if(val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; // Merah
+            if(val.includes('sedang')) return 'badge-pending'; // Kuning
+            if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; // Hijau
             return 'badge-abu';
         }
 
@@ -370,6 +371,7 @@
                 tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
                 <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)">
                     <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
+                    <option value="Tersedia" ${a.status=='Tersedia'?'selected':''}>Tersedia</option>
                     <option value="Sedang Dipinjam" ${a.status=='Sedang Dipinjam'?'selected':''}>Sedang Dipinjam</option>
                     <option value="Dikembalikan" ${a.status=='Dikembalikan'?'selected':''}>Dikembalikan</option>
                     <option value="Hilang" ${a.status=='Hilang'?'selected':''}>Hilang</option>
@@ -392,6 +394,7 @@
                         <option value="Belum Dibeli" ${k.pembelian=='Belum Dibeli'?'selected':''}>Belum Dibeli</option>
                         <option value="Sedang Dibeli" ${k.pembelian=='Sedang Dibeli'?'selected':''}>Sedang Dibeli</option>
                         <option value="Sudah Dibeli" ${k.pembelian=='Sudah Dibeli'?'selected':''}>Sudah Dibeli</option>
+                        <option value="Tidak membeli" ${k.pembelian=='Tidak membeli'?'selected':''}>Tidak membeli</option>
                     </select></td></tr>`;
                 }
             });
@@ -414,7 +417,7 @@
             db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; });
         }
 
-        // --- 5. DASHBOARD & PERSENTASE ---
+        // --- 5. DASHBOARD (KALKULASI BERTINGKAT AKURAT) ---
         function updateDashboard() {
             if(!db.ruang || !db.alat || !db.konstruksi) return;
 
@@ -426,48 +429,70 @@
                 return 'var(--accent-red)';
             };
 
-            // 1. Dashboard Ruang
-            let tRuang = db.ruang.length;
-            let amanRuang = db.ruang.filter(r => r.status.includes('Sudah') || r.selesai).length;
-            let pRuang = tRuang === 0 ? 100 : Math.floor((amanRuang / tRuang) * 100);
-            let cRuang = penentuWarna(pRuang, tRuang);
-            let subRuang = tRuang === 0 ? 'Belum ada data masuk' : `${tRuang - amanRuang} Ruang belum ACC/Selesai`;
+            // 1. Dashboard Ruang (Bobot: Belum=0, Sedang=50, ACC=100)
+            let totalRuangScore = 0;
+            let maxRuangScore = db.ruang.length * 100;
+            let belumRuang = 0;
+            db.ruang.forEach(r => {
+                if (r.status.includes('Belum')) { totalRuangScore += 0; belumRuang++; }
+                else if (r.status.includes('Sedang')) { totalRuangScore += 50; belumRuang++; }
+                else if (r.status.includes('ACC') || r.selesai) { totalRuangScore += 100; }
+            });
+            let pRuang = maxRuangScore === 0 ? 100 : Math.floor((totalRuangScore / maxRuangScore) * 100);
+            let cRuang = penentuWarna(pRuang, db.ruang.length);
+            let subRuang = db.ruang.length === 0 ? 'Belum ada data masuk' : `${belumRuang} Ruang belum ACC final`;
             
             document.getElementById('dashRuang').innerHTML = `<span style="color:${cRuang}">${pRuang}% Aman</span>`;
             document.getElementById('dashRuangSub').innerText = subRuang;
 
-            // 2. Dashboard Alat
-            let tAlatItem = 0; let badAlat = 0;
+            // 2. Dashboard Alat (Belum/Hilang=0, Sisanya=100)
+            let totalAlatScore = 0;
+            let maxAlatScore = 0;
+            let badAlat = 0;
             db.alat.forEach(a => { 
                 let j = Number(a.jumlah) || 0;
-                tAlatItem += j; 
-                if(a.status.includes('Belum') || a.status === 'Hilang') {
+                maxAlatScore += (j * 100);
+                if (a.status === 'Belum Menyediakan' || a.status === 'Hilang') {
+                    totalAlatScore += 0;
                     badAlat += (a.status === 'Hilang' ? Number(a.hilang || 0) : j);
+                } else {
+                    totalAlatScore += (j * 100);
                 }
             });
-            let pAlat = tAlatItem === 0 ? 100 : Math.floor(((tAlatItem - badAlat) / tAlatItem) * 100);
-            let cAlat = penentuWarna(pAlat, tAlatItem);
-            let subAlat = tAlatItem === 0 ? 'Belum ada data masuk' : `${badAlat} Item belum tersedia/hilang`;
+            let pAlat = maxAlatScore === 0 ? 100 : Math.floor((totalAlatScore / maxAlatScore) * 100);
+            let cAlat = penentuWarna(pAlat, maxAlatScore);
+            let subAlat = maxAlatScore === 0 ? 'Belum ada data masuk' : `${badAlat} Item belum tersedia/hilang`;
 
             document.getElementById('dashAlat').innerHTML = `<span style="color:${cAlat}">${pAlat}% Aman</span>`;
             document.getElementById('dashAlatSub').innerText = subAlat;
 
-            // 3. Dashboard Konstruksi
-            let tKonstruksi = 0; let badKonstruksi = 0;
+            // 3. Dashboard Konstruksi (Pembelian=Max 30, Ketersediaan=Max 70, Tersedia=Mutlak 100)
+            let totalKScore = 0;
+            let maxKScore = 0;
+            let cK = 0;
             db.konstruksi.forEach(k => {
                 let j = Number(k.jumlah) || 0;
-                tKonstruksi += j;
-                if(k.ketersediaan.includes('Belum')) badKonstruksi += j;
+                maxKScore += (j * 100);
+                let itemScore = 0;
+                
+                if (k.ketersediaan === 'Tersedia') {
+                    itemScore = 100; // Mutlak 100 jika barang fisik sudah ada
+                    cK++;
+                } else {
+                    if (k.pembelian === 'Sedang Dibeli') itemScore += 15;
+                    else if (k.pembelian === 'Sudah Dibeli' || k.pembelian === 'Tidak membeli') itemScore += 30;
+                }
+                totalKScore += (j * itemScore);
             });
-            let pKonstruksi = tKonstruksi === 0 ? 100 : Math.floor(((tKonstruksi - badKonstruksi) / tKonstruksi) * 100);
-            let cKonstruksi = penentuWarna(pKonstruksi, tKonstruksi);
-            let subKonstruksi = tKonstruksi === 0 ? 'Belum ada data masuk' : `${badKonstruksi} Material belum tersedia`;
+            let pKonstruksi = maxKScore === 0 ? 100 : Math.floor((totalKScore / maxKScore) * 100);
+            let cKonstruksi = penentuWarna(pKonstruksi, maxKScore);
+            let subKonstruksi = maxKScore === 0 ? 'Belum ada data masuk' : `${cK} dari ${db.konstruksi.length} Material Tersedia`;
 
             document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${cKonstruksi}">${pKonstruksi}% Siap</span>`;
             document.getElementById('dashKonstruksiSub').innerText = subKonstruksi;
         }
 
-        // Modifikasi Catat Log agar menampilkan Lencana Warna
+        // --- 6. AKSI INPUT & UBAH DATA ---
         function catatLog(tindakan, modul, statusClass) {
             const dateObj = new Date();
             db.log.unshift({ 
@@ -481,7 +506,6 @@
             saveDB();
         }
 
-        // --- 6. AKSI INPUT & UBAH DATA ---
         function tambahRuang() {
             let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value;
             if(!n) return alert("Isi nama ruang!");
