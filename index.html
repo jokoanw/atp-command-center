@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>ATP COMMAND CENTER - DIESNAT FMIPA 12</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -12,145 +12,213 @@
         :root {
             --bg-dark: #121212; --surface: #1e1e1e; --text-main: #e0e0e0; --text-muted: #888888;
             --accent-green: #00e676; --accent-yellow: #ffea00; --accent-red: #ff1744; --border-color: #333333;
+            --accent-blue: #00b0ff;
         }
         body.light-mode {
             --bg-dark: #f0f2f5; --surface: #ffffff; --text-main: #1a1a1a; --text-muted: #666666;
             --accent-green: #00a03e; --accent-yellow: #d4a000; --accent-red: #d50000; --border-color: #cccccc;
+            --accent-blue: #0091ea;
         }
 
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
+        /* Smooth Scrolling Mentega */
+        html { scroll-behavior: smooth; }
+        body { 
+            background-color: var(--bg-dark); color: var(--text-main); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; 
+            transition: background-color 0.3s, color 0.3s; 
+            -webkit-font-smoothing: antialiased;
+        }
 
-        /* Modal Login */
-        #loginModal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: var(--surface); padding: 2.5rem; border-radius: 8px; width: 320px; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        /* Halaman Landing - Triple Menu */
+        #landingPage { position: fixed; inset: 0; background: var(--bg-dark); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; overflow-y: auto; padding: 2rem;}
+        .landing-title { font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-main); text-align: center; letter-spacing: 2px;}
+        .landing-subtitle { color: var(--accent-green); margin-bottom: 2.5rem; font-weight: bold; letter-spacing: 1px; text-align: center;}
+        
+        .triple-menu-container { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; max-width: 1000px; width: 100%; }
+        .menu-card { background: var(--surface); border: 1px solid var(--border-color); flex: 1; min-width: 250px; padding: 2rem; border-radius: 12px; text-align: center; cursor: pointer; transition: transform 0.3s, border-color 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .menu-card:hover { transform: translateY(-5px); border-color: var(--text-main); }
+        .menu-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .menu-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-main); }
+        .menu-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;}
+
+        /* Form Login Transisi */
+        #loginFormBox { display: none; background: var(--surface); border: 1px solid var(--border-color); padding: 2.5rem; border-radius: 12px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 2rem; }
+        #loginFormBox input { width: 100%; box-sizing: border-box; margin-bottom: 1rem; text-align: center; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-dark); color: var(--text-main); outline: none; font-size: 1rem;}
+        #loginFormBox input:focus { border-color: var(--accent-green); }
 
         /* Sidebar Desktop */
-        .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; transition: background-color 0.3s; }
+        .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; transition: background-color 0.3s; z-index: 100;}
         .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; color: var(--text-main); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
-        .user-profile { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+        .user-profile { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; }
         .user-profile label { font-size: 0.7rem; color: var(--accent-green); margin-bottom: 0.3rem; display: block; font-weight: bold;}
         .user-name { font-size: 1rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-main); word-wrap: break-word;}
-        .logout-btn { font-size: 0.7rem; color: var(--text-main); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
+        .logout-btn { font-size: 0.75rem; color: var(--accent-red); cursor: pointer; background: rgba(255, 23, 68, 0.1); border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold;}
 
-        .nav-link { background: none; border: none; color: var(--text-muted); text-align: left; padding: 0; margin-bottom: 1.5rem; font-size: 0.95rem; cursor: pointer; transition: color 0.3s ease; font-family: inherit; }
-        .nav-link:hover, .nav-link.active { color: var(--text-main); font-weight: bold; }
+        .nav-link { background: none; border: none; color: var(--text-muted); text-align: left; padding: 0.8rem 1rem; margin-bottom: 0.5rem; font-size: 0.95rem; cursor: pointer; transition: 0.3s ease; font-family: inherit; border-radius: 8px;}
+        .nav-link:hover { background: var(--bg-dark); color: var(--text-main); }
+        .nav-link.active { background: var(--bg-dark); color: var(--text-main); border-left: 4px solid var(--accent-green); font-weight: bold; }
 
-        .theme-toggle { margin-top: auto; margin-bottom: 0.5rem; padding: 0.8rem; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold;}
-        .reset-btn { padding: 0.8rem; background-color: rgba(255, 23, 68, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
-
+        .theme-toggle { margin-top: auto; margin-bottom: 0.5rem; padding: 0.8rem; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold;}
+        
         /* Konten Utama Desktop */
-        .main-content { flex: 1; padding: 3rem; box-sizing: border-box; overflow-y: auto; padding-bottom: 50px;}
-        .tab-section { display: none; }
+        .main-content { 
+            flex: 1; padding: 3rem; box-sizing: border-box; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; /* Momentum scroll mentega iOS */
+            overscroll-behavior-y: contain;
+            padding-bottom: 120px; /* Jauh lebih lega di bawah */
+        }
+        
+        .tab-section { display: none; animation: fadeIn 0.4s; }
         .tab-section.active { display: block; }
-        .header-title { font-size: 2rem; margin: 0 0 0.5rem 0; font-weight: 400; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header-title { font-size: 2rem; margin: 0 0 0.5rem 0; font-weight: bold; }
         .header-subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
 
-        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 3rem; }
-        .card { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; }
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+        .card { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .card-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
         .card-value { font-size: 2rem; font-weight: bold; margin: 0; color: var(--text-main);}
-        .card-subtext { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; }
+        .card-subtext { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4;}
 
-        .form-container { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
+        .form-container { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
         .form-group { display: flex; flex-direction: column; flex: 1; min-width: 130px; }
-        label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;}
-        select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 4px; outline: none; }
-        button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+        label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+        select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 8px; outline: none; font-family: inherit;}
+        button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: opacity 0.2s; }
+        button.btn-primary:active { opacity: 0.7; }
 
-        /* Tabel Responsif Desktop */
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 10px;}
-        table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
-        th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; /* Mencegah teks turun berantakan */ }
-        th { color: var(--text-muted); font-weight: normal; text-transform: uppercase; font-size: 0.8rem;}
+        /* Tabel Responsif */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px;}
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 2rem; }
+        th, td { text-align: left; padding: 1.2rem 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
+        th { color: var(--text-muted); font-weight: bold; text-transform: uppercase; font-size: 0.75rem; background: var(--surface); position: sticky; top: 0; z-index: 10;}
         
-        .status-badge { padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: none; outline: none; cursor: pointer; appearance: auto; font-family: inherit; }
+        .status-badge { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: none; outline: none; cursor: pointer; appearance: auto; font-family: inherit; }
         .status-badge:disabled { opacity: 0.8; cursor: not-allowed; } 
         
         .badge-aman { background-color: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
         .badge-kritis { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-pending { background-color: rgba(255, 234, 0, 0.1); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
         .badge-abu { background-color: rgba(136, 136, 136, 0.1); color: var(--text-muted); border: 1px solid var(--text-muted); }
+        .badge-biru { background-color: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
 
-        /* Tombol Aksi */
-        .btn-aksi { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; margin-left: 5px; }
-        .btn-aksi.hapus:hover { background-color: var(--accent-red); color: #fff; border-color: var(--accent-red);}
-        .btn-aksi.edit:hover { background-color: var(--accent-yellow); color: #000; border-color: var(--accent-yellow);}
+        .btn-aksi { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; margin-left: 5px; }
+        .btn-aksi:active { transform: scale(0.9); }
 
         /* =========================================
-           TAMPILAN KHUSUS HP (SUDAH DIRAPIHKAN)
+           HP RESPONSIVE - SCROLL MENTEGA & LEGA
            ========================================= */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: hidden; }
+            .landing-title { font-size: 1.8rem; }
+            .triple-menu-container { flex-direction: column; align-items: center; gap: 1rem; }
+            .menu-card { width: 100%; padding: 1.5rem; min-width: unset; }
             
-            .sidebar { width: 100%; height: auto; padding: 10px 15px; border-right: none; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background: var(--surface); z-index: 100; border-bottom: 1px solid var(--border-color); }
+            .sidebar { 
+                width: 100%; height: auto; padding: 12px 20px; 
+                flex-direction: row; align-items: center; justify-content: space-between; 
+                border-bottom: 1px solid var(--border-color); border-right: none;
+            }
             .logo { font-size: 1rem; margin: 0; padding: 0; border: none; }
             .user-profile { display: flex; align-items: center; margin: 0; padding: 0; background: transparent; border: none; }
             .user-profile label { display: none; } 
-            .user-name { font-size: 0.8rem; margin: 0 10px 0 0; }
-            .logout-btn { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); padding: 5px 8px; border-radius: 4px; text-decoration: none; }
-            .theme-toggle { margin: 0; padding: 5px 10px; width: auto; font-size: 0.7rem; border-radius: 4px; }
+            .user-name { font-size: 0.9rem; margin: 0 15px 0 0; }
+            .theme-toggle { display: none; } /* Sembunyikan tema di navbar HP agar rapi */
             
-            .nav-link { position: fixed; bottom: 0; z-index: 999; width: 20%; height: 60px; margin: 0; padding: 5px; font-size: 0.6rem; text-align: center; line-height: 1.3; border: none; border-top: 1px solid var(--border-color); border-radius: 0; background-color: var(--surface); display: flex; align-items: center; justify-content: center; }
-            .nav-link.active { border-top: 3px solid var(--accent-green); color: var(--accent-green); background-color: var(--bg-dark); font-weight: bold;}
+            /* Bottom Navigation Bar HP */
+            .nav-link { 
+                position: fixed; bottom: 0; z-index: 999; 
+                width: 20%; height: 65px; margin: 0; padding: 5px; 
+                font-size: 0.65rem; text-align: center; border: none; 
+                border-top: 1px solid var(--border-color); background-color: var(--surface); 
+                display: flex; flex-direction: column; align-items: center; justify-content: center; 
+                border-radius: 0; border-left: none;
+            }
+            .nav-link.active { border-top: 4px solid var(--accent-green); background-color: var(--bg-dark); border-left: none;}
             
             .sidebar > button.nav-link:nth-of-type(1) { left: 0; }
             .sidebar > button.nav-link:nth-of-type(2) { left: 20%; }
             .sidebar > button.nav-link:nth-of-type(3) { left: 40%; }
             .sidebar > button.nav-link:nth-of-type(4) { left: 60%; }
-            .sidebar > button.nav-link:nth-of-type(5) { left: 80%; display: none; }
+            .sidebar > button.nav-link:nth-of-type(5) { left: 80%; }
+            .sidebar > button.nav-link:nth-of-type(6) { display: none; } /* Setting dipindah/disembunyikan di HP */
 
-            .main-content { padding: 1rem; padding-bottom: 90px; overflow-y: auto; height: calc(100vh - 60px); } /* Hindari tertutup nav */
-            .header-title { font-size: 1.5rem; }
-            .grid-container { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-            .form-container { flex-direction: column; gap: 0.8rem; align-items: stretch; }
+            /* Area Konten Utama */
+            .main-content { 
+                padding: 1.2rem; 
+                height: calc(100vh - 60px); /* Kurangi tinggi navbar */
+                padding-bottom: 160px; /* Ruang BAWAH SANGAT LEGA agar konten terakhir bisa digeser naik */
+            }
+            .header-title { font-size: 1.6rem; }
+            .grid-container { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; }
+            .form-container { flex-direction: column; gap: 1rem; align-items: stretch; padding: 1.2rem;}
             .form-group { width: 100%; min-width: 100%; }
-            button.btn-primary { width: 100%; padding: 1rem; }
+            button.btn-primary { width: 100%; padding: 1.2rem; }
             
-            /* KUNCI RAPIH DI HP: Tabel digeser, tidak memaksakan teks tergencet */
-            .table-responsive { border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 2rem; overflow-x: auto; }
-            table { min-width: 600px; margin-bottom: 0; border: none;} 
-            th, td { padding: 0.6rem; font-size: 0.8rem; white-space: nowrap; } /* Pastikan teks memanjang kesamping */
+            .table-responsive { border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 2rem; }
+            table { min-width: 600px; border: none;} 
+            th, td { padding: 1rem; font-size: 0.85rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="loginModal">
-        <div class="login-box" id="loginStep1">
-            <h2 style="margin-top:0; color: var(--text-main);">Pilih Hak Akses</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Sistem akan menyesuaikan wewenang menu Anda.</p>
-            <button class="btn-primary" onclick="pilihRole('admin')" style="width: 100%; margin-bottom: 10px;">Masuk sebagai ATP (Akses Penuh)</button>
-            <button class="btn-primary" onclick="pilihRole('viewer')" style="width: 100%; background: var(--surface); border: 1px solid var(--border-color); color: var(--text-main);">SC/PO/Koor (Pantau Saja)</button>
-        </div>
+    <div id="landingPage">
+        <h1 class="landing-title">ATP COMMAND CENTER</h1>
+        <div class="landing-subtitle">DIESNATALIS FMIPA UNSOED KE-12</div>
         
-        <div class="login-box" id="loginStep2" style="display:none;">
-            <h2 style="margin-top:0; color: var(--text-main);" id="titleStep2">Identitas Petugas</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">Sistem akan mengingat sesi Anda secara permanen.</p>
-            <input type="text" id="loginName" placeholder="Masukkan Nama Anda" style="width: 100%; box-sizing:border-box; margin-bottom: 1rem; text-align: center;">
-            <button class="btn-primary" onclick="masukSistem()" style="width: 100%; margin-bottom: 10px;">Akses Sistem</button>
-            <button onclick="batalRole()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem; text-decoration:underline;">Kembali</button>
+        <div class="triple-menu-container" id="menuKasta">
+            <div class="menu-card" onclick="siapkanLogin('koor')">
+                <div class="menu-icon">👑</div>
+                <div class="menu-title">KOOR ATP</div>
+                <div class="menu-desc">Akses Penuh + Menu Rahasia.</div>
+            </div>
+            <div class="menu-card" onclick="siapkanLogin('pasukan')">
+                <div class="menu-icon">⚔️</div>
+                <div class="menu-title">PASUKAN ATP</div>
+                <div class="menu-desc">Akses Input Data & Validasi Lapangan.</div>
+            </div>
+            <div class="menu-card" onclick="siapkanLogin('viewer')">
+                <div class="menu-icon">👁️</div>
+                <div class="menu-title">PEMANTAU SC/PO</div>
+                <div class="menu-desc">Akses Pantau Data (Read-Only).</div>
+            </div>
+        </div>
+
+        <div id="loginFormBox">
+            <h2 id="loginJudul" style="margin-top:0; color:var(--text-main); font-size:1.5rem;">Identitas</h2>
+            <p id="loginDesc" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.5rem;">Masukkan detail identitas Anda.</p>
+            
+            <input type="text" id="loginName" placeholder="Masukkan Nama Anda">
+            <input type="password" id="loginPass" placeholder="Masukkan Password Koor" style="display: none;">
+            
+            <button class="btn-primary" onclick="masukSistem()" style="width: 100%; margin-bottom: 15px;">Akses Sistem</button>
+            <button onclick="batalLogin()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; font-weight:bold; text-decoration:underline;">Kembali ke Menu</button>
         </div>
     </div>
 
     <div class="sidebar">
         <div class="logo">ATP DIESNAT 12</div>
-        
         <div class="user-profile">
             <label id="roleLabel">PETUGAS:</label>
             <div class="user-name" id="displayUserName">Memuat...</div>
-            <button class="logout-btn" onclick="keluarSistem()">Ganti</button>
+            <button class="logout-btn" onclick="keluarSistem()">Keluar</button>
         </div>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Ganti Tema</button>
 
-        <button class="theme-toggle" onclick="toggleTheme()">🌓 Tema</button>
-
-        <button class="nav-link active" onclick="bukaTab('dashboard', this)">Dashboard Log</button>
-        <button class="nav-link" onclick="bukaTab('ruang', this)">Matriks Ruang</button>
-        <button class="nav-link" onclick="bukaTab('alat', this)">Sirkulasi Alat</button>
-        <button class="nav-link" onclick="bukaTab('konstruksi', this)">Manajemen Konstruksi</button>
-        <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">Pengaturan</button>
+        <button class="nav-link active" onclick="bukaTab('dashboard', this)">🚀 Dashboard</button>
+        <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Matriks Ruang</button>
+        <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Sirkulasi Alat</button>
+        <button class="nav-link" onclick="bukaTab('konstruksi', this)">🏗️ Konstruksi</button>
+        <button class="nav-link" onclick="bukaTab('ipk', this)">📊 Sistem IPK</button>
+        <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">⚙️ Pengaturan</button>
     </div>
 
     <div class="main-content">
+        
         <div id="dashboard" class="tab-section active">
             <h1 class="header-title">Sentralisasi Presisi</h1>
             <p class="header-subtitle">Rekam Jejak Operasional Real-Time</p>
@@ -172,7 +240,7 @@
                 </div>
             </div>
             
-            <h3 style="font-weight: normal; margin-bottom: 0.5rem;">Log Aktivitas Lapangan</h3>
+            <h3 style="font-weight: bold; margin-bottom: 1rem; color:var(--text-main);">Log Aktivitas Lapangan</h3>
             <div class="table-responsive">
                 <table>
                     <thead><tr><th>Waktu</th><th>Oleh</th><th>Tindakan / Status Baru</th><th>Modul</th><th>Aksi</th></tr></thead>
@@ -229,10 +297,8 @@
                     <div style="display: flex; gap: 0.5rem;">
                         <select id="kategoriProyek" style="flex: 1;" onchange="renderKonstruksi()">
                             <option value="Semua Proyek">-- Semua Proyek --</option>
-                            <option value="Gate In">Gate In</option>
-                            <option value="Gate Out">Gate Out</option>
                         </select>
-                        <button onclick="kelolaKategori()" id="btnKelolaProyek" title="Kelola Kategori" style="padding: 0.8rem; background-color: var(--border-color); color: var(--text-main); border-radius:4px; cursor:pointer;">⚙️</button>
+                        <button onclick="kelolaKategori()" id="btnKelolaProyek" title="Kelola Kategori" class="btn-primary" style="padding: 0 1rem;">⚙️</button>
                     </div>
                 </div>
                 <button class="btn-primary" onclick="tambahMaterial()">Tambah Material</button>
@@ -245,17 +311,50 @@
             </div>
         </div>
 
+        <div id="ipk" class="tab-section">
+            <h1 class="header-title">Indeks Presisi Kinerja (IPK)</h1>
+            <p class="header-subtitle">Rumus: IPK = [(0.50 × C) + (0.35 × D) − (0.15 × E)] × (1 + 0.05 × N)</p>
+            
+            <div class="table-responsive" style="margin-top:1rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Pasukan</th>
+                            <th title="Penyelesaian Tugas">Tugas (C)</th>
+                            <th title="Kejelian Deteksi">Kejelian (D)</th>
+                            <th title="Pengurangan Nilai">Denda/Error (E)</th>
+                            <th title="Jumlah Divisi yang Dipegang">Divisi (N)</th>
+                            <th>Skor Akhir IPK</th>
+                            <th id="thAksiIPK">Aksi Koor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelIPK"></tbody>
+                </table>
+            </div>
+            
+            <div style="background:var(--surface); border-left:4px solid var(--accent-blue); padding:1.5rem; border-radius:8px; margin-top:2rem;">
+                <h4 style="margin:0 0 10px 0; color:var(--text-main);">📌 Keterangan Variabel:</h4>
+                <ul style="margin:0; padding-left:20px; font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
+                    <li><strong>C (Penyelesaian Tugas):</strong> Poin positif dari jumlah tugas penataan barang atau pembersihan ruang yang diselesaikan hingga tuntas.</li>
+                    <li><strong>D (Kejelian):</strong> Poin tambahan jika anggota teliti menemukan barang yang hampir hilang/rusak sebelum kejadian.</li>
+                    <li><strong>E (Pengurangan Nilai):</strong> Angka denda jika anggota salah mencatat barang, lupa mendata, atau menyebabkan alat hilang.</li>
+                    <li><strong>N (Jumlah Divisi):</strong> Bonus poin jika melayani permintaan dari banyak divisi sekaligus.</li>
+                </ul>
+            </div>
+        </div>
+
         <div id="pengaturan" class="tab-section">
-            <h1 class="header-title">Pengaturan</h1>
+            <h1 class="header-title">Menu Rahasia Koor</h1>
+            <p class="header-subtitle">Area berbahaya. Pastikan keputusan Anda tepat.</p>
             <div class="form-container">
-                <button class="reset-btn" onclick="resetDatabase()" style="display:block; width:100%;">⚠️ Reset Semua Data (Hapus Database di Cloud)</button>
+                <button class="btn-primary" onclick="resetDatabase()" style="width:100%; background:var(--accent-red); color:white; padding:1.5rem; font-size:1.1rem;">⚠️ RESET SEMUA DATABASE (CLOUD)</button>
             </div>
         </div>
 
     </div>
 
     <script>
-        // --- 1. KONFIGURASI FIREBASE CLOUD FIRESTORE ---
+        // --- 1. KONFIGURASI FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyCksEKeVfZ39valn9SGLFYySslqoFTczEI",
             authDomain: "atpdiesnatfmipa12.firebaseapp.com",
@@ -264,180 +363,202 @@
             messagingSenderId: "784817488307",
             appId: "1:784817488307:web:9dae99a93e3fef8fcccbc6"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const dbCloud = firebase.firestore();
 
-        let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
+        // Default Pasukan
+        const defaultIPK = [
+            { nama: "Shafa", c: 0, d: 0, e: 0, n: 1 }, { nama: "Yehezkiel", c: 0, d: 0, e: 0, n: 1 },
+            { nama: "Violeta", c: 0, d: 0, e: 0, n: 1 }, { nama: "Elang", c: 0, d: 0, e: 0, n: 1 },
+            { nama: "Lavinia", c: 0, d: 0, e: 0, n: 1 }, { nama: "Zaki", c: 0, d: 0, e: 0, n: 1 },
+            { nama: "Chelsea", c: 0, d: 0, e: 0, n: 2 }
+        ];
+
+        let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK };
+        window.userRole = ''; // 'koor', 'pasukan', 'viewer'
         window.isViewer = false;
 
         dbCloud.collection("atp").doc("data").onSnapshot((doc) => {
-            if (doc.exists) { db = doc.data(); } 
-            else { dbCloud.collection("atp").doc("data").set(db); }
-            if(document.getElementById('loginModal').style.display === 'none') {
+            if (doc.exists) { 
+                db = doc.data(); 
+                if(!db.ipk) db.ipk = defaultIPK; 
+            } else { 
+                dbCloud.collection("atp").doc("data").set(db); 
+            }
+            if(document.getElementById('landingPage').style.display === 'none') {
                 renderSemua(); updateDashboard(); renderDropdownKategori();
             }
         });
 
         function saveDB() { if(!window.isViewer) dbCloud.collection("atp").doc("data").set(db); }
 
-        // --- 2. SISTEM LOGIN PERMANEN & HAK AKSES ---
-        let tempRole = '';
-
-        function pilihRole(role) {
-            tempRole = role;
-            document.getElementById('loginStep1').style.display = 'none';
-            document.getElementById('loginStep2').style.display = 'block';
-            document.getElementById('titleStep2').innerText = role === 'admin' ? 'Identitas ATP' : 'Identitas Pemantau';
-        }
-
-        function batalRole() {
-            tempRole = '';
-            document.getElementById('loginStep1').style.display = 'block';
-            document.getElementById('loginStep2').style.display = 'none';
-        }
-
+        // --- 2. SISTEM LOGIN TRIPLE PRESISI ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
             const savedRole = localStorage.getItem('atpRole');
             
             if(savedUser && savedRole) {
-                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('landingPage').style.display = 'none';
                 document.getElementById('displayUserName').innerText = savedUser;
                 terapkanHakAkses(savedRole);
-            } else {
-                document.getElementById('loginModal').style.display = 'flex';
+                renderSemua(); updateDashboard(); renderDropdownKategori();
             }
         };
 
+        function siapkanLogin(role) {
+            window.tempRole = role;
+            document.getElementById('menuKasta').style.display = 'none';
+            document.getElementById('loginFormBox').style.display = 'block';
+            
+            let passInput = document.getElementById('loginPass');
+            if(role === 'koor') {
+                document.getElementById('loginJudul').innerText = "Akses Komandan";
+                document.getElementById('loginDesc').innerText = "Masukkan Nama dan Password Rahasia.";
+                passInput.style.display = 'block';
+                passInput.value = '';
+            } else if(role === 'pasukan') {
+                document.getElementById('loginJudul').innerText = "Akses Pasukan";
+                document.getElementById('loginDesc').innerText = "Masukkan Nama Anda.";
+                passInput.style.display = 'none';
+            } else {
+                document.getElementById('loginJudul').innerText = "Akses Pemantau";
+                document.getElementById('loginDesc').innerText = "Masukkan Nama / Jabatan (Misal: PO / Acara).";
+                passInput.style.display = 'none';
+            }
+        }
+
+        function batalLogin() {
+            window.tempRole = '';
+            document.getElementById('loginFormBox').style.display = 'none';
+            document.getElementById('menuKasta').style.display = 'flex';
+        }
+
         function masukSistem() {
             const nama = document.getElementById('loginName').value;
+            const pass = document.getElementById('loginPass').value;
             if(!nama.trim()) return alert('Nama wajib diisi!');
             
+            if(window.tempRole === 'koor') {
+                // Password Rahasia Koor ATP
+                if(pass !== 'komandan12') return alert('Password Koor Salah!');
+            }
+            
             localStorage.setItem('atpUser', nama);
-            localStorage.setItem('atpRole', tempRole);
+            localStorage.setItem('atpRole', window.tempRole);
             
             document.getElementById('displayUserName').innerText = nama;
-            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'none';
             
-            if(tempRole === 'admin') catatLog('Login ke sistem komando', 'Sistem', 'badge-aman');
-            terapkanHakAkses(tempRole);
+            if(window.tempRole === 'koor') catatLog('Koor masuk Command Center', 'Sistem', 'badge-aman');
+            else if(window.tempRole === 'pasukan') catatLog('Pasukan siap operasi', 'Sistem', 'badge-aman');
             
+            terapkanHakAkses(window.tempRole);
             renderSemua(); updateDashboard(); renderDropdownKategori();
         }
 
         function terapkanHakAkses(role) {
+            window.userRole = role;
             window.isViewer = (role === 'viewer');
-            document.getElementById('roleLabel').innerText = window.isViewer ? 'PEMANTAU:' : 'PETUGAS (ATP):';
             
+            let label = 'PETUGAS:';
+            if(role === 'viewer') label = 'PEMANTAU:';
+            if(role === 'koor') label = 'KOORDINATOR:';
+            document.getElementById('roleLabel').innerText = label;
+            
+            // Atur Visibilitas Form Input
             if(window.isViewer) {
                 document.querySelectorAll('.form-container').forEach(el => el.style.display = 'none');
-                document.getElementById('navPengaturan').style.display = 'none';
-                if (window.innerWidth <= 768) {
-                    let navs = document.querySelectorAll('.sidebar > button.nav-link');
-                    if(navs.length >= 5) {
-                        navs[0].style.width = '25%'; navs[0].style.left = '0';
-                        navs[1].style.width = '25%'; navs[1].style.left = '25%';
-                        navs[2].style.width = '25%'; navs[2].style.left = '50%';
-                        navs[3].style.width = '25%'; navs[3].style.left = '75%';
-                    }
-                }
+            } else {
+                document.querySelectorAll('.form-container').forEach(el => el.style.display = 'flex');
+            }
+
+            // Atur Visibilitas Tab Pengaturan (Menu Rahasia)
+            const navSet = document.getElementById('navPengaturan');
+            if(role === 'koor') {
+                if(navSet) navSet.style.display = 'block';
+                document.getElementById('thAksiIPK').style.display = 'table-cell';
+            } else {
+                if(navSet) navSet.style.display = 'none'; // Pasukan dan Viewer tidak bisa akses pengaturan
+                document.getElementById('thAksiIPK').style.display = 'none';
             }
         }
 
         function keluarSistem() { localStorage.removeItem('atpUser'); localStorage.removeItem('atpRole'); location.reload(); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
-        
         function resetDatabase() {
-            if(prompt("PERINGATAN! Ini akan menghapus SELURUH DATA. Ketik 'RESET' untuk melanjutkan:") === 'RESET') {
-                db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'] };
-                saveDB(); alert('Database berhasil di-reset!');
+            if(prompt("PERINGATAN! Ketik 'RESET' untuk menghapus data:") === 'RESET') {
+                db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK };
+                saveDB(); alert('Database berhasil di-reset!'); location.reload();
             }
         }
 
         function bukaTab(idTab, elemen) {
             document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
-            document.getElementById(idTab).classList.add('active'); elemen.classList.add('active');
+            document.getElementById(idTab).classList.add('active'); 
+            if(elemen) elemen.classList.add('active');
         }
 
-        // --- 3. LOGIKA WARNA STATUS ---
+        // --- 3. WARNA STATUS ---
         function dptClass(val) {
             val = val.toLowerCase();
             if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis';
             if(val.includes('sedang')) return 'badge-pending';
             if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman';
+            if(val.includes('transit') || val.includes('telah dipinjam')) return 'badge-biru';
             return 'badge-abu';
         }
+        function getModulColor(m) { return m==='Ruang'?'#87cefa':m==='Alat'?'#ff69b4':m==='Konstruksi'?'#dda0dd':'var(--text-muted)'; }
 
-        function getModulColor(modul) {
-            if(modul === 'Ruang') return '#87cefa';
-            if(modul === 'Alat') return '#ff69b4'; 
-            if(modul === 'Konstruksi') return '#dda0dd';
-            return 'var(--text-muted)';
-        }
-
-        // --- 4. RENDER DATA HTML & TOMBOL AKSI ---
-        function renderSemua() { renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); }
+        // --- 4. RENDER DATA ---
+        function renderSemua() { renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); }
 
         function renderRuang() {
             const tbody = document.getElementById('tabelRuang'); tbody.innerHTML = '';
-            if(!db.ruang) return; 
-            let dis = window.isViewer ? 'disabled' : '';
-
+            if(!db.ruang) return; let dis = window.isViewer ? 'disabled' : '';
             db.ruang.forEach((r, idx) => {
-                let btnTap = r.status === 'Sudah Terajukan (ACC)' && !r.tapped && !r.selesai && !window.isViewer ? `<button onclick="aksiRuang(${idx}, 'tap')" style="background:var(--text-main); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer; margin-right:5px;">Tap-In</button>` : '';
-                let btnVal = r.tapped && !r.selesai && !window.isViewer ? `<button onclick="aksiRuang(${idx}, 'val')" style="background:var(--accent-green); color:var(--bg-dark); padding:5px 10px; border-radius:4px; font-weight:bold; font-size:0.7rem; border:none; cursor:pointer; margin-right:5px;">Validasi Bersih</button>` : '';
-                
-                let btnEdit = !window.isViewer ? `<button class="btn-aksi edit" onclick="editRuang(${idx})" title="Edit Data">✏️</button>` : '';
-                let btnHapus = !window.isViewer ? `<button class="btn-aksi hapus" onclick="hapusRuang(${idx})" title="Hapus Data">🗑️</button>` : '';
-                
-                let aksiTxt = r.selesai ? `<span style="font-size:0.8rem; color:var(--accent-green); font-weight:bold; margin-right:5px;">Selesai Bersih</span>` : (window.isViewer ? '-' : btnTap + btnVal);
-
+                let btnEdit = !window.isViewer ? `<button class="btn-aksi" onclick="editRuang(${idx})">✏️</button>` : '';
+                let btnHapus = !window.isViewer ? `<button class="btn-aksi" onclick="hapusRuang(${idx})">🗑️</button>` : '';
                 tbody.innerHTML += `<tr><td>${r.nama}</td><td>${r.divisi}</td>
                 <td><select class="status-badge ${dptClass(r.status)}" onchange="ubahStatusRuang(${idx}, this.value)" ${dis}>
                     <option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option>
                     <option value="Sedang Diajukan" ${r.status=='Sedang Diajukan'?'selected':''}>Sedang Diajukan</option>
                     <option value="Sudah Terajukan (ACC)" ${r.status=='Sudah Terajukan (ACC)'?'selected':''}>Sudah Terajukan (ACC)</option>
                     <option value="Tidak Tersedia" ${r.status=='Tidak Tersedia'?'selected':''}>Tidak Tersedia</option>
-                </select></td>
-                <td>${aksiTxt}${btnEdit}${btnHapus}</td></tr>`;
+                </select></td><td>${btnEdit}${btnHapus}</td></tr>`;
             });
         }
 
         function renderAlat() {
             const tbody = document.getElementById('tabelAlat'); tbody.innerHTML = '';
-            if(!db.alat) return;
-            let dis = window.isViewer ? 'disabled' : '';
-
+            if(!db.alat) return; let dis = window.isViewer ? 'disabled' : '';
             db.alat.forEach((a, idx) => {
-                let btnEdit = !window.isViewer ? `<button class="btn-aksi edit" onclick="editAlat(${idx})" title="Edit Data">✏️</button>` : '';
-                let btnHapus = !window.isViewer ? `<button class="btn-aksi hapus" onclick="hapusAlat(${idx})" title="Hapus Data">🗑️</button>` : '';
-                
-                tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
+                let btnEdit = !window.isViewer ? `<button class="btn-aksi" onclick="editAlat(${idx})">✏️</button>` : '';
+                let btnHapus = !window.isViewer ? `<button class="btn-aksi" onclick="hapusAlat(${idx})">🗑️</button>` : '';
+                tbody.innerHTML += `<tr><td><span style="font-family:monospace; color:var(--text-muted); font-size:0.8rem;">${a.id}</span></td><td style="font-weight:bold;">${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
                 <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)" ${dis}>
                     <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
                     <option value="Tersedia" ${a.status=='Tersedia'?'selected':''}>Tersedia</option>
                     <option value="Sedang Dipinjam" ${a.status=='Sedang Dipinjam'?'selected':''}>Sedang Dipinjam</option>
+                    <option value="Transit" ${a.status=='Transit'?'selected':''}>Transit</option>
+                    <option value="Telah Dipinjam" ${a.status=='Telah Dipinjam'?'selected':''}>Telah Dipinjam</option>
                     <option value="Dikembalikan" ${a.status=='Dikembalikan'?'selected':''}>Dikembalikan</option>
                     <option value="Hilang" ${a.status=='Hilang'?'selected':''}>Hilang</option>
-                </select> <br><span style="font-size:0.7rem; color:var(--accent-red);">${a.status === 'Hilang' ? a.hilang + ' Hilang' : ''}</span></td>
+                </select> <br><span style="font-size:0.75rem; color:var(--accent-red); font-weight:bold;">${a.status === 'Hilang' ? '⚠️ '+a.hilang + ' Hilang' : ''}</span></td>
                 <td>${btnEdit}${btnHapus}</td></tr>`;
             });
         }
 
         function renderKonstruksi() {
             const tbody = document.getElementById('tabelKonstruksi'); tbody.innerHTML = '';
-            const filter = document.getElementById('kategoriProyek').value;
-            if(!db.konstruksi) return;
-            let dis = window.isViewer ? 'disabled' : '';
-
+            const filter = document.getElementById('kategoriProyek') ? document.getElementById('kategoriProyek').value : 'Semua Proyek';
+            if(!db.konstruksi) return; let dis = window.isViewer ? 'disabled' : '';
             db.konstruksi.forEach((k, idx) => {
                 if(filter === 'Semua Proyek' || k.proyek === filter) {
-                    let btnEdit = !window.isViewer ? `<button class="btn-aksi edit" onclick="editKonstruksi(${idx})" title="Edit Data">✏️</button>` : '';
-                    let btnHapus = !window.isViewer ? `<button class="btn-aksi hapus" onclick="hapusKonstruksi(${idx})" title="Hapus Data">🗑️</button>` : '';
-                    
-                    tbody.innerHTML += `<tr><td>${k.nama}</td><td>${k.jumlah}</td><td>${k.proyek}</td>
+                    let btnEdit = !window.isViewer ? `<button class="btn-aksi" onclick="editKonstruksi(${idx})">✏️</button>` : '';
+                    let btnHapus = !window.isViewer ? `<button class="btn-aksi" onclick="hapusKonstruksi(${idx})">🗑️</button>` : '';
+                    tbody.innerHTML += `<tr><td style="font-weight:bold;">${k.nama}</td><td>${k.jumlah}</td><td>${k.proyek}</td>
                     <td><select class="status-badge ${dptClass(k.ketersediaan)}" onchange="ubahKonstruksi(${idx}, 'ket', this.value)" ${dis}>
                         <option value="Belum Tersedia" ${k.ketersediaan=='Belum Tersedia'?'selected':''}>Belum Tersedia</option>
                         <option value="Tersedia" ${k.ketersediaan=='Tersedia'?'selected':''}>Tersedia</option>
@@ -447,8 +568,7 @@
                         <option value="Sedang Dibeli" ${k.pembelian=='Sedang Dibeli'?'selected':''}>Sedang Dibeli</option>
                         <option value="Sudah Dibeli" ${k.pembelian=='Sudah Dibeli'?'selected':''}>Sudah Dibeli</option>
                         <option value="Tidak membeli" ${k.pembelian=='Tidak membeli'?'selected':''}>Tidak membeli</option>
-                    </select></td>
-                    <td>${btnEdit}${btnHapus}</td></tr>`;
+                    </select></td><td>${btnEdit}${btnHapus}</td></tr>`;
                 }
             });
         }
@@ -457,167 +577,118 @@
             const tbody = document.getElementById('tabelLog'); tbody.innerHTML = '';
             if(!db.log) return;
             db.log.slice(0, 30).forEach((l, idx) => {
-                let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.2rem 0.5rem; font-size:0.7rem;">${l.tindakan}</span>` : l.tindakan;
-                let btnHapus = !window.isViewer ? `<button class="btn-aksi hapus" onclick="hapusLog(${idx})" title="Hapus Riwayat Log">🗑️</button>` : '-';
-                tbody.innerHTML += `<tr><td>${l.tanggal}<br><span style="color:var(--text-muted); font-size:0.75rem;">${l.waktu}</span></td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td><td>${btnHapus}</td></tr>`;
+                let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.3rem 0.6rem; font-size:0.75rem;">${l.tindakan}</span>` : l.tindakan;
+                let btnHapus = !window.isViewer ? `<button class="btn-aksi hapus" onclick="hapusLog(${idx})">🗑️</button>` : '-';
+                tbody.innerHTML += `<tr><td>${l.tanggal}<br><span style="color:var(--text-muted); font-size:0.8rem;">${l.waktu}</span></td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td><td>${btnHapus}</td></tr>`;
+            });
+        }
+        
+        function renderDropdownKategori() {
+            const sel = document.getElementById('kategoriProyek'); if(!sel) return;
+            sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>';
+            if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; });
+        }
+
+        // --- SISTEM IPK KHUSUS ---
+        function renderIPK() {
+            const tbody = document.getElementById('tabelIPK'); tbody.innerHTML = '';
+            if(!db.ipk) return;
+            
+            let sortedIPK = [...db.ipk].sort((a,b) => hitungSkorIPK(b.c, b.d, b.e, b.n) - hitungSkorIPK(a.c, a.d, a.e, a.n));
+
+            sortedIPK.forEach((p, idx) => {
+                let skor = hitungSkorIPK(p.c, p.d, p.e, p.n);
+                let originalIdx = db.ipk.findIndex(item => item.nama === p.nama);
+                
+                let btnUpdate = (window.userRole === 'koor') ? `<button class="btn-primary" style="padding:0.5rem 1rem; font-size:0.75rem;" onclick="updateNilaiIPK(${originalIdx})">Beri Nilai</button>` : '';
+                let tdAksi = (window.userRole === 'koor') ? `<td>${btnUpdate}</td>` : '';
+                
+                tbody.innerHTML += `<tr>
+                    <td style="font-weight:bold; color:var(--text-main); font-size:1.1rem;">
+                        ${idx === 0 ? '🏆 ' : ''}${idx === 1 ? '🥈 ' : ''}${idx === 2 ? '🥉 ' : ''}
+                        ${p.nama}
+                    </td>
+                    <td style="text-align:center;">${p.c}</td>
+                    <td style="text-align:center; color:var(--accent-blue);">${p.d}</td>
+                    <td style="text-align:center; color:var(--accent-red); font-weight:bold;">${p.e}</td>
+                    <td style="text-align:center;">${p.n}</td>
+                    <td style="font-weight:bold; font-size:1.4rem; color:var(--accent-green); text-align:center;">${skor.toFixed(2)}</td>
+                    ${tdAksi}
+                </tr>`;
             });
         }
 
-        function renderDropdownKategori() {
-            const sel = document.getElementById('kategoriProyek');
-            sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>';
-            if(!db.kategori) return;
-            db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; });
+        function hitungSkorIPK(c, d, e, n) { let skor = ((0.50 * c) + (0.35 * d) - (0.15 * e)) * (1 + (0.05 * n)); return skor > 0 ? skor : 0; }
+
+        function updateNilaiIPK(idx) {
+            let p = db.ipk[idx];
+            let nc = prompt(`[C] Jumlah Penuntasan Tugas untuk ${p.nama}:`, p.c); if(nc === null) return;
+            let nd = prompt(`[D] Jumlah Kejelian Deteksi untuk ${p.nama}:`, p.d); if(nd === null) return;
+            let ne = prompt(`[E] Jumlah Error / Denda untuk ${p.nama}:`, p.e); if(ne === null) return;
+            
+            db.ipk[idx].c = Number(nc); db.ipk[idx].d = Number(nd); db.ipk[idx].e = Number(ne);
+            catatLog(`Update IPK ${p.nama}`, 'Sistem', 'badge-aman');
+            saveDB(); renderIPK();
         }
 
-        // --- 5. DASHBOARD & KALKULASI PENGECUALIAN RUANG ---
+        // --- 5. DASHBOARD ---
         function updateDashboard() {
             if(!db.ruang || !db.alat || !db.konstruksi) return;
+            const penentuWarna = (persen, total) => { if(total === 0) return 'var(--accent-green)'; if(persen >= 80) return 'var(--accent-green)'; if(persen >= 60) return 'var(--accent-yellow)'; return 'var(--accent-red)'; };
 
-            const penentuWarna = (persen, total) => {
-                if(total === 0) return 'var(--accent-green)'; 
-                if(persen >= 80) return 'var(--accent-green)';
-                if(persen >= 60) return 'var(--accent-yellow)';
-                return 'var(--accent-red)';
-            };
-
-            // Ruang (Pengecualian "Tidak Tersedia")
             let totalRuangScore = 0; let maxRuangScore = 0; let belumRuang = 0; let tidakTersedia = 0;
             db.ruang.forEach(r => {
-                if (r.status === 'Tidak Tersedia') {
-                    tidakTersedia++; // Hitung terpisah, jangan tambahkan ke pembagi MaxScore
-                } else {
-                    maxRuangScore += 100;
-                    if (r.status.includes('Belum')) { totalRuangScore += 0; belumRuang++; }
-                    else if (r.status.includes('Sedang')) { totalRuangScore += 50; belumRuang++; }
-                    else if (r.status.includes('ACC') || r.selesai) { totalRuangScore += 100; }
-                }
+                if (r.status === 'Tidak Tersedia') { tidakTersedia++; } 
+                else { maxRuangScore += 100; if (r.status.includes('Belum')) { totalRuangScore += 0; belumRuang++; } else if (r.status.includes('Sedang')) { totalRuangScore += 50; belumRuang++; } else if (r.status.includes('ACC') || r.selesai) { totalRuangScore += 100; } }
             });
             let pRuang = maxRuangScore === 0 ? 100 : Math.floor((totalRuangScore / maxRuangScore) * 100);
-            let subRuang = maxRuangScore === 0 && tidakTersedia === 0 ? 'Belum ada data masuk' : `${belumRuang} Ruang belum ACC.`;
+            let subRuang = maxRuangScore === 0 && tidakTersedia === 0 ? 'Belum ada data' : `${belumRuang} Ruang belum ACC.`;
             if(tidakTersedia > 0) subRuang += `<br><span style="color:var(--accent-red); font-weight:bold;">⚠️ ${tidakTersedia} Ruang Tidak Tersedia!</span>`;
-            
             document.getElementById('dashRuang').innerHTML = `<span style="color:${penentuWarna(pRuang, maxRuangScore)}">${pRuang}% Aman</span>`;
             document.getElementById('dashRuangSub').innerHTML = subRuang;
 
-            // Alat
             let totalAlatScore = 0; let maxAlatScore = 0; let badAlat = 0;
             db.alat.forEach(a => { 
-                let j = Number(a.jumlah) || 0; maxAlatScore += (j * 100);
-                if (a.status === 'Belum Menyediakan' || a.status === 'Hilang') {
-                    badAlat += (a.status === 'Hilang' ? Number(a.hilang || 0) : j);
-                } else { totalAlatScore += (j * 100); }
+                let j = Number(a.jumlah) || 0; 
+                if (a.status === 'Transit' || a.status === 'Telah Dipinjam') { /* Abaikan */ } 
+                else if (a.status === 'Belum Menyediakan' || a.status === 'Hilang') { maxAlatScore += (j * 100); badAlat += (a.status === 'Hilang' ? Number(a.hilang || 0) : j); } 
+                else { maxAlatScore += (j * 100); totalAlatScore += (j * 100); }
             });
             let pAlat = maxAlatScore === 0 ? 100 : Math.floor((totalAlatScore / maxAlatScore) * 100);
             document.getElementById('dashAlat').innerHTML = `<span style="color:${penentuWarna(pAlat, maxAlatScore)}">${pAlat}% Aman</span>`;
-            document.getElementById('dashAlatSub').innerText = maxAlatScore === 0 ? 'Belum ada data masuk' : `${badAlat} Item belum tersedia/hilang`;
+            document.getElementById('dashAlatSub').innerText = maxAlatScore === 0 ? 'Belum ada data' : `${badAlat} Item belum tersedia / hilang`;
 
-            // Konstruksi
             let totalKScore = 0; let maxKScore = 0; let cK = 0;
             db.konstruksi.forEach(k => {
-                let j = Number(k.jumlah) || 0; maxKScore += (j * 100);
-                let itemScore = 0;
+                let j = Number(k.jumlah) || 0; maxKScore += (j * 100); let itemScore = 0;
                 if (k.ketersediaan === 'Tersedia') { itemScore = 100; cK++; } 
-                else {
-                    if (k.pembelian === 'Sedang Dibeli') itemScore += 15;
-                    else if (k.pembelian === 'Sudah Dibeli' || k.pembelian === 'Tidak membeli') itemScore += 30;
-                }
+                else { if (k.pembelian === 'Sedang Dibeli') itemScore += 15; else if (k.pembelian === 'Sudah Dibeli' || k.pembelian === 'Tidak membeli') itemScore += 30; }
                 totalKScore += (j * itemScore);
             });
             let pKonstruksi = maxKScore === 0 ? 100 : Math.floor((totalKScore / maxKScore) * 100);
             document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${penentuWarna(pKonstruksi, maxKScore)}">${pKonstruksi}% Siap</span>`;
-            document.getElementById('dashKonstruksiSub').innerText = maxKScore === 0 ? 'Belum ada data masuk' : `${cK} dari ${db.konstruksi.length} Material fisik Tersedia`;
+            document.getElementById('dashKonstruksiSub').innerText = maxKScore === 0 ? 'Belum ada data' : `${cK} dari ${db.konstruksi.length} Material Tersedia`;
         }
 
-        // --- 6. AKSI INPUT, EDIT, & HAPUS DATA ---
-        function catatLog(tindakan, modul, statusClass) {
-            if(window.isViewer) return;
-            const dateObj = new Date();
-            db.log.unshift({ tanggal: dateObj.toLocaleDateString('id-ID'), waktu: dateObj.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan, modul, statusClass });
-            saveDB();
-        }
-        function hapusLog(idx) {
-            if(confirm("Hapus riwayat log ini?")) { db.log.splice(idx, 1); saveDB(); }
-        }
+        // --- 6. AKSI INPUT ---
+        function catatLog(t, m, c) { if(window.isViewer) return; const d = new Date(); db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); saveDB(); }
+        function hapusLog(idx) { if(confirm("Hapus?")) { db.log.splice(idx, 1); saveDB(); } }
 
-        /* RUANG */
-        function tambahRuang() {
-            let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value;
-            if(!n) return alert("Isi nama ruang!");
-            db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false });
-            document.getElementById('inputRuang').value = ''; catatLog(`Didaftarkan: ${n}`, 'Ruang', dptClass('Belum Diajukan')); saveDB(); 
-        }
-        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; catatLog(`Ubah Ruang ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); saveDB(); }
-        function aksiRuang(idx, tipe) {
-            if(tipe === 'tap') { db.ruang[idx].tapped = true; catatLog(`Mulai Tap-In: ${db.ruang[idx].nama}`, 'Ruang', 'badge-pending'); }
-            if(tipe === 'val') { db.ruang[idx].selesai = true; catatLog(`Selesai Bersih: ${db.ruang[idx].nama}`, 'Ruang', 'badge-aman'); }
-            saveDB(); 
-        }
-        function editRuang(idx) {
-            let n = prompt("Ubah Nama Ruang:", db.ruang[idx].nama); if(!n) return;
-            let d = prompt("Ubah Divisi Pengguna:", db.ruang[idx].divisi); if(!d) return;
-            catatLog(`Edit detail ruang: ${db.ruang[idx].nama} ➔ ${n}`, 'Ruang', 'badge-abu');
-            db.ruang[idx].nama = n; db.ruang[idx].divisi = d; saveDB();
-        }
-        function hapusRuang(idx) { if(confirm(`Hapus ruang ${db.ruang[idx].nama}?`)) { catatLog(`Hapus Ruang: ${db.ruang[idx].nama}`, 'Ruang', 'badge-kritis'); db.ruang.splice(idx, 1); saveDB(); } }
+        function tambahRuang() { let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value; if(!n) return alert("Isi nama!"); db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false }); document.getElementById('inputRuang').value = ''; catatLog(`Input: ${n}`, 'Ruang', dptClass('Belum Diajukan')); saveDB(); }
+        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; catatLog(`Update ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); saveDB(); }
+        function editRuang(idx) { let n = prompt("Nama Ruang:", db.ruang[idx].nama); if(!n) return; let d = prompt("Divisi:", db.ruang[idx].divisi); if(!d) return; catatLog(`Edit ruang: ${n}`, 'Ruang', 'badge-abu'); db.ruang[idx].nama = n; db.ruang[idx].divisi = d; saveDB(); }
+        function hapusRuang(idx) { if(confirm(`Hapus ${db.ruang[idx].nama}?`)) { db.ruang.splice(idx, 1); saveDB(); } }
 
-        /* ALAT */
-        function tambahAlat() {
-            let n = document.getElementById('inputAlat').value; let asal = document.getElementById('asalAlat').value || 'BEM/Umum'; let div = document.getElementById('divisiAlat').value; let jml = document.getElementById('jumlahAlat').value;
-            if(!n) return alert("Isi nama alat!");
-            db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Belum Menyediakan', hilang: 0 });
-            document.getElementById('inputAlat').value = ''; document.getElementById('jumlahAlat').value = '1'; document.getElementById('asalAlat').value = '';
-            catatLog(`Input ${jml} ${n}`, 'Alat', dptClass('Belum Menyediakan')); saveDB(); 
-        }
-        function ubahStatusAlat(idx, val) {
-            let a = db.alat[idx];
-            if(val === 'Hilang') {
-                let h = prompt(`Berapa jumlah yang hilang dari total ${a.jumlah} ${a.nama}?`);
-                if(h === null || isNaN(h) || h <= 0) return renderAlat(); 
-                a.hilang = h; catatLog(`URGENT: ${h} ${a.nama} Hilang!`, 'Alat', 'badge-kritis');
-            } else { a.hilang = 0; catatLog(`Status ${a.nama} ➔ ${val}`, 'Alat', dptClass(val)); }
-            a.status = val; saveDB(); 
-        }
-        function editAlat(idx) {
-            let n = prompt("Ubah Nama Alat:", db.alat[idx].nama); if(!n) return;
-            let j = prompt("Ubah Jumlah Alat:", db.alat[idx].jumlah); if(!j) return;
-            catatLog(`Edit detail alat: ${db.alat[idx].nama} ➔ ${n}`, 'Alat', 'badge-abu');
-            db.alat[idx].nama = n; db.alat[idx].jumlah = j; saveDB();
-        }
-        function hapusAlat(idx) { if(confirm(`Hapus alat ${db.alat[idx].nama}?`)) { catatLog(`Hapus Alat: ${db.alat[idx].nama}`, 'Alat', 'badge-kritis'); db.alat.splice(idx, 1); saveDB(); } }
+        function tambahAlat() { let n = document.getElementById('inputAlat').value; let asal = document.getElementById('asalAlat').value || 'BEM/Umum'; let div = document.getElementById('divisiAlat').value; let jml = document.getElementById('jumlahAlat').value; if(!n) return alert("Isi nama alat!"); db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Belum Menyediakan', hilang: 0 }); document.getElementById('inputAlat').value = ''; catatLog(`Input ${n}`, 'Alat', dptClass('Belum Menyediakan')); saveDB(); }
+        function ubahStatusAlat(idx, val) { let a = db.alat[idx]; if(val === 'Hilang') { let h = prompt(`Berapa hilang dari ${a.jumlah}?`); if(!h) return renderAlat(); a.hilang = h; catatLog(`URGENT: ${h} ${a.nama} Hilang!`, 'Alat', 'badge-kritis'); } else { a.hilang = 0; catatLog(`${a.nama} ➔ ${val}`, 'Alat', dptClass(val)); } a.status = val; saveDB(); }
+        function editAlat(idx) { let n = prompt("Nama Alat:", db.alat[idx].nama); if(!n) return; let j = prompt("Jumlah:", db.alat[idx].jumlah); if(!j) return; db.alat[idx].nama = n; db.alat[idx].jumlah = j; saveDB(); }
+        function hapusAlat(idx) { if(confirm(`Hapus ${db.alat[idx].nama}?`)) { db.alat.splice(idx, 1); saveDB(); } }
 
-        /* KONSTRUKSI */
-        function tambahMaterial() {
-            let n = document.getElementById('inputMaterial').value; let jml = document.getElementById('jumlahMaterial').value; let p = document.getElementById('kategoriProyek').value;
-            if(!n) return alert("Isi nama material!"); if(p === 'Semua Proyek') return alert("Pilih proyek spesifik di dropdown!");
-            db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
-            document.getElementById('inputMaterial').value = ''; document.getElementById('jumlahMaterial').value = '1';
-            catatLog(`Input ${jml} ${n} (${p})`, 'Konstruksi', dptClass('Belum Tersedia')); saveDB(); 
-        }
-        function ubahKonstruksi(idx, col, val) {
-            if(col === 'ket') db.konstruksi[idx].ketersediaan = val;
-            if(col === 'beli') db.konstruksi[idx].pembelian = val;
-            catatLog(`Update ${db.konstruksi[idx].nama} ➔ ${val}`, 'Konstruksi', dptClass(val)); saveDB(); 
-        }
-        function editKonstruksi(idx) {
-            let n = prompt("Ubah Nama Material:", db.konstruksi[idx].nama); if(!n) return;
-            let j = prompt("Ubah Jumlah Material:", db.konstruksi[idx].jumlah); if(!j) return;
-            catatLog(`Edit material: ${db.konstruksi[idx].nama} ➔ ${n}`, 'Konstruksi', 'badge-abu');
-            db.konstruksi[idx].nama = n; db.konstruksi[idx].jumlah = j; saveDB();
-        }
-        function hapusKonstruksi(idx) { if(confirm(`Hapus material ${db.konstruksi[idx].nama}?`)) { catatLog(`Hapus Material: ${db.konstruksi[idx].nama}`, 'Konstruksi', 'badge-kritis'); db.konstruksi.splice(idx, 1); saveDB(); } }
-
-        function kelolaKategori() {
-            let a = prompt("Ketik 'tambah' atau 'hapus' untuk mengelola proyek:");
-            if(a && a.toLowerCase() === 'tambah') {
-                let n = prompt("Nama proyek baru:");
-                if(n && !db.kategori.includes(n)) { db.kategori.push(n); saveDB(); catatLog(`Kategori baru: ${n}`, 'Konstruksi', 'badge-aman'); }
-            } else if(a && a.toLowerCase() === 'hapus') {
-                let v = document.getElementById('kategoriProyek').value;
-                if(v === 'Semua Proyek') return alert("Tidak bisa menghapus ini.");
-                if(confirm(`Hapus kategori ${v}?`)) { db.kategori = db.kategori.filter(k => k !== v); saveDB(); catatLog(`Hapus kategori: ${v}`, 'Konstruksi', 'badge-kritis'); }
-            }
-        }
+        function tambahMaterial() { let n = document.getElementById('inputMaterial').value; let jml = document.getElementById('jumlahMaterial').value; let p = document.getElementById('kategoriProyek').value; if(!n) return alert("Isi!"); if(p==='Semua Proyek') return alert("Pilih proyek!"); db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' }); document.getElementById('inputMaterial').value = ''; saveDB(); }
+        function ubahKonstruksi(idx, col, val) { if(col === 'ket') db.konstruksi[idx].ketersediaan = val; if(col === 'beli') db.konstruksi[idx].pembelian = val; saveDB(); }
+        function editKonstruksi(idx) { let n = prompt("Nama:", db.konstruksi[idx].nama); if(!n) return; let j = prompt("Jumlah:", db.konstruksi[idx].jumlah); if(!j) return; db.konstruksi[idx].nama = n; db.konstruksi[idx].jumlah = j; saveDB(); }
+        function hapusKonstruksi(idx) { if(confirm(`Hapus?`)) { db.konstruksi.splice(idx, 1); saveDB(); } }
+        function kelolaKategori() { let a = prompt("Ketik 'tambah' atau 'hapus':"); if(a==='tambah') { let n = prompt("Nama baru:"); if(n) { db.kategori.push(n); saveDB(); } } else if(a==='hapus') { let v = document.getElementById('kategoriProyek').value; if(v!=='Semua Proyek' && confirm("Hapus?")) { db.kategori = db.kategori.filter(k=>k!==v); saveDB(); } } }
     </script>
 </body>
 </html>
