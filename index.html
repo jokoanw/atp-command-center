@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>ATP COMMAND CENTER - DIESNAT FMIPA 12</title>
     
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <!-- Library Cetak PDF Otomatis -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -75,7 +73,8 @@
         .form-group { display: flex; flex-direction: column; flex: 1; min-width: 130px; }
         label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;}
         select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 8px; font-family: inherit;}
-        button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
+        button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: 0.2s;}
+        button.btn-primary:active { transform: scale(0.95); }
 
         /* Tables */
         .table-responsive { width: 100%; overflow-x: auto; padding-bottom: 20px;}
@@ -90,23 +89,16 @@
         .badge-abu { background-color: rgba(136, 136, 136, 0.1); color: var(--text-muted); border: 1px solid var(--text-muted); }
         .badge-biru { background-color: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
 
-        .btn-aksi { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-left: 5px; }
+        .btn-aksi { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-left: 5px; transition: 0.2s;}
+        .btn-aksi:active { transform: scale(0.9); }
 
-        /* Klik Edit Variabel IPK */
         .editable-cell { cursor: pointer; transition: 0.2s; position: relative; }
         .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 5px; opacity: 0.5;}
 
-        /* Desain Sertifikat HTML (Akan di-render ke PDF) */
+        /* Desain Sertifikat HTML */
         #sertifikatWrapper { position: absolute; top: -9999px; left: -9999px; width: 800px; height: 560px; background: #ffffff; color: #1a1a1a; padding: 40px; box-sizing: border-box; font-family: 'Times New Roman', serif; border: 10px solid var(--gold); }
-        
-        /* Corak Blueprint Insinyur Logistik */
-        .sertif-bg { 
-            position: absolute; inset: 0; opacity: 0.05; z-index: 1;
-            background-image: linear-gradient(#005088 1px, transparent 1px), linear-gradient(90deg, #005088 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        
+        .sertif-bg { position: absolute; inset: 0; opacity: 0.05; z-index: 1; background-image: linear-gradient(#005088 1px, transparent 1px), linear-gradient(90deg, #005088 1px, transparent 1px); background-size: 20px 20px; }
         .sertif-content { position: relative; z-index: 2; text-align: center; border: 2px solid var(--gold); height: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;}
         .sertif-title { font-size: 2.5rem; font-weight: bold; color: var(--gold); margin-bottom: 5px; letter-spacing: 3px; text-transform: uppercase; }
         .sertif-subtitle { font-size: 1.2rem; letter-spacing: 5px; margin-bottom: 30px; color: #333;}
@@ -132,14 +124,9 @@
             .user-name { font-size: 0.9rem; margin: 0 15px 0 0; }
             .theme-toggle { display: none; } 
             
-            .nav-link { position: fixed; bottom: 0; z-index: 999; width: 20%; height: 65px; margin: 0; padding: 5px; font-size: 0.65rem; text-align: center; border: none; border-top: 1px solid var(--border-color); background-color: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+            .nav-link { position: fixed; bottom: 0; z-index: 999; height: 65px; margin: 0; padding: 5px; font-size: 0.65rem; text-align: center; border: none; border-top: 1px solid var(--border-color); background-color: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; }
             .nav-link.active { border-top: 4px solid var(--accent-green); background-color: var(--bg-dark); }
-            .sidebar > button.nav-link:nth-of-type(1) { left: 0; }
-            .sidebar > button.nav-link:nth-of-type(2) { left: 20%; }
-            .sidebar > button.nav-link:nth-of-type(3) { left: 40%; }
-            .sidebar > button.nav-link:nth-of-type(4) { left: 60%; }
-            .sidebar > button.nav-link:nth-of-type(5) { left: 80%; }
-            .sidebar > button.nav-link:nth-of-type(6) { display: none; } 
+            .sidebar > button.nav-link:nth-of-type(6) { display: none; } /* Setting icon hidden on mobile */
 
             .main-content { padding: 1.2rem; height: calc(100vh - 60px); padding-bottom: 160px; }
             .grid-container { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; }
@@ -154,7 +141,6 @@
 </head>
 <body>
 
-    <!-- HALAMAN LANDING -->
     <div id="landingPage">
         <h1 class="landing-title">ATP COMMAND CENTER</h1>
         <div class="landing-subtitle">DIESNATALIS FMIPA UNSOED KE-12</div>
@@ -180,7 +166,6 @@
         </div>
     </div>
 
-    <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="logo">ATP DIESNAT 12</div>
         <div class="user-profile">
@@ -194,13 +179,12 @@
         <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Ruang</button>
         <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Alat</button>
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">🏗️ Konstruksi</button>
-        <button class="nav-link" onclick="bukaTab('ipk', this)">📊 Sistem IPK</button>
+        <button class="nav-link" id="navIPK" onclick="bukaTab('ipk', this)">📊 Sistem IPK</button>
         <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">⚙️ Setting</button>
     </div>
 
-    <!-- KONTEN UTAMA -->
     <div class="main-content">
-        <!-- Dashboard, Ruang, Alat, Konstruksi disembunyikan logikanya sama seperti versi sebelumnya -->
+        
         <div id="dashboard" class="tab-section active">
             <h1 class="header-title">Sentralisasi Presisi</h1>
             <p class="header-subtitle">Rekam Jejak Operasional Real-Time</p>
@@ -275,7 +259,6 @@
             </div>
         </div>
 
-        <!-- SISTEM IPK -->
         <div id="ipk" class="tab-section">
             <h1 class="header-title">Indeks Presisi Kinerja (IPK)</h1>
             <p class="header-subtitle">Rumus: IPK = [(0.50 × C) + (0.35 × D) − (0.15 × E)] × (1 + 0.05 × N)</p>
@@ -306,16 +289,23 @@
             </div>
         </div>
 
-        <!-- PENGATURAN -->
         <div id="pengaturan" class="tab-section">
             <h1 class="header-title">Menu Rahasia Koor</h1>
-            <div class="form-container">
-                <button class="btn-primary" onclick="resetDatabase()" style="width:100%; background:var(--accent-red); color:white; padding:1.5rem; font-size:1.1rem;">⚠️ RESET SEMUA DATABASE</button>
+            <div class="form-container" style="flex-direction: column; align-items: stretch; gap: 1rem;">
+                
+                <div style="background:var(--bg-dark); padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h3 style="margin:0 0 5px 0; font-size:1.1rem; color:var(--accent-yellow);">🔒 Status Segel Leaderboard IPK</h3>
+                        <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Jika segel dibuka, semua staf (Pasukan/Pemantau) tiba-tiba dapat melihat menu IPK di layar mereka.</p>
+                    </div>
+                    <button id="btnSegelIPK" onclick="toggleSegelIPK()" class="btn-primary" style="background:var(--accent-blue); color:#000;">MEMUAT...</button>
+                </div>
+
+                <button class="btn-primary" onclick="resetDatabase()" style="width:100%; background:var(--accent-red); color:white; padding:1.5rem; font-size:1.1rem; margin-top:1rem;">⚠️ RESET SEMUA DATABASE</button>
             </div>
         </div>
     </div>
 
-    <!-- TEMPLATE SERTIFIKAT PDF (Disembunyikan) -->
     <div id="sertifikatWrapper">
         <div class="sertif-bg"></div>
         <div class="sertif-content">
@@ -336,7 +326,6 @@
             <div class="sertif-footer">
                 <div class="sertif-sign-box">
                     <div style="font-size:0.9rem; margin-bottom:5px; color:#333;">Purwokerto, Diesnatalis FMIPA 12</div>
-                    <!-- Panggil File Tanda Tangan GitHub di sini -->
                     <img src="ttd-koor.png" class="sertif-sign-img" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div style=\'height:80px; line-height:80px; color:#aaa; font-style:italic;\'>[Tanda Tangan Koor]</div>');">
                     <div class="sertif-koor-name">Afdhi Abdilah</div>
                     <div class="sertif-koor-title">Koordinator Divisi ATP</div>
@@ -365,24 +354,77 @@
             { nama: "Chelsea", c: 0, d: 0, e: 0, n: 2 }
         ];
 
-        let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK };
+        let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false };
         window.userRole = ''; window.isViewer = false; window.tempRole = '';
 
         dbCloud.collection("atp").doc("data").onSnapshot((doc) => {
             if (doc.exists) { 
                 db = doc.data(); 
                 if(!db.ipk) db.ipk = defaultIPK; 
+                if(db.isIPKRevealed === undefined) db.isIPKRevealed = false;
             } else { dbCloud.collection("atp").doc("data").set(db); }
+            
             if(document.getElementById('landingPage').style.display === 'none') {
-                renderSemua(); updateDashboard(); renderDropdownKategori();
+                renderSemua(); updateDashboard(); renderDropdownKategori(); updateIPKVisibility();
             }
         });
 
         function saveDB() { if(!window.isViewer) dbCloud.collection("atp").doc("data").set(db); }
 
-        // --- 2. LOGIKA AUTO-IPK ---
+        // --- 2. FITUR BUKA SEGEL IPK ---
+        function updateIPKVisibility() {
+            const navIPK = document.getElementById('navIPK');
+            const btnSegel = document.getElementById('btnSegelIPK');
+            
+            if(!navIPK) return;
+
+            // Atur Visibilitas Tab IPK
+            if(window.userRole === 'koor') {
+                navIPK.style.display = ''; // Koor selalu lihat
+            } else {
+                navIPK.style.display = db.isIPKRevealed ? '' : 'none'; // Pasukan/Viewer tergantung segel
+            }
+
+            // Jika Pasukan sedang buka tab IPK lalu Koor menutup segelnya tiba-tiba, tendang ke Dashboard
+            if(navIPK.style.display === 'none' && document.getElementById('ipk').classList.contains('active')) {
+                bukaTab('dashboard', document.querySelectorAll('.nav-link')[0]);
+            }
+
+            // Atur Kerapatan Navbar HP (Mobile Bottom Nav)
+            if(window.innerWidth <= 768) {
+                let navs = Array.from(document.querySelectorAll('.sidebar > button.nav-link')).filter(n => n.id !== 'navPengaturan');
+                let visibleNavs = navs.filter(n => n.style.display !== 'none');
+                let widthPercent = 100 / visibleNavs.length;
+                
+                visibleNavs.forEach((n, idx) => {
+                    n.style.width = widthPercent + '%';
+                    n.style.left = (widthPercent * idx) + '%';
+                });
+            }
+
+            // Update UI Saklar di Pengaturan Koor
+            if(btnSegel) {
+                if(db.isIPKRevealed) {
+                    btnSegel.innerText = "TUTUP SEGEL KEMBALI";
+                    btnSegel.style.background = "var(--accent-red)";
+                    btnSegel.style.color = "white";
+                } else {
+                    btnSegel.innerText = "🔓 BUKA SEGEL IPK SEKARANG";
+                    btnSegel.style.background = "var(--accent-yellow)";
+                    btnSegel.style.color = "black";
+                }
+            }
+        }
+
+        function toggleSegelIPK() {
+            db.isIPKRevealed = !db.isIPKRevealed;
+            catatLog(db.isIPKRevealed ? 'Membuka Segel Menu IPK Publik' : 'Menutup Segel Menu IPK', 'Sistem', db.isIPKRevealed ? 'badge-aman' : 'badge-kritis');
+            saveDB();
+        }
+
+        // --- 3. LOGIKA AUTO-IPK ---
         function autoUpdateIPK(tipe) {
-            if(window.isViewer || window.userRole === 'koor') return; // Viewer tidak masuk penilaian
+            if(window.isViewer || window.userRole === 'koor') return;
             let myName = localStorage.getItem('atpUser');
             if(!myName) return;
             let p = db.ipk.find(i => i.nama.toLowerCase() === myName.toLowerCase());
@@ -394,7 +436,7 @@
             }
         }
 
-        // --- 3. SISTEM LOGIN ---
+        // --- 4. SISTEM LOGIN ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
@@ -402,7 +444,7 @@
             if(savedUser && savedRole) {
                 document.getElementById('landingPage').style.display = 'none';
                 document.getElementById('displayUserName').innerText = savedUser;
-                terapkanHakAkses(savedRole); renderSemua(); updateDashboard(); renderDropdownKategori();
+                terapkanHakAkses(savedRole); renderSemua(); updateDashboard(); renderDropdownKategori(); updateIPKVisibility();
             }
         };
 
@@ -421,7 +463,6 @@
             if(!nama.trim()) return alert('Nama wajib diisi!');
             if(window.tempRole === 'koor' && pass !== 'komandan12') return alert('Password Koor Salah!');
             
-            // Cek apakah nama pasukan terdaftar di IPK, kalau tidak, tambahkan.
             if(window.tempRole === 'pasukan' && !db.ipk.find(i => i.nama.toLowerCase() === nama.toLowerCase())) {
                 db.ipk.push({ nama: nama, c: 0, d: 0, e: 0, n: 1 }); saveDB();
             }
@@ -429,7 +470,7 @@
             localStorage.setItem('atpUser', nama); localStorage.setItem('atpRole', window.tempRole);
             document.getElementById('displayUserName').innerText = nama; document.getElementById('landingPage').style.display = 'none';
             if(window.tempRole === 'koor') catatLog('Koor masuk', 'Sistem', 'badge-aman'); else if(window.tempRole === 'pasukan') catatLog('Pasukan siap', 'Sistem', 'badge-aman');
-            terapkanHakAkses(window.tempRole); renderSemua(); updateDashboard(); renderDropdownKategori();
+            terapkanHakAkses(window.tempRole); renderSemua(); updateDashboard(); renderDropdownKategori(); updateIPKVisibility();
         }
 
         function terapkanHakAkses(role) {
@@ -447,10 +488,10 @@
 
         function keluarSistem() { localStorage.removeItem('atpUser'); localStorage.removeItem('atpRole'); location.reload(); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
-        function resetDatabase() { if(prompt("Ketik 'RESET' untuk menghapus data:") === 'RESET') { db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK }; saveDB(); alert('Database reset!'); location.reload(); } }
+        function resetDatabase() { if(prompt("Ketik 'RESET' untuk menghapus data:") === 'RESET') { db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false }; saveDB(); alert('Database reset!'); location.reload(); } }
         function bukaTab(idTab, elemen) { document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active')); document.getElementById(idTab).classList.add('active'); if(elemen) elemen.classList.add('active'); }
 
-        // --- 4. RENDER DATA UTAMA (Ruang, Alat, Konstruksi) ---
+        // --- 5. RENDER DATA UTAMA ---
         function dptClass(val) { val = val.toLowerCase(); if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; if(val.includes('sedang')) return 'badge-pending'; if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; if(val.includes('transit') || val.includes('telah dipinjam')) return 'badge-biru'; return 'badge-abu'; }
         function getModulColor(m) { return m==='Ruang'?'#87cefa':m==='Alat'?'#ff69b4':m==='Konstruksi'?'#dda0dd':'var(--text-muted)'; }
 
@@ -461,16 +502,16 @@
             if(!db.ruang) return; let dis = window.isViewer ? 'disabled' : '';
             db.ruang.forEach((r, idx) => {
                 let btnEdit = !window.isViewer ? `<button class="btn-aksi" onclick="editRuang(${idx})">✏️</button>` : '';
-                let btnHapus = !window.isViewer ? `<button class="btn-aksi" onclick="hapusRuang(${idx})">🗑️</button>` : '';
+                let btnHapus = (window.userRole === 'koor') ? `<button class="btn-aksi" onclick="hapusRuang(${idx})">🗑️</button>` : '';
                 tbody.innerHTML += `<tr><td>${r.nama}</td><td>${r.divisi}</td>
                 <td><select class="status-badge ${dptClass(r.status)}" onchange="ubahStatusRuang(${idx}, this.value)" ${dis}>
-    <option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option>
-    <option value="Sedang Diajukan [A]" ${r.status=='Sedang Diajukan [A]'?'selected':''}>Sedang Diajukan [A]</option>
-    <option value="Sudah Terajukan [A]" ${r.status=='Sudah Terajukan [A]'?'selected':''}>Sudah Terajukan (ACC) [A]</option>
-    <option value="Sedang Dipinjam [B]" ${r.status=='Sedang Dipinjam [B]'?'selected':''}>Sedang Dipinjam [B]</option>
-    <option value="Selesai Bersih [C]" ${r.status=='Selesai Bersih [C]'?'selected':''}>Selesai Bersih [C]</option>
-    <option value="Tidak Tersedia" ${r.status=='Tidak Tersedia'?'selected':''}>Tidak Tersedia</option>
-</select></td><td>${btnEdit}${btnHapus}</td></tr>`;
+                    <option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option>
+                    <option value="Sedang Diajukan [A]" ${r.status=='Sedang Diajukan [A]'?'selected':''}>Sedang Diajukan [A]</option>
+                    <option value="Sudah Terajukan [A]" ${r.status=='Sudah Terajukan [A]'?'selected':''}>Sudah Terajukan (ACC) [A]</option>
+                    <option value="Sedang Dipinjam [B]" ${r.status=='Sedang Dipinjam [B]'?'selected':''}>Sedang Dipinjam [B]</option>
+                    <option value="Selesai Bersih [C]" ${r.status=='Selesai Bersih [C]'?'selected':''}>Selesai Bersih [C]</option>
+                    <option value="Tidak Tersedia" ${r.status=='Tidak Tersedia'?'selected':''}>Tidak Tersedia</option>
+                </select></td><td>${btnEdit}${btnHapus}</td></tr>`;
             });
         }
 
@@ -479,28 +520,28 @@
             if(!db.alat) return; let dis = window.isViewer ? 'disabled' : '';
             db.alat.forEach((a, idx) => {
                 let btnEdit = !window.isViewer ? `<button class="btn-aksi" onclick="editAlat(${idx})">✏️</button>` : '';
-                let btnHapus = !window.isViewer ? `<button class="btn-aksi" onclick="hapusAlat(${idx})">🗑️</button>` : '';
+                let btnHapus = (window.userRole === 'koor') ? `<button class="btn-aksi" onclick="hapusAlat(${idx})">🗑️</button>` : '';
                 tbody.innerHTML += `<tr><td><span style="font-family:monospace; color:var(--text-muted); font-size:0.8rem;">${a.id}</span></td><td style="font-weight:bold;">${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
                 <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)" ${dis}>
-    <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
-    <option value="Tersedia [B]" ${a.status=='Tersedia [B]'?'selected':''}>Tersedia [B]</option>
-    <option value="Transit" ${a.status=='Transit'?'selected':''}>Transit</option>
-    <option value="Telah Dipinjam" ${a.status=='Telah Dipinjam'?'selected':''}>Telah Dipinjam</option>
-    <option value="Dikembalikan [C]" ${a.status=='Dikembalikan [C]'?'selected':''}>Dikembalikan [C]</option>
-    <option value="Hilang" ${a.status=='Hilang'?'selected':''}>Hilang</option>
-</select> <br><span style="font-size:0.75rem; color:var(--accent-red); font-weight:bold;">${a.status === 'Hilang' ? '⚠️ '+a.hilang + ' Hilang' : ''}</span></td>
+                    <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
+                    <option value="Tersedia [B]" ${a.status=='Tersedia [B]'?'selected':''}>Tersedia [B]</option>
+                    <option value="Transit" ${a.status=='Transit'?'selected':''}>Transit</option>
+                    <option value="Telah Dipinjam" ${a.status=='Telah Dipinjam'?'selected':''}>Telah Dipinjam</option>
+                    <option value="Dikembalikan [C]" ${a.status=='Dikembalikan [C]'?'selected':''}>Dikembalikan [C]</option>
+                    <option value="Hilang" ${a.status=='Hilang'?'selected':''}>Hilang</option>
+                </select> <br><span style="font-size:0.75rem; color:var(--accent-red); font-weight:bold;">${a.status === 'Hilang' ? '⚠️ '+a.hilang + ' Hilang' : ''}</span></td>
                 <td>${btnEdit}${btnHapus}</td></tr>`;
             });
         }
 
-        function renderKonstruksi() { /* Logic sama */ 
+        function renderKonstruksi() { 
             const tbody = document.getElementById('tabelKonstruksi'); tbody.innerHTML = '';
             const filter = document.getElementById('kategoriProyek') ? document.getElementById('kategoriProyek').value : 'Semua Proyek';
             if(!db.konstruksi) return; let dis = window.isViewer ? 'disabled' : '';
             db.konstruksi.forEach((k, idx) => {
                 if(filter === 'Semua Proyek' || k.proyek === filter) {
                     let btnEdit = !window.isViewer ? `<button class="btn-aksi" onclick="editKonstruksi(${idx})">✏️</button>` : '';
-                    let btnHapus = !window.isViewer ? `<button class="btn-aksi" onclick="hapusKonstruksi(${idx})">🗑️</button>` : '';
+                    let btnHapus = (window.userRole === 'koor') ? `<button class="btn-aksi" onclick="hapusKonstruksi(${idx})">🗑️</button>` : '';
                     tbody.innerHTML += `<tr><td style="font-weight:bold;">${k.nama}</td><td>${k.jumlah}</td><td>${k.proyek}</td>
                     <td><select class="status-badge ${dptClass(k.ketersediaan)}" onchange="ubahKonstruksi(${idx}, 'ket', this.value)" ${dis}>
                         <option value="Belum Tersedia" ${k.ketersediaan=='Belum Tersedia'?'selected':''}>Belum Tersedia</option>
@@ -516,7 +557,7 @@
             });
         }
 
-        function renderLog() { /* Logic sama */ 
+        function renderLog() { 
             const tbody = document.getElementById('tabelLog'); tbody.innerHTML = ''; if(!db.log) return;
             db.log.slice(0, 30).forEach((l, idx) => {
                 let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.3rem 0.6rem; font-size:0.75rem;">${l.tindakan}</span>` : l.tindakan;
@@ -526,7 +567,7 @@
         }
         function renderDropdownKategori() { const sel = document.getElementById('kategoriProyek'); if(!sel) return; sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>'; if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; }); }
 
-        // --- 5. RENDER SISTEM IPK KLIK-EDIT & PDF ---
+        // --- 6. RENDER SISTEM IPK KLIK-EDIT & PDF ---
         function renderIPK() {
             const tbody = document.getElementById('tabelIPK'); tbody.innerHTML = '';
             if(!db.ipk) return;
@@ -536,7 +577,6 @@
                 let skor = hitungSkorIPK(p.c, p.d, p.e, p.n);
                 let isKoor = (window.userRole === 'koor');
                 
-                // Variabel yang bisa diklik Koor
                 let tdC = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'c')" title="Edit Nilai C">${p.c}</td>` : `<td>${p.c}</td>`;
                 let tdD = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'd')" title="Edit Nilai D" style="color:var(--accent-blue);">${p.d}</td>` : `<td style="color:var(--accent-blue);">${p.d}</td>`;
                 let tdE = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'e')" title="Edit Nilai E" style="color:var(--accent-red); font-weight:bold;">${p.e}</td>` : `<td style="color:var(--accent-red); font-weight:bold;">${p.e}</td>`;
@@ -571,13 +611,10 @@
 
         // GENERATOR SERTIFIKAT PDF
         function cetakSertifikat(nama, skor) {
-            // Update teks template
             document.getElementById('sertifNamaTeks').innerText = nama.toUpperCase();
             document.getElementById('sertifSkorTeks').innerText = skor;
-            
-            // Render HTML to PDF
             var element = document.getElementById('sertifikatWrapper');
-            element.style.top = '0'; // Pindah ke viewport sesaat agar tidak error render
+            element.style.top = '0'; 
             
             var opt = {
                 margin:       0,
@@ -587,14 +624,13 @@
                 jsPDF:        { unit: 'px', format: [800, 560], orientation: 'landscape' }
             };
             
-            // Proses download otomatis
             html2pdf().set(opt).from(element).save().then(() => {
-                element.style.top = '-9999px'; // Sembunyikan lagi
+                element.style.top = '-9999px'; 
                 alert(`Sertifikat PDF atas nama ${nama} berhasil diunduh!`);
             });
         }
 
-        // --- 6. AKSI INPUT KE DATABASE ---
+        // --- 7. AKSI INPUT KE DATABASE ---
         function catatLog(t, m, c) { if(window.isViewer) return; const d = new Date(); db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); saveDB(); }
         function hapusLog(idx) { if(confirm("Hapus?")) { db.log.splice(idx, 1); saveDB(); } }
 
@@ -602,8 +638,7 @@
         
         function ubahStatusRuang(idx, val) { 
             db.ruang[idx].status = val; 
-            // Auto IPK
-            if(val === 'Selesai Bersih' || val === 'Sudah Terajukan (ACC)') autoUpdateIPK('C');
+            if(val.includes('Selesai Bersih') || val.includes('Sudah Terajukan')) autoUpdateIPK('C');
             catatLog(`Update ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); saveDB(); 
         }
         
@@ -617,10 +652,10 @@
             if(val === 'Hilang') { 
                 let h = prompt(`Berapa hilang dari ${a.jumlah}?`); if(!h) return renderAlat(); 
                 a.hilang = h; catatLog(`URGENT: ${h} ${a.nama} Hilang!`, 'Alat', 'badge-kritis');
-                autoUpdateIPK('E'); // Auto Error Penalty
+                autoUpdateIPK('E'); 
             } else { 
                 a.hilang = 0; catatLog(`${a.nama} ➔ ${val}`, 'Alat', dptClass(val)); 
-                if(val === 'Dikembalikan' || val === 'Tersedia') autoUpdateIPK('C'); // Auto Poin
+                if(val.includes('Dikembalikan') || val.includes('Tersedia')) autoUpdateIPK('C'); 
             } 
             a.status = val; saveDB(); 
         }
