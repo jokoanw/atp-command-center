@@ -464,12 +464,13 @@
                 let btnHapus = !window.isViewer ? `<button class="btn-aksi" onclick="hapusRuang(${idx})">🗑️</button>` : '';
                 tbody.innerHTML += `<tr><td>${r.nama}</td><td>${r.divisi}</td>
                 <td><select class="status-badge ${dptClass(r.status)}" onchange="ubahStatusRuang(${idx}, this.value)" ${dis}>
-                    <option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option>
-                    <option value="Sedang Diajukan" ${r.status=='Sedang Diajukan'?'selected':''}>Sedang Diajukan</option>
-                    <option value="Sudah Terajukan (ACC)" ${r.status=='Sudah Terajukan (ACC)'?'selected':''}>Sudah Terajukan (ACC)</option>
-                    <option value="Selesai Bersih" ${r.status=='Selesai Bersih'?'selected':''}>Selesai Bersih</option>
-                    <option value="Tidak Tersedia" ${r.status=='Tidak Tersedia'?'selected':''}>Tidak Tersedia</option>
-                </select></td><td>${btnEdit}${btnHapus}</td></tr>`;
+    <option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option>
+    <option value="Sedang Diajukan [A]" ${r.status=='Sedang Diajukan [A]'?'selected':''}>Sedang Diajukan [A]</option>
+    <option value="Sudah Terajukan [A]" ${r.status=='Sudah Terajukan [A]'?'selected':''}>Sudah Terajukan (ACC) [A]</option>
+    <option value="Sedang Dipinjam [B]" ${r.status=='Sedang Dipinjam [B]'?'selected':''}>Sedang Dipinjam [B]</option>
+    <option value="Selesai Bersih [C]" ${r.status=='Selesai Bersih [C]'?'selected':''}>Selesai Bersih [C]</option>
+    <option value="Tidak Tersedia" ${r.status=='Tidak Tersedia'?'selected':''}>Tidak Tersedia</option>
+</select></td><td>${btnEdit}${btnHapus}</td></tr>`;
             });
         }
 
@@ -481,14 +482,13 @@
                 let btnHapus = !window.isViewer ? `<button class="btn-aksi" onclick="hapusAlat(${idx})">🗑️</button>` : '';
                 tbody.innerHTML += `<tr><td><span style="font-family:monospace; color:var(--text-muted); font-size:0.8rem;">${a.id}</span></td><td style="font-weight:bold;">${a.nama} (${a.jumlah})</td><td>${a.asal}</td><td>${a.divisi}</td>
                 <td><select class="status-badge ${dptClass(a.status)}" onchange="ubahStatusAlat(${idx}, this.value)" ${dis}>
-                    <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
-                    <option value="Tersedia" ${a.status=='Tersedia'?'selected':''}>Tersedia</option>
-                    <option value="Sedang Dipinjam" ${a.status=='Sedang Dipinjam'?'selected':''}>Sedang Dipinjam</option>
-                    <option value="Transit" ${a.status=='Transit'?'selected':''}>Transit</option>
-                    <option value="Telah Dipinjam" ${a.status=='Telah Dipinjam'?'selected':''}>Telah Dipinjam</option>
-                    <option value="Dikembalikan" ${a.status=='Dikembalikan'?'selected':''}>Dikembalikan</option>
-                    <option value="Hilang" ${a.status=='Hilang'?'selected':''}>Hilang</option>
-                </select> <br><span style="font-size:0.75rem; color:var(--accent-red); font-weight:bold;">${a.status === 'Hilang' ? '⚠️ '+a.hilang + ' Hilang' : ''}</span></td>
+    <option value="Belum Menyediakan" ${a.status=='Belum Menyediakan'?'selected':''}>Belum Menyediakan</option>
+    <option value="Tersedia [B]" ${a.status=='Tersedia [B]'?'selected':''}>Tersedia [B]</option>
+    <option value="Transit" ${a.status=='Transit'?'selected':''}>Transit</option>
+    <option value="Telah Dipinjam" ${a.status=='Telah Dipinjam'?'selected':''}>Telah Dipinjam</option>
+    <option value="Dikembalikan [C]" ${a.status=='Dikembalikan [C]'?'selected':''}>Dikembalikan [C]</option>
+    <option value="Hilang" ${a.status=='Hilang'?'selected':''}>Hilang</option>
+</select> <br><span style="font-size:0.75rem; color:var(--accent-red); font-weight:bold;">${a.status === 'Hilang' ? '⚠️ '+a.hilang + ' Hilang' : ''}</span></td>
                 <td>${btnEdit}${btnHapus}</td></tr>`;
             });
         }
