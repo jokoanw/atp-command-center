@@ -96,36 +96,52 @@
         .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 5px; opacity: 0.5;}
 
-        /* Desain Sertifikat HTML (REVISI FIX BLANK) */
+        /* Desain Sertifikat HTML - DESAIN KLASIK 100% AMAN ANTI-BLANK */
         #sertifikatWrapper { 
-            position: fixed; 
-            top: -9999px; 
-            left: -9999px; 
-            z-index: -9999; 
+            display: none; /* Sembunyikan secara normal */
             width: 800px; 
             height: 560px; 
-            background: #ffffff; 
+            background-color: #ffffff; 
             color: #1a1a1a; 
-            padding: 40px; 
+            padding: 30px; 
             box-sizing: border-box; 
-            font-family: 'Times New Roman', serif; 
-            border: 10px solid var(--gold); 
-            visibility: hidden; 
-            opacity: 1; /* Jangan transparan agar bisa dirender oleh html2canvas */
+            font-family: 'Times New Roman', Times, serif; 
         }
-        .sertif-bg { position: absolute; inset: 0; opacity: 0.05; z-index: 1; background-image: linear-gradient(#005088 1px, transparent 1px), linear-gradient(90deg, #005088 1px, transparent 1px); background-size: 20px 20px; }
-        .sertif-content { position: relative; z-index: 2; text-align: center; border: 2px solid var(--gold); height: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;}
-        .sertif-title { font-size: 2.5rem; font-weight: bold; color: var(--gold); margin-bottom: 5px; letter-spacing: 3px; text-transform: uppercase; }
-        .sertif-subtitle { font-size: 1.2rem; letter-spacing: 5px; margin-bottom: 30px; color: #333;}
-        .sertif-text { font-size: 1.1rem; margin-bottom: 10px; color: #555; }
-        .sertif-name { font-size: 3rem; font-weight: bold; border-bottom: 2px solid var(--gold); padding-bottom: 5px; margin-bottom: 20px; color: #000; width: 80%; display: inline-block;}
-        .sertif-desc { font-size: 1.1rem; line-height: 1.6; max-width: 600px; color: #333;}
-        .sertif-score { font-size: 1.5rem; font-weight: bold; color: var(--gold); margin-top: 15px; border: 1px dashed var(--gold); padding: 10px 20px; display: inline-block;}
-        .sertif-footer { margin-top: 40px; width: 100%; display: flex; justify-content: flex-end; padding-right: 50px; }
+        
+        .sertif-border-luar {
+            border: 8px solid #1a1a1a;
+            height: 100%;
+            padding: 4px;
+            box-sizing: border-box;
+        }
+
+        .sertif-border-dalam {
+            border: 2px solid #1a1a1a;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sertif-title { font-size: 2.2rem; font-weight: bold; color: #1a1a1a; margin-bottom: 5px; letter-spacing: 4px; text-transform: uppercase; }
+        .sertif-subtitle { font-size: 1rem; letter-spacing: 5px; margin-bottom: 30px; color: #555555;}
+        .sertif-text { font-size: 1.1rem; margin-bottom: 10px; color: #333333; }
+        .sertif-name { font-size: 2.8rem; font-weight: bold; border-bottom: 2px solid #1a1a1a; padding-bottom: 5px; margin-bottom: 20px; color: #000000; width: 80%; display: inline-block;}
+        .sertif-desc { font-size: 1.1rem; line-height: 1.6; max-width: 600px; color: #333333;}
+        
+        /* Area Predikat & Skor */
+        .sertif-score-box { margin-top: 20px; border: 2px dashed #1a1a1a; padding: 15px 30px; background-color: #f9f9f9;}
+        .sertif-predikat { font-size: 1.2rem; font-weight: bold; color: #000000; text-transform: uppercase; letter-spacing: 2px;}
+        .sertif-score { font-size: 1.1rem; color: #333333; margin-top: 5px;}
+
+        .sertif-footer { margin-top: 40px; width: 100%; display: flex; justify-content: flex-end; padding-right: 40px; }
         .sertif-sign-box { text-align: center; }
-        .sertif-sign-img { height: 80px; object-fit: contain; margin: 5px 0; }
-        .sertif-koor-name { font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 2px; color: #000;}
-        .sertif-koor-title { font-size: 0.9rem; color: #555; margin-top: 5px; }
+        .sertif-koor-name { font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 2px; color: #000000; margin-top: 40px;}
+        .sertif-koor-title { font-size: 0.9rem; color: #555555; margin-top: 5px; }
 
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: hidden; }
@@ -274,6 +290,7 @@
             </div>
         </div>
 
+        <!-- SISTEM IPK -->
         <div id="ipk" class="tab-section">
             <h1 class="header-title">Indeks Presisi Kinerja (IPK)</h1>
             <p class="header-subtitle">Rumus: IPK = [(0.50 × C) + (0.35 × D) − (0.15 × E)] × (1 + 0.05 × N)</p>
@@ -321,29 +338,33 @@
         </div>
     </div>
 
+    <!-- TEMPLATE SERTIFIKAT PDF (DESAIN AMAN 100%) -->
     <div id="sertifikatWrapper">
-        <div class="sertif-bg"></div>
-        <div class="sertif-content">
-            <div class="sertif-title">SERTIFIKAT PENGHARGAAN</div>
-            <div class="sertif-subtitle">COMMAND CENTER LOGISTICS</div>
-            
-            <div class="sertif-text" style="margin-top:20px;">Diberikan Dengan Penuh Rasa Bangga Kepada:</div>
-            <div class="sertif-name" id="sertifNamaTeks">NAMA PASUKAN</div>
-            
-            <div class="sertif-desc">
-                Atas dedikasi, kedisiplinan, dan eksekusi tata letak spasial yang luar biasa sebagai<br>
-                <strong>STAF ATP DIESNAT FMIPA KE-12</strong><br>
-                Sistem Pusat Komando mencatat performa operasional Anda dengan:
-            </div>
-            
-            <div class="sertif-score">Indeks Presisi Kinerja (IPK): <span id="sertifSkorTeks">0.00</span></div>
-            
-            <div class="sertif-footer">
-                <div class="sertif-sign-box">
-                    <div style="font-size:0.9rem; margin-bottom:5px; color:#333;">Purwokerto, Diesnatalis FMIPA 12</div>
-                    <img src="ttd-koor.png" class="sertif-sign-img" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div style=\'height:80px; line-height:80px; color:#aaa; font-style:italic;\'>[Tanda Tangan Koor]</div>');">
-                    <div class="sertif-koor-name">Afdhi Abdilah</div>
-                    <div class="sertif-koor-title">Koordinator Divisi ATP</div>
+        <div class="sertif-border-luar">
+            <div class="sertif-border-dalam">
+                <div class="sertif-title">SERTIFIKAT PENGHARGAAN</div>
+                <div class="sertif-subtitle">COMMAND CENTER LOGISTICS</div>
+                
+                <div class="sertif-text" style="margin-top:20px;">Diberikan Dengan Penuh Rasa Bangga Kepada:</div>
+                <div class="sertif-name" id="sertifNamaTeks">NAMA PASUKAN</div>
+                
+                <div class="sertif-desc">
+                    Atas dedikasi, kedisiplinan, dan eksekusi tata letak spasial yang luar biasa sebagai<br>
+                    <strong>STAF ATP DIESNAT FMIPA KE-12</strong><br>
+                    Sistem Pusat Komando mencatat performa operasional Anda dengan:
+                </div>
+                
+                <div class="sertif-score-box">
+                    <div class="sertif-predikat" id="sertifPredikatTeks">PREDIKAT</div>
+                    <div class="sertif-score">Skor Indeks Presisi Kinerja (IPK): <span id="sertifSkorTeks" style="font-weight:bold;">0.00</span></div>
+                </div>
+                
+                <div class="sertif-footer">
+                    <div class="sertif-sign-box">
+                        <div style="font-size:0.9rem; margin-bottom:10px; color:#555;">Purwokerto, Diesnatalis FMIPA 12</div>
+                        <div class="sertif-koor-name">Afdhi Abdilah</div>
+                        <div class="sertif-koor-title">Koordinator Divisi ATP</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -393,19 +414,16 @@
             
             if(!navIPK) return;
 
-            // Atur Visibilitas Tab IPK
             if(window.userRole === 'koor') {
-                navIPK.style.display = ''; // Koor selalu lihat
+                navIPK.style.display = ''; 
             } else {
-                navIPK.style.display = db.isIPKRevealed ? '' : 'none'; // Pasukan/Viewer tergantung segel
+                navIPK.style.display = db.isIPKRevealed ? '' : 'none'; 
             }
 
-            // Jika Pasukan sedang buka tab IPK lalu Koor menutup segelnya tiba-tiba, tendang ke Dashboard
             if(navIPK.style.display === 'none' && document.getElementById('ipk').classList.contains('active')) {
                 bukaTab('dashboard', document.querySelectorAll('.nav-link')[0]);
             }
 
-            // Atur Kerapatan Navbar HP (Mobile Bottom Nav)
             if(window.innerWidth <= 768) {
                 let navs = Array.from(document.querySelectorAll('.sidebar > button.nav-link')).filter(n => n.id !== 'navPengaturan');
                 let visibleNavs = navs.filter(n => n.style.display !== 'none');
@@ -417,7 +435,6 @@
                 });
             }
 
-            // Update UI Saklar di Pengaturan Koor
             if(btnSegel) {
                 if(db.isIPKRevealed) {
                     btnSegel.innerText = "TUTUP SEGEL KEMBALI";
@@ -582,6 +599,15 @@
         }
         function renderDropdownKategori() { const sel = document.getElementById('kategoriProyek'); if(!sel) return; sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>'; if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; }); }
 
+        // --- PREDIKAT IPK HELPER ---
+        function getPredikat(skor) {
+            if(skor >= 100) return "LEGENDA LOGISTIK (CUM LAUDE)";
+            if(skor >= 60) return "PASUKAN ELITE (SANGAT MEMUASKAN)";
+            if(skor >= 30) return "EKSEKUTOR HANDAL (MEMUASKAN)";
+            if(skor >= 10) return "STANDAR OPERASIONAL (CUKUP)";
+            return "PERLU EVALUASI";
+        }
+
         // --- 6. RENDER SISTEM IPK KLIK-EDIT & PDF ---
         function renderIPK() {
             const tbody = document.getElementById('tabelIPK'); tbody.innerHTML = '';
@@ -590,6 +616,7 @@
 
             sortedIPK.forEach((p, idx) => {
                 let skor = hitungSkorIPK(p.c, p.d, p.e, p.n);
+                let predikat = getPredikat(skor);
                 let isKoor = (window.userRole === 'koor');
                 
                 let tdC = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'c')" title="Edit Nilai C">${p.c}</td>` : `<td>${p.c}</td>`;
@@ -604,7 +631,10 @@
                         ${idx === 0 ? '🏆 ' : ''}${idx === 1 ? '🥈 ' : ''}${idx === 2 ? '🥉 ' : ''}${p.nama}
                     </td>
                     ${tdC}${tdD}${tdE}${tdN}
-                    <td style="font-weight:bold; font-size:1.3rem; color:var(--accent-green);">${skor.toFixed(2)}</td>
+                    <td>
+                        <div style="font-weight:bold; font-size:1.3rem; color:var(--accent-green);">${skor.toFixed(2)}</div>
+                        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px;">${predikat}</div>
+                    </td>
                     <td>${btnCetak}</td>
                 </tr>`;
             });
@@ -624,37 +654,33 @@
             }
         }
 
-        // GENERATOR SERTIFIKAT PDF
+        // GENERATOR SERTIFIKAT PDF (CARA PALING AMAN ANTI BLANK)
         function cetakSertifikat(nama, skor) {
+            let predikat = getPredikat(skor);
             document.getElementById('sertifNamaTeks').innerText = nama.toUpperCase();
             document.getElementById('sertifSkorTeks').innerText = skor;
+            document.getElementById('sertifPredikatTeks').innerText = predikat;
             
             var element = document.getElementById('sertifikatWrapper');
             
-            // Taktik baru: Munculkan elemen secara transparan agar ter-render oleh browser
-            element.style.visibility = 'visible';
-            element.style.top = '0px';
-            element.style.left = '0px';
-            element.style.zIndex = '-9999'; 
+            // Munculkan sebentar untuk html2canvas (di luar jangkauan scroll mata user)
+            element.style.display = 'block';
+            element.style.position = 'fixed';
+            element.style.top = '200%'; 
+            element.style.left = '0';
             
             var opt = {
                 margin:       0,
                 filename:     `Sertifikat_ATP_${nama}.pdf`,
-                image:        { type: 'jpeg', quality: 1 }, // Kualitas dimaksimalkan
-                html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 800, windowHeight: 560 }, // useCORS penting agar background/gambar tidak blank
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { scale: 2, logging: false }, 
                 jsPDF:        { unit: 'px', format: [800, 560], orientation: 'landscape' }
             };
             
-            // Beri jeda 500ms agar browser menggambar font & border sebelum diubah jadi PDF
-            setTimeout(() => {
-                html2pdf().set(opt).from(element).save().then(() => {
-                    // Sembunyikan kembali setelah selesai di-download
-                    element.style.visibility = 'hidden';
-                    element.style.top = '-9999px';
-                    element.style.left = '-9999px';
-                    alert(`Sertifikat PDF atas nama ${nama} berhasil diunduh!`);
-                });
-            }, 500);
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none'; // Sembunyikan kembali
+                alert(`Sertifikat PDF atas nama ${nama} berhasil diunduh!`);
+            });
         }
 
         // --- 7. AKSI INPUT KE DATABASE ---
