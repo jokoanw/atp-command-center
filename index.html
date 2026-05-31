@@ -96,9 +96,23 @@
         .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 5px; opacity: 0.5;}
 
-        /* Desain Sertifikat HTML */
-        /* Desain Sertifikat HTML (Akan di-render ke PDF) */
-#sertifikatWrapper { visibility: hidden; position: fixed; bottom: 0; left: 0; z-index: -1; width: 800px; height: 560px; background: #ffffff; color: #1a1a1a; padding: 40px; box-sizing: border-box; font-family: 'Times New Roman', serif; border: 10px solid var(--gold); }
+        /* Desain Sertifikat HTML (REVISI FIX BLANK) */
+        #sertifikatWrapper { 
+            position: fixed; 
+            top: -9999px; 
+            left: -9999px; 
+            z-index: -9999; 
+            width: 800px; 
+            height: 560px; 
+            background: #ffffff; 
+            color: #1a1a1a; 
+            padding: 40px; 
+            box-sizing: border-box; 
+            font-family: 'Times New Roman', serif; 
+            border: 10px solid var(--gold); 
+            visibility: hidden; 
+            opacity: 1; /* Jangan transparan agar bisa dirender oleh html2canvas */
+        }
         .sertif-bg { position: absolute; inset: 0; opacity: 0.05; z-index: 1; background-image: linear-gradient(#005088 1px, transparent 1px), linear-gradient(90deg, #005088 1px, transparent 1px); background-size: 20px 20px; }
         .sertif-content { position: relative; z-index: 2; text-align: center; border: 2px solid var(--gold); height: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;}
         .sertif-title { font-size: 2.5rem; font-weight: bold; color: var(--gold); margin-bottom: 5px; letter-spacing: 3px; text-transform: uppercase; }
@@ -611,36 +625,37 @@
         }
 
         // GENERATOR SERTIFIKAT PDF
-function cetakSertifikat(nama, skor) {
-    document.getElementById('sertifNamaTeks').innerText = nama.toUpperCase();
-    document.getElementById('sertifSkorTeks').innerText = skor;
-    
-    var element = document.getElementById('sertifikatWrapper');
-    
-    // Taktik baru: Munculkan elemen secara transparan agar ter-render oleh browser
-    element.style.visibility = 'visible';
-    element.style.opacity = '0';
-    element.style.zIndex = '10000'; 
-    
-    var opt = {
-        margin:       0,
-        filename:     `Sertifikat_ATP_${nama}.pdf`,
-        image:        { type: 'jpeg', quality: 1 }, // Kualitas dimaksimalkan
-        html2canvas:  { scale: 2, useCORS: true, logging: false }, // useCORS penting agar background/gambar tidak blank
-        jsPDF:        { unit: 'px', format: [800, 560], orientation: 'landscape' }
-    };
-    
-    // Beri jeda 500ms agar browser menggambar font & border sebelum diubah jadi PDF
-    setTimeout(() => {
-        html2pdf().set(opt).from(element).save().then(() => {
-            // Sembunyikan kembali setelah selesai di-download
-            element.style.visibility = 'hidden';
-            element.style.opacity = '1';
-            element.style.zIndex = '-1';
-            alert(`Sertifikat PDF atas nama ${nama} berhasil diunduh!`);
-        });
-    }, 500);
-}
+        function cetakSertifikat(nama, skor) {
+            document.getElementById('sertifNamaTeks').innerText = nama.toUpperCase();
+            document.getElementById('sertifSkorTeks').innerText = skor;
+            
+            var element = document.getElementById('sertifikatWrapper');
+            
+            // Taktik baru: Munculkan elemen secara transparan agar ter-render oleh browser
+            element.style.visibility = 'visible';
+            element.style.top = '0px';
+            element.style.left = '0px';
+            element.style.zIndex = '-9999'; 
+            
+            var opt = {
+                margin:       0,
+                filename:     `Sertifikat_ATP_${nama}.pdf`,
+                image:        { type: 'jpeg', quality: 1 }, // Kualitas dimaksimalkan
+                html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 800, windowHeight: 560 }, // useCORS penting agar background/gambar tidak blank
+                jsPDF:        { unit: 'px', format: [800, 560], orientation: 'landscape' }
+            };
+            
+            // Beri jeda 500ms agar browser menggambar font & border sebelum diubah jadi PDF
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Sembunyikan kembali setelah selesai di-download
+                    element.style.visibility = 'hidden';
+                    element.style.top = '-9999px';
+                    element.style.left = '-9999px';
+                    alert(`Sertifikat PDF atas nama ${nama} berhasil diunduh!`);
+                });
+            }, 500);
+        }
 
         // --- 7. AKSI INPUT KE DATABASE ---
         function catatLog(t, m, c) { if(window.isViewer) return; const d = new Date(); db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); saveDB(); }
