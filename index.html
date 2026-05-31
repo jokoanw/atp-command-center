@@ -5,159 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>ATP COMMAND CENTER - DIESNAT FMIPA 12</title>
     
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Library Cetak PDF Otomatis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
             --bg-dark: #121212; --surface: #1e1e1e; --text-main: #e0e0e0; --text-muted: #888888;
             --accent-green: #00e676; --accent-yellow: #ffea00; --accent-red: #ff1744; --border-color: #333333;
-            --accent-blue: #00b0ff;
+            --accent-blue: #00b0ff; --gold: #d4af37;
         }
         body.light-mode {
             --bg-dark: #f0f2f5; --surface: #ffffff; --text-main: #1a1a1a; --text-muted: #666666;
             --accent-green: #00a03e; --accent-yellow: #d4a000; --accent-red: #d50000; --border-color: #cccccc;
-            --accent-blue: #0091ea;
+            --accent-blue: #0091ea; --gold: #b8860b;
         }
 
-        /* Smooth Scrolling Mentega */
         html { scroll-behavior: smooth; }
         body { 
             background-color: var(--bg-dark); color: var(--text-main); 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; 
             transition: background-color 0.3s, color 0.3s; 
-            -webkit-font-smoothing: antialiased;
         }
 
-        /* Halaman Landing - Triple Menu */
+        /* Landing Page */
         #landingPage { position: fixed; inset: 0; background: var(--bg-dark); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; overflow-y: auto; padding: 2rem;}
         .landing-title { font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-main); text-align: center; letter-spacing: 2px;}
         .landing-subtitle { color: var(--accent-green); margin-bottom: 2.5rem; font-weight: bold; letter-spacing: 1px; text-align: center;}
-        
         .triple-menu-container { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; max-width: 1000px; width: 100%; }
-        .menu-card { background: var(--surface); border: 1px solid var(--border-color); flex: 1; min-width: 250px; padding: 2rem; border-radius: 12px; text-align: center; cursor: pointer; transition: transform 0.3s, border-color 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .menu-card { background: var(--surface); border: 1px solid var(--border-color); flex: 1; min-width: 250px; padding: 2rem; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .menu-card:hover { transform: translateY(-5px); border-color: var(--text-main); }
         .menu-icon { font-size: 2.5rem; margin-bottom: 1rem; }
         .menu-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-main); }
         .menu-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;}
 
-        /* Form Login Transisi */
         #loginFormBox { display: none; background: var(--surface); border: 1px solid var(--border-color); padding: 2.5rem; border-radius: 12px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 2rem; }
         #loginFormBox input { width: 100%; box-sizing: border-box; margin-bottom: 1rem; text-align: center; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-dark); color: var(--text-main); outline: none; font-size: 1rem;}
-        #loginFormBox input:focus { border-color: var(--accent-green); }
-
-        /* Sidebar Desktop */
-        .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; transition: background-color 0.3s; z-index: 100;}
+        
+        /* Sidebar & Nav */
+        .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; z-index: 100;}
         .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; color: var(--text-main); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .user-profile { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; }
         .user-profile label { font-size: 0.7rem; color: var(--accent-green); margin-bottom: 0.3rem; display: block; font-weight: bold;}
         .user-name { font-size: 1rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-main); word-wrap: break-word;}
         .logout-btn { font-size: 0.75rem; color: var(--accent-red); cursor: pointer; background: rgba(255, 23, 68, 0.1); border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold;}
 
-        .nav-link { background: none; border: none; color: var(--text-muted); text-align: left; padding: 0.8rem 1rem; margin-bottom: 0.5rem; font-size: 0.95rem; cursor: pointer; transition: 0.3s ease; font-family: inherit; border-radius: 8px;}
+        .nav-link { background: none; border: none; color: var(--text-muted); text-align: left; padding: 0.8rem 1rem; margin-bottom: 0.5rem; font-size: 0.95rem; cursor: pointer; transition: 0.3s; border-radius: 8px; font-family: inherit;}
         .nav-link:hover { background: var(--bg-dark); color: var(--text-main); }
         .nav-link.active { background: var(--bg-dark); color: var(--text-main); border-left: 4px solid var(--accent-green); font-weight: bold; }
-
         .theme-toggle { margin-top: auto; margin-bottom: 0.5rem; padding: 0.8rem; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold;}
         
-        /* Konten Utama Desktop */
-        .main-content { 
-            flex: 1; padding: 3rem; box-sizing: border-box; 
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch; /* Momentum scroll mentega iOS */
-            overscroll-behavior-y: contain;
-            padding-bottom: 120px; /* Jauh lebih lega di bawah */
-        }
-        
+        /* Main Content */
+        .main-content { flex: 1; padding: 3rem; box-sizing: border-box; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
         .tab-section { display: none; animation: fadeIn 0.4s; }
         .tab-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .header-title { font-size: 2rem; margin: 0 0 0.5rem 0; font-weight: bold; }
         .header-subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
-
         .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
         .card { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .card-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
         .card-value { font-size: 2rem; font-weight: bold; margin: 0; color: var(--text-main);}
-        .card-subtext { font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4;}
 
-        .form-container { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
+        .form-container { background-color: var(--surface); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
         .form-group { display: flex; flex-direction: column; flex: 1; min-width: 130px; }
-        label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
-        select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 8px; outline: none; font-family: inherit;}
-        button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: opacity 0.2s; }
-        button.btn-primary:active { opacity: 0.7; }
+        label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;}
+        select, input { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 8px; font-family: inherit;}
+        button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
 
-        /* Tabel Responsif */
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px;}
+        /* Tables */
+        .table-responsive { width: 100%; overflow-x: auto; padding-bottom: 20px;}
         table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 2rem; }
         th, td { text-align: left; padding: 1.2rem 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
         th { color: var(--text-muted); font-weight: bold; text-transform: uppercase; font-size: 0.75rem; background: var(--surface); position: sticky; top: 0; z-index: 10;}
         
         .status-badge { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: none; outline: none; cursor: pointer; appearance: auto; font-family: inherit; }
-        .status-badge:disabled { opacity: 0.8; cursor: not-allowed; } 
-        
         .badge-aman { background-color: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
         .badge-kritis { background-color: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); }
         .badge-pending { background-color: rgba(255, 234, 0, 0.1); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
         .badge-abu { background-color: rgba(136, 136, 136, 0.1); color: var(--text-muted); border: 1px solid var(--text-muted); }
         .badge-biru { background-color: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
 
-        .btn-aksi { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; margin-left: 5px; }
-        .btn-aksi:active { transform: scale(0.9); }
+        .btn-aksi { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-left: 5px; }
 
-        /* =========================================
-           HP RESPONSIVE - SCROLL MENTEGA & LEGA
-           ========================================= */
+        /* Klik Edit Variabel IPK */
+        .editable-cell { cursor: pointer; transition: 0.2s; position: relative; }
+        .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 5px; opacity: 0.5;}
+
+        /* Desain Sertifikat HTML (Akan di-render ke PDF) */
+        #sertifikatWrapper { position: absolute; top: -9999px; left: -9999px; width: 800px; height: 560px; background: #ffffff; color: #1a1a1a; padding: 40px; box-sizing: border-box; font-family: 'Times New Roman', serif; border: 10px solid var(--gold); }
+        
+        /* Corak Blueprint Insinyur Logistik */
+        .sertif-bg { 
+            position: absolute; inset: 0; opacity: 0.05; z-index: 1;
+            background-image: linear-gradient(#005088 1px, transparent 1px), linear-gradient(90deg, #005088 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .sertif-content { position: relative; z-index: 2; text-align: center; border: 2px solid var(--gold); height: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;}
+        .sertif-title { font-size: 2.5rem; font-weight: bold; color: var(--gold); margin-bottom: 5px; letter-spacing: 3px; text-transform: uppercase; }
+        .sertif-subtitle { font-size: 1.2rem; letter-spacing: 5px; margin-bottom: 30px; color: #333;}
+        .sertif-text { font-size: 1.1rem; margin-bottom: 10px; color: #555; }
+        .sertif-name { font-size: 3rem; font-weight: bold; border-bottom: 2px solid var(--gold); padding-bottom: 5px; margin-bottom: 20px; color: #000; width: 80%; display: inline-block;}
+        .sertif-desc { font-size: 1.1rem; line-height: 1.6; max-width: 600px; color: #333;}
+        .sertif-score { font-size: 1.5rem; font-weight: bold; color: var(--gold); margin-top: 15px; border: 1px dashed var(--gold); padding: 10px 20px; display: inline-block;}
+        .sertif-footer { margin-top: 40px; width: 100%; display: flex; justify-content: flex-end; padding-right: 50px; }
+        .sertif-sign-box { text-align: center; }
+        .sertif-sign-img { height: 80px; object-fit: contain; margin: 5px 0; }
+        .sertif-koor-name { font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 2px; color: #000;}
+        .sertif-koor-title { font-size: 0.9rem; color: #555; margin-top: 5px; }
+
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: hidden; }
             .landing-title { font-size: 1.8rem; }
             .triple-menu-container { flex-direction: column; align-items: center; gap: 1rem; }
             .menu-card { width: 100%; padding: 1.5rem; min-width: unset; }
-            
-            .sidebar { 
-                width: 100%; height: auto; padding: 12px 20px; 
-                flex-direction: row; align-items: center; justify-content: space-between; 
-                border-bottom: 1px solid var(--border-color); border-right: none;
-            }
+            .sidebar { width: 100%; height: auto; padding: 12px 20px; flex-direction: row; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); border-right: none;}
             .logo { font-size: 1rem; margin: 0; padding: 0; border: none; }
             .user-profile { display: flex; align-items: center; margin: 0; padding: 0; background: transparent; border: none; }
             .user-profile label { display: none; } 
             .user-name { font-size: 0.9rem; margin: 0 15px 0 0; }
-            .theme-toggle { display: none; } /* Sembunyikan tema di navbar HP agar rapi */
+            .theme-toggle { display: none; } 
             
-            /* Bottom Navigation Bar HP */
-            .nav-link { 
-                position: fixed; bottom: 0; z-index: 999; 
-                width: 20%; height: 65px; margin: 0; padding: 5px; 
-                font-size: 0.65rem; text-align: center; border: none; 
-                border-top: 1px solid var(--border-color); background-color: var(--surface); 
-                display: flex; flex-direction: column; align-items: center; justify-content: center; 
-                border-radius: 0; border-left: none;
-            }
-            .nav-link.active { border-top: 4px solid var(--accent-green); background-color: var(--bg-dark); border-left: none;}
-            
+            .nav-link { position: fixed; bottom: 0; z-index: 999; width: 20%; height: 65px; margin: 0; padding: 5px; font-size: 0.65rem; text-align: center; border: none; border-top: 1px solid var(--border-color); background-color: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+            .nav-link.active { border-top: 4px solid var(--accent-green); background-color: var(--bg-dark); }
             .sidebar > button.nav-link:nth-of-type(1) { left: 0; }
             .sidebar > button.nav-link:nth-of-type(2) { left: 20%; }
             .sidebar > button.nav-link:nth-of-type(3) { left: 40%; }
             .sidebar > button.nav-link:nth-of-type(4) { left: 60%; }
             .sidebar > button.nav-link:nth-of-type(5) { left: 80%; }
-            .sidebar > button.nav-link:nth-of-type(6) { display: none; } /* Setting dipindah/disembunyikan di HP */
+            .sidebar > button.nav-link:nth-of-type(6) { display: none; } 
 
-            /* Area Konten Utama */
-            .main-content { 
-                padding: 1.2rem; 
-                height: calc(100vh - 60px); /* Kurangi tinggi navbar */
-                padding-bottom: 160px; /* Ruang BAWAH SANGAT LEGA agar konten terakhir bisa digeser naik */
-            }
-            .header-title { font-size: 1.6rem; }
+            .main-content { padding: 1.2rem; height: calc(100vh - 60px); padding-bottom: 160px; }
             .grid-container { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; }
             .form-container { flex-direction: column; gap: 1rem; align-items: stretch; padding: 1.2rem;}
-            .form-group { width: 100%; min-width: 100%; }
+            .form-group { width: 100%; }
             button.btn-primary { width: 100%; padding: 1.2rem; }
-            
             .table-responsive { border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 2rem; }
             table { min-width: 600px; border: none;} 
             th, td { padding: 1rem; font-size: 0.85rem; }
@@ -166,40 +154,33 @@
 </head>
 <body>
 
+    <!-- HALAMAN LANDING -->
     <div id="landingPage">
         <h1 class="landing-title">ATP COMMAND CENTER</h1>
         <div class="landing-subtitle">DIESNATALIS FMIPA UNSOED KE-12</div>
-        
         <div class="triple-menu-container" id="menuKasta">
             <div class="menu-card" onclick="siapkanLogin('koor')">
-                <div class="menu-icon">👑</div>
-                <div class="menu-title">KOOR ATP</div>
-                <div class="menu-desc">Akses Penuh + Menu Rahasia.</div>
+                <div class="menu-icon">👑</div><div class="menu-title">KOOR ATP</div><div class="menu-desc">Akses Penuh + Edit IPK.</div>
             </div>
             <div class="menu-card" onclick="siapkanLogin('pasukan')">
-                <div class="menu-icon">⚔️</div>
-                <div class="menu-title">PASUKAN ATP</div>
-                <div class="menu-desc">Akses Input Data & Validasi Lapangan.</div>
+                <div class="menu-icon">⚔️</div><div class="menu-title">PASUKAN ATP</div><div class="menu-desc">Akses Input Data Lapangan.</div>
             </div>
             <div class="menu-card" onclick="siapkanLogin('viewer')">
-                <div class="menu-icon">👁️</div>
-                <div class="menu-title">PEMANTAU SC/PO</div>
-                <div class="menu-desc">Akses Pantau Data (Read-Only).</div>
+                <div class="menu-icon">👁️</div><div class="menu-title">PEMANTAU SC/PO</div><div class="menu-desc">Akses Pantau Data (Read-Only).</div>
             </div>
         </div>
 
         <div id="loginFormBox">
             <h2 id="loginJudul" style="margin-top:0; color:var(--text-main); font-size:1.5rem;">Identitas</h2>
             <p id="loginDesc" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.5rem;">Masukkan detail identitas Anda.</p>
-            
             <input type="text" id="loginName" placeholder="Masukkan Nama Anda">
             <input type="password" id="loginPass" placeholder="Masukkan Password Koor" style="display: none;">
-            
             <button class="btn-primary" onclick="masukSistem()" style="width: 100%; margin-bottom: 15px;">Akses Sistem</button>
             <button onclick="batalLogin()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; font-weight:bold; text-decoration:underline;">Kembali ke Menu</button>
         </div>
     </div>
 
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="logo">ATP DIESNAT 12</div>
         <div class="user-profile">
@@ -209,37 +190,25 @@
         </div>
         <button class="theme-toggle" onclick="toggleTheme()">🌓 Ganti Tema</button>
 
-        <button class="nav-link active" onclick="bukaTab('dashboard', this)">🚀 Dashboard</button>
-        <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Matriks Ruang</button>
-        <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Sirkulasi Alat</button>
+        <button class="nav-link active" onclick="bukaTab('dashboard', this)">🚀 Dash</button>
+        <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Ruang</button>
+        <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Alat</button>
         <button class="nav-link" onclick="bukaTab('konstruksi', this)">🏗️ Konstruksi</button>
         <button class="nav-link" onclick="bukaTab('ipk', this)">📊 Sistem IPK</button>
-        <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">⚙️ Pengaturan</button>
+        <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">⚙️ Setting</button>
     </div>
 
+    <!-- KONTEN UTAMA -->
     <div class="main-content">
-        
+        <!-- Dashboard, Ruang, Alat, Konstruksi disembunyikan logikanya sama seperti versi sebelumnya -->
         <div id="dashboard" class="tab-section active">
             <h1 class="header-title">Sentralisasi Presisi</h1>
             <p class="header-subtitle">Rekam Jejak Operasional Real-Time</p>
             <div class="grid-container">
-                <div class="card">
-                    <div class="card-title">Ruang (Tap-In)</div>
-                    <p class="card-value" id="dashRuang">0% Aman</p>
-                    <p class="card-subtext" id="dashRuangSub">Belum ada data masuk</p>
-                </div>
-                <div class="card">
-                    <div class="card-title">Sirkulasi Alat</div>
-                    <p class="card-value" id="dashAlat">0% Aman</p>
-                    <p class="card-subtext" id="dashAlatSub">Belum ada data masuk</p>
-                </div>
-                <div class="card">
-                    <div class="card-title">Konstruksi</div>
-                    <p class="card-value" id="dashKonstruksi">0% Siap</p>
-                    <p class="card-subtext" id="dashKonstruksiSub">Belum ada data masuk</p>
-                </div>
+                <div class="card"><div class="card-title">Ruang (Tap-In)</div><p class="card-value" id="dashRuang">0% Aman</p><p class="card-subtext" id="dashRuangSub">Belum ada data masuk</p></div>
+                <div class="card"><div class="card-title">Sirkulasi Alat</div><p class="card-value" id="dashAlat">0% Aman</p><p class="card-subtext" id="dashAlatSub">Belum ada data masuk</p></div>
+                <div class="card"><div class="card-title">Konstruksi</div><p class="card-value" id="dashKonstruksi">0% Siap</p><p class="card-subtext" id="dashKonstruksiSub">Belum ada data masuk</p></div>
             </div>
-            
             <h3 style="font-weight: bold; margin-bottom: 1rem; color:var(--text-main);">Log Aktivitas Lapangan</h3>
             <div class="table-responsive">
                 <table>
@@ -272,16 +241,13 @@
             <div class="form-container">
                 <div class="form-group"><label>Nama Alat</label><input type="text" id="inputAlat"></div>
                 <div class="form-group"><label>Asal Alat</label><input type="text" id="asalAlat" placeholder="BEM/Sewa"></div>
-                <div class="form-group">
-                    <label>Peminjam</label>
-                    <select id="divisiAlat"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option></select>
-                </div>
-                <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahAlat" min="1" value="1"></div>
+                <div class="form-group"><label>Peminjam</label><select id="divisiAlat"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option></select></div>
+                <div class="form-group" style="flex: 0.5;"><label>Jml</label><input type="number" id="jumlahAlat" min="1" value="1"></div>
                 <button class="btn-primary" onclick="tambahAlat()">Catat Pinjaman</button>
             </div>
             <div class="table-responsive">
                 <table>
-                    <thead><tr><th>Kode</th><th>Nama Alat (Jml)</th><th>Asal Alat</th><th>Peminjam</th><th>Status Alat</th><th>Aksi Data</th></tr></thead>
+                    <thead><tr><th>Kode</th><th>Alat (Jml)</th><th>Asal</th><th>Peminjam</th><th>Status Alat</th><th>Aksi</th></tr></thead>
                     <tbody id="tabelAlat"></tbody>
                 </table>
             </div>
@@ -291,26 +257,25 @@
             <h1 class="header-title">Manajemen Konstruksi</h1>
             <div class="form-container">
                 <div class="form-group"><label>Material Baru</label><input type="text" id="inputMaterial"></div>
-                <div class="form-group" style="flex: 0.5;"><label>Jumlah</label><input type="number" id="jumlahMaterial" min="1" value="1"></div>
+                <div class="form-group" style="flex: 0.5;"><label>Jml</label><input type="number" id="jumlahMaterial" min="1" value="1"></div>
                 <div class="form-group">
                     <label>Kategori Proyek</label>
                     <div style="display: flex; gap: 0.5rem;">
-                        <select id="kategoriProyek" style="flex: 1;" onchange="renderKonstruksi()">
-                            <option value="Semua Proyek">-- Semua Proyek --</option>
-                        </select>
-                        <button onclick="kelolaKategori()" id="btnKelolaProyek" title="Kelola Kategori" class="btn-primary" style="padding: 0 1rem;">⚙️</button>
+                        <select id="kategoriProyek" style="flex: 1;" onchange="renderKonstruksi()"><option value="Semua Proyek">-- Semua Proyek --</option></select>
+                        <button onclick="kelolaKategori()" class="btn-primary" style="padding: 0 1rem;">⚙️</button>
                     </div>
                 </div>
                 <button class="btn-primary" onclick="tambahMaterial()">Tambah Material</button>
             </div>
             <div class="table-responsive">
                 <table>
-                    <thead><tr><th>Item Konstruksi</th><th>Jml</th><th>Proyek</th><th>Ketersediaan</th><th>Status Pembelian</th><th>Aksi Data</th></tr></thead>
+                    <thead><tr><th>Material</th><th>Jml</th><th>Proyek</th><th>Ketersediaan</th><th>Pembelian</th><th>Aksi</th></tr></thead>
                     <tbody id="tabelKonstruksi"></tbody>
                 </table>
             </div>
         </div>
 
+        <!-- SISTEM IPK -->
         <div id="ipk" class="tab-section">
             <h1 class="header-title">Indeks Presisi Kinerja (IPK)</h1>
             <p class="header-subtitle">Rumus: IPK = [(0.50 × C) + (0.35 × D) − (0.15 × E)] × (1 + 0.05 × N)</p>
@@ -322,10 +287,10 @@
                             <th>Nama Pasukan</th>
                             <th title="Penyelesaian Tugas">Tugas (C)</th>
                             <th title="Kejelian Deteksi">Kejelian (D)</th>
-                            <th title="Pengurangan Nilai">Denda/Error (E)</th>
-                            <th title="Jumlah Divisi yang Dipegang">Divisi (N)</th>
-                            <th>Skor Akhir IPK</th>
-                            <th id="thAksiIPK">Aksi Koor</th>
+                            <th title="Pengurangan Nilai">Error (E)</th>
+                            <th title="Jumlah Divisi">Divisi (N)</th>
+                            <th>Skor IPK</th>
+                            <th>Aksi Cetak</th>
                         </tr>
                     </thead>
                     <tbody id="tabelIPK"></tbody>
@@ -333,24 +298,51 @@
             </div>
             
             <div style="background:var(--surface); border-left:4px solid var(--accent-blue); padding:1.5rem; border-radius:8px; margin-top:2rem;">
-                <h4 style="margin:0 0 10px 0; color:var(--text-main);">📌 Keterangan Variabel:</h4>
+                <h4 style="margin:0 0 10px 0; color:var(--text-main);">📌 Keterangan & Otomatisasi:</h4>
                 <ul style="margin:0; padding-left:20px; font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
-                    <li><strong>C (Penyelesaian Tugas):</strong> Poin positif dari jumlah tugas penataan barang atau pembersihan ruang yang diselesaikan hingga tuntas.</li>
-                    <li><strong>D (Kejelian):</strong> Poin tambahan jika anggota teliti menemukan barang yang hampir hilang/rusak sebelum kejadian.</li>
-                    <li><strong>E (Pengurangan Nilai):</strong> Angka denda jika anggota salah mencatat barang, lupa mendata, atau menyebabkan alat hilang.</li>
-                    <li><strong>N (Jumlah Divisi):</strong> Bonus poin jika melayani permintaan dari banyak divisi sekaligus.</li>
+                    <li><strong>Klik Angka (Bagi Koor):</strong> Koor dapat mengedit nilai secara paksa dengan mengeklik langsung angka C, D, atau E di tabel.</li>
+                    <li>Sistem otomatis mendeteksi siapa yang <i>login</i>. Jika Anda menuntaskan ruang/alat, nilai <strong>[C]</strong> Anda otomatis bertambah. Jika menghilangkan alat, nilai <strong>[E]</strong> otomatis bertambah.</li>
                 </ul>
             </div>
         </div>
 
+        <!-- PENGATURAN -->
         <div id="pengaturan" class="tab-section">
             <h1 class="header-title">Menu Rahasia Koor</h1>
-            <p class="header-subtitle">Area berbahaya. Pastikan keputusan Anda tepat.</p>
             <div class="form-container">
-                <button class="btn-primary" onclick="resetDatabase()" style="width:100%; background:var(--accent-red); color:white; padding:1.5rem; font-size:1.1rem;">⚠️ RESET SEMUA DATABASE (CLOUD)</button>
+                <button class="btn-primary" onclick="resetDatabase()" style="width:100%; background:var(--accent-red); color:white; padding:1.5rem; font-size:1.1rem;">⚠️ RESET SEMUA DATABASE</button>
             </div>
         </div>
+    </div>
 
+    <!-- TEMPLATE SERTIFIKAT PDF (Disembunyikan) -->
+    <div id="sertifikatWrapper">
+        <div class="sertif-bg"></div>
+        <div class="sertif-content">
+            <div class="sertif-title">SERTIFIKAT PENGHARGAAN</div>
+            <div class="sertif-subtitle">COMMAND CENTER LOGISTICS</div>
+            
+            <div class="sertif-text" style="margin-top:20px;">Diberikan Dengan Penuh Rasa Bangga Kepada:</div>
+            <div class="sertif-name" id="sertifNamaTeks">NAMA PASUKAN</div>
+            
+            <div class="sertif-desc">
+                Atas dedikasi, kedisiplinan, dan eksekusi tata letak spasial yang luar biasa sebagai<br>
+                <strong>STAF ATP DIESNAT FMIPA KE-12</strong><br>
+                Sistem Pusat Komando mencatat performa operasional Anda dengan:
+            </div>
+            
+            <div class="sertif-score">Indeks Presisi Kinerja (IPK): <span id="sertifSkorTeks">0.00</span></div>
+            
+            <div class="sertif-footer">
+                <div class="sertif-sign-box">
+                    <div style="font-size:0.9rem; margin-bottom:5px; color:#333;">Purwokerto, Diesnatalis FMIPA 12</div>
+                    <!-- Panggil File Tanda Tangan GitHub di sini -->
+                    <img src="ttd-koor.png" class="sertif-sign-img" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div style=\'height:80px; line-height:80px; color:#aaa; font-style:italic;\'>[Tanda Tangan Koor]</div>');">
+                    <div class="sertif-koor-name">Afdhi Abdilah</div>
+                    <div class="sertif-koor-title">Koordinator Divisi ATP</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -366,7 +358,6 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const dbCloud = firebase.firestore();
 
-        // Default Pasukan
         const defaultIPK = [
             { nama: "Shafa", c: 0, d: 0, e: 0, n: 1 }, { nama: "Yehezkiel", c: 0, d: 0, e: 0, n: 1 },
             { nama: "Violeta", c: 0, d: 0, e: 0, n: 1 }, { nama: "Elang", c: 0, d: 0, e: 0, n: 1 },
@@ -375,16 +366,13 @@
         ];
 
         let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK };
-        window.userRole = ''; // 'koor', 'pasukan', 'viewer'
-        window.isViewer = false;
+        window.userRole = ''; window.isViewer = false; window.tempRole = '';
 
         dbCloud.collection("atp").doc("data").onSnapshot((doc) => {
             if (doc.exists) { 
                 db = doc.data(); 
                 if(!db.ipk) db.ipk = defaultIPK; 
-            } else { 
-                dbCloud.collection("atp").doc("data").set(db); 
-            }
+            } else { dbCloud.collection("atp").doc("data").set(db); }
             if(document.getElementById('landingPage').style.display === 'none') {
                 renderSemua(); updateDashboard(); renderDropdownKategori();
             }
@@ -392,126 +380,80 @@
 
         function saveDB() { if(!window.isViewer) dbCloud.collection("atp").doc("data").set(db); }
 
-        // --- 2. SISTEM LOGIN TRIPLE PRESISI ---
+        // --- 2. LOGIKA AUTO-IPK ---
+        function autoUpdateIPK(tipe) {
+            if(window.isViewer || window.userRole === 'koor') return; // Viewer tidak masuk penilaian
+            let myName = localStorage.getItem('atpUser');
+            if(!myName) return;
+            let p = db.ipk.find(i => i.nama.toLowerCase() === myName.toLowerCase());
+            if(p) {
+                if(tipe === 'C') p.c += 1;
+                if(tipe === 'E') p.e += 1;
+                if(tipe === 'D') p.d += 1;
+                saveDB();
+            }
+        }
+
+        // --- 3. SISTEM LOGIN ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
             const savedRole = localStorage.getItem('atpRole');
-            
             if(savedUser && savedRole) {
                 document.getElementById('landingPage').style.display = 'none';
                 document.getElementById('displayUserName').innerText = savedUser;
-                terapkanHakAkses(savedRole);
-                renderSemua(); updateDashboard(); renderDropdownKategori();
+                terapkanHakAkses(savedRole); renderSemua(); updateDashboard(); renderDropdownKategori();
             }
         };
 
         function siapkanLogin(role) {
-            window.tempRole = role;
-            document.getElementById('menuKasta').style.display = 'none';
-            document.getElementById('loginFormBox').style.display = 'block';
-            
+            window.tempRole = role; document.getElementById('menuKasta').style.display = 'none'; document.getElementById('loginFormBox').style.display = 'block';
             let passInput = document.getElementById('loginPass');
-            if(role === 'koor') {
-                document.getElementById('loginJudul').innerText = "Akses Komandan";
-                document.getElementById('loginDesc').innerText = "Masukkan Nama dan Password Rahasia.";
-                passInput.style.display = 'block';
-                passInput.value = '';
-            } else if(role === 'pasukan') {
-                document.getElementById('loginJudul').innerText = "Akses Pasukan";
-                document.getElementById('loginDesc').innerText = "Masukkan Nama Anda.";
-                passInput.style.display = 'none';
-            } else {
-                document.getElementById('loginJudul').innerText = "Akses Pemantau";
-                document.getElementById('loginDesc').innerText = "Masukkan Nama / Jabatan (Misal: PO / Acara).";
-                passInput.style.display = 'none';
-            }
+            if(role === 'koor') { document.getElementById('loginJudul').innerText = "Akses Komandan"; document.getElementById('loginDesc').innerText = "Masukkan Nama dan Password Rahasia."; passInput.style.display = 'block'; passInput.value = ''; } 
+            else if(role === 'pasukan') { document.getElementById('loginJudul').innerText = "Akses Pasukan"; document.getElementById('loginDesc').innerText = "Masukkan Nama Anda."; passInput.style.display = 'none'; } 
+            else { document.getElementById('loginJudul').innerText = "Akses Pemantau"; document.getElementById('loginDesc').innerText = "Masukkan Nama / Jabatan Anda."; passInput.style.display = 'none'; }
         }
 
-        function batalLogin() {
-            window.tempRole = '';
-            document.getElementById('loginFormBox').style.display = 'none';
-            document.getElementById('menuKasta').style.display = 'flex';
-        }
+        function batalLogin() { window.tempRole = ''; document.getElementById('loginFormBox').style.display = 'none'; document.getElementById('menuKasta').style.display = 'flex'; }
 
         function masukSistem() {
-            const nama = document.getElementById('loginName').value;
-            const pass = document.getElementById('loginPass').value;
+            const nama = document.getElementById('loginName').value; const pass = document.getElementById('loginPass').value;
             if(!nama.trim()) return alert('Nama wajib diisi!');
+            if(window.tempRole === 'koor' && pass !== 'komandan12') return alert('Password Koor Salah!');
             
-            if(window.tempRole === 'koor') {
-                // Password Rahasia Koor ATP
-                if(pass !== 'komandan12') return alert('Password Koor Salah!');
+            // Cek apakah nama pasukan terdaftar di IPK, kalau tidak, tambahkan.
+            if(window.tempRole === 'pasukan' && !db.ipk.find(i => i.nama.toLowerCase() === nama.toLowerCase())) {
+                db.ipk.push({ nama: nama, c: 0, d: 0, e: 0, n: 1 }); saveDB();
             }
-            
-            localStorage.setItem('atpUser', nama);
-            localStorage.setItem('atpRole', window.tempRole);
-            
-            document.getElementById('displayUserName').innerText = nama;
-            document.getElementById('landingPage').style.display = 'none';
-            
-            if(window.tempRole === 'koor') catatLog('Koor masuk Command Center', 'Sistem', 'badge-aman');
-            else if(window.tempRole === 'pasukan') catatLog('Pasukan siap operasi', 'Sistem', 'badge-aman');
-            
-            terapkanHakAkses(window.tempRole);
-            renderSemua(); updateDashboard(); renderDropdownKategori();
+
+            localStorage.setItem('atpUser', nama); localStorage.setItem('atpRole', window.tempRole);
+            document.getElementById('displayUserName').innerText = nama; document.getElementById('landingPage').style.display = 'none';
+            if(window.tempRole === 'koor') catatLog('Koor masuk', 'Sistem', 'badge-aman'); else if(window.tempRole === 'pasukan') catatLog('Pasukan siap', 'Sistem', 'badge-aman');
+            terapkanHakAkses(window.tempRole); renderSemua(); updateDashboard(); renderDropdownKategori();
         }
 
         function terapkanHakAkses(role) {
-            window.userRole = role;
-            window.isViewer = (role === 'viewer');
-            
-            let label = 'PETUGAS:';
-            if(role === 'viewer') label = 'PEMANTAU:';
-            if(role === 'koor') label = 'KOORDINATOR:';
+            window.userRole = role; window.isViewer = (role === 'viewer');
+            let label = 'PETUGAS:'; if(role === 'viewer') label = 'PEMANTAU:'; if(role === 'koor') label = 'KOORDINATOR:';
             document.getElementById('roleLabel').innerText = label;
             
-            // Atur Visibilitas Form Input
-            if(window.isViewer) {
-                document.querySelectorAll('.form-container').forEach(el => el.style.display = 'none');
-            } else {
-                document.querySelectorAll('.form-container').forEach(el => el.style.display = 'flex');
-            }
+            if(window.isViewer) { document.querySelectorAll('.form-container').forEach(el => el.style.display = 'none'); } 
+            else { document.querySelectorAll('.form-container').forEach(el => el.style.display = 'flex'); }
 
-            // Atur Visibilitas Tab Pengaturan (Menu Rahasia)
             const navSet = document.getElementById('navPengaturan');
-            if(role === 'koor') {
-                if(navSet) navSet.style.display = 'block';
-                document.getElementById('thAksiIPK').style.display = 'table-cell';
-            } else {
-                if(navSet) navSet.style.display = 'none'; // Pasukan dan Viewer tidak bisa akses pengaturan
-                document.getElementById('thAksiIPK').style.display = 'none';
-            }
+            if(role === 'koor') { if(navSet) navSet.style.display = 'block'; } 
+            else { if(navSet) navSet.style.display = 'none'; }
         }
 
         function keluarSistem() { localStorage.removeItem('atpUser'); localStorage.removeItem('atpRole'); location.reload(); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
-        function resetDatabase() {
-            if(prompt("PERINGATAN! Ketik 'RESET' untuk menghapus data:") === 'RESET') {
-                db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK };
-                saveDB(); alert('Database berhasil di-reset!'); location.reload();
-            }
-        }
+        function resetDatabase() { if(prompt("Ketik 'RESET' untuk menghapus data:") === 'RESET') { db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK }; saveDB(); alert('Database reset!'); location.reload(); } }
+        function bukaTab(idTab, elemen) { document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active')); document.getElementById(idTab).classList.add('active'); if(elemen) elemen.classList.add('active'); }
 
-        function bukaTab(idTab, elemen) {
-            document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
-            document.getElementById(idTab).classList.add('active'); 
-            if(elemen) elemen.classList.add('active');
-        }
-
-        // --- 3. WARNA STATUS ---
-        function dptClass(val) {
-            val = val.toLowerCase();
-            if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis';
-            if(val.includes('sedang')) return 'badge-pending';
-            if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman';
-            if(val.includes('transit') || val.includes('telah dipinjam')) return 'badge-biru';
-            return 'badge-abu';
-        }
+        // --- 4. RENDER DATA UTAMA (Ruang, Alat, Konstruksi) ---
+        function dptClass(val) { val = val.toLowerCase(); if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; if(val.includes('sedang')) return 'badge-pending'; if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; if(val.includes('transit') || val.includes('telah dipinjam')) return 'badge-biru'; return 'badge-abu'; }
         function getModulColor(m) { return m==='Ruang'?'#87cefa':m==='Alat'?'#ff69b4':m==='Konstruksi'?'#dda0dd':'var(--text-muted)'; }
 
-        // --- 4. RENDER DATA ---
         function renderSemua() { renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); }
 
         function renderRuang() {
@@ -525,6 +467,7 @@
                     <option value="Belum Diajukan" ${r.status=='Belum Diajukan'?'selected':''}>Belum Diajukan</option>
                     <option value="Sedang Diajukan" ${r.status=='Sedang Diajukan'?'selected':''}>Sedang Diajukan</option>
                     <option value="Sudah Terajukan (ACC)" ${r.status=='Sudah Terajukan (ACC)'?'selected':''}>Sudah Terajukan (ACC)</option>
+                    <option value="Selesai Bersih" ${r.status=='Selesai Bersih'?'selected':''}>Selesai Bersih</option>
                     <option value="Tidak Tersedia" ${r.status=='Tidak Tersedia'?'selected':''}>Tidak Tersedia</option>
                 </select></td><td>${btnEdit}${btnHapus}</td></tr>`;
             });
@@ -550,7 +493,7 @@
             });
         }
 
-        function renderKonstruksi() {
+        function renderKonstruksi() { /* Logic sama */ 
             const tbody = document.getElementById('tabelKonstruksi'); tbody.innerHTML = '';
             const filter = document.getElementById('kategoriProyek') ? document.getElementById('kategoriProyek').value : 'Semua Proyek';
             if(!db.konstruksi) return; let dis = window.isViewer ? 'disabled' : '';
@@ -573,65 +516,125 @@
             });
         }
 
-        function renderLog() {
-            const tbody = document.getElementById('tabelLog'); tbody.innerHTML = '';
-            if(!db.log) return;
+        function renderLog() { /* Logic sama */ 
+            const tbody = document.getElementById('tabelLog'); tbody.innerHTML = ''; if(!db.log) return;
             db.log.slice(0, 30).forEach((l, idx) => {
                 let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.3rem 0.6rem; font-size:0.75rem;">${l.tindakan}</span>` : l.tindakan;
-                let btnHapus = !window.isViewer ? `<button class="btn-aksi hapus" onclick="hapusLog(${idx})">🗑️</button>` : '-';
+                let btnHapus = (window.userRole === 'koor') ? `<button class="btn-aksi hapus" onclick="hapusLog(${idx})">🗑️</button>` : '-';
                 tbody.innerHTML += `<tr><td>${l.tanggal}<br><span style="color:var(--text-muted); font-size:0.8rem;">${l.waktu}</span></td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td><td>${btnHapus}</td></tr>`;
             });
         }
-        
-        function renderDropdownKategori() {
-            const sel = document.getElementById('kategoriProyek'); if(!sel) return;
-            sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>';
-            if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; });
-        }
+        function renderDropdownKategori() { const sel = document.getElementById('kategoriProyek'); if(!sel) return; sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>'; if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; }); }
 
-        // --- SISTEM IPK KHUSUS ---
+        // --- 5. RENDER SISTEM IPK KLIK-EDIT & PDF ---
         function renderIPK() {
             const tbody = document.getElementById('tabelIPK'); tbody.innerHTML = '';
             if(!db.ipk) return;
-            
             let sortedIPK = [...db.ipk].sort((a,b) => hitungSkorIPK(b.c, b.d, b.e, b.n) - hitungSkorIPK(a.c, a.d, a.e, a.n));
 
             sortedIPK.forEach((p, idx) => {
                 let skor = hitungSkorIPK(p.c, p.d, p.e, p.n);
-                let originalIdx = db.ipk.findIndex(item => item.nama === p.nama);
+                let isKoor = (window.userRole === 'koor');
                 
-                let btnUpdate = (window.userRole === 'koor') ? `<button class="btn-primary" style="padding:0.5rem 1rem; font-size:0.75rem;" onclick="updateNilaiIPK(${originalIdx})">Beri Nilai</button>` : '';
-                let tdAksi = (window.userRole === 'koor') ? `<td>${btnUpdate}</td>` : '';
+                // Variabel yang bisa diklik Koor
+                let tdC = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'c')" title="Edit Nilai C">${p.c}</td>` : `<td>${p.c}</td>`;
+                let tdD = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'd')" title="Edit Nilai D" style="color:var(--accent-blue);">${p.d}</td>` : `<td style="color:var(--accent-blue);">${p.d}</td>`;
+                let tdE = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'e')" title="Edit Nilai E" style="color:var(--accent-red); font-weight:bold;">${p.e}</td>` : `<td style="color:var(--accent-red); font-weight:bold;">${p.e}</td>`;
+                let tdN = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'n')" title="Edit Nilai N">${p.n}</td>` : `<td>${p.n}</td>`;
+                
+                let btnCetak = `<button class="btn-primary" style="padding:0.4rem 0.8rem; font-size:0.7rem;" onclick="cetakSertifikat('${p.nama}', ${skor.toFixed(2)})">Cetak PDF</button>`;
                 
                 tbody.innerHTML += `<tr>
-                    <td style="font-weight:bold; color:var(--text-main); font-size:1.1rem;">
-                        ${idx === 0 ? '🏆 ' : ''}${idx === 1 ? '🥈 ' : ''}${idx === 2 ? '🥉 ' : ''}
-                        ${p.nama}
+                    <td style="font-weight:bold; color:var(--text-main); font-size:1.05rem;">
+                        ${idx === 0 ? '🏆 ' : ''}${idx === 1 ? '🥈 ' : ''}${idx === 2 ? '🥉 ' : ''}${p.nama}
                     </td>
-                    <td style="text-align:center;">${p.c}</td>
-                    <td style="text-align:center; color:var(--accent-blue);">${p.d}</td>
-                    <td style="text-align:center; color:var(--accent-red); font-weight:bold;">${p.e}</td>
-                    <td style="text-align:center;">${p.n}</td>
-                    <td style="font-weight:bold; font-size:1.4rem; color:var(--accent-green); text-align:center;">${skor.toFixed(2)}</td>
-                    ${tdAksi}
+                    ${tdC}${tdD}${tdE}${tdN}
+                    <td style="font-weight:bold; font-size:1.3rem; color:var(--accent-green);">${skor.toFixed(2)}</td>
+                    <td>${btnCetak}</td>
                 </tr>`;
             });
         }
 
         function hitungSkorIPK(c, d, e, n) { let skor = ((0.50 * c) + (0.35 * d) - (0.15 * e)) * (1 + (0.05 * n)); return skor > 0 ? skor : 0; }
 
-        function updateNilaiIPK(idx) {
-            let p = db.ipk[idx];
-            let nc = prompt(`[C] Jumlah Penuntasan Tugas untuk ${p.nama}:`, p.c); if(nc === null) return;
-            let nd = prompt(`[D] Jumlah Kejelian Deteksi untuk ${p.nama}:`, p.d); if(nd === null) return;
-            let ne = prompt(`[E] Jumlah Error / Denda untuk ${p.nama}:`, p.e); if(ne === null) return;
-            
-            db.ipk[idx].c = Number(nc); db.ipk[idx].d = Number(nd); db.ipk[idx].e = Number(ne);
-            catatLog(`Update IPK ${p.nama}`, 'Sistem', 'badge-aman');
-            saveDB(); renderIPK();
+        function editVarIPK(nama, varType) {
+            let pIdx = db.ipk.findIndex(i => i.nama === nama);
+            if(pIdx === -1) return;
+            let currentVal = db.ipk[pIdx][varType];
+            let newVal = prompt(`Ubah nilai [${varType.toUpperCase()}] untuk ${nama}:`, currentVal);
+            if(newVal !== null && !isNaN(newVal)) {
+                db.ipk[pIdx][varType] = Number(newVal);
+                catatLog(`Update IPK (${varType.toUpperCase()}) ${nama} ➔ ${newVal}`, 'Sistem', 'badge-aman');
+                saveDB(); renderIPK();
+            }
         }
 
-        // --- 5. DASHBOARD ---
+        // GENERATOR SERTIFIKAT PDF
+        function cetakSertifikat(nama, skor) {
+            // Update teks template
+            document.getElementById('sertifNamaTeks').innerText = nama.toUpperCase();
+            document.getElementById('sertifSkorTeks').innerText = skor;
+            
+            // Render HTML to PDF
+            var element = document.getElementById('sertifikatWrapper');
+            element.style.top = '0'; // Pindah ke viewport sesaat agar tidak error render
+            
+            var opt = {
+                margin:       0,
+                filename:     `Sertifikat_ATP_${nama}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'px', format: [800, 560], orientation: 'landscape' }
+            };
+            
+            // Proses download otomatis
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.top = '-9999px'; // Sembunyikan lagi
+                alert(`Sertifikat PDF atas nama ${nama} berhasil diunduh!`);
+            });
+        }
+
+        // --- 6. AKSI INPUT KE DATABASE ---
+        function catatLog(t, m, c) { if(window.isViewer) return; const d = new Date(); db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); saveDB(); }
+        function hapusLog(idx) { if(confirm("Hapus?")) { db.log.splice(idx, 1); saveDB(); } }
+
+        function tambahRuang() { let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value; if(!n) return alert("Isi nama!"); db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false }); document.getElementById('inputRuang').value = ''; catatLog(`Input: ${n}`, 'Ruang', dptClass('Belum Diajukan')); saveDB(); }
+        
+        function ubahStatusRuang(idx, val) { 
+            db.ruang[idx].status = val; 
+            // Auto IPK
+            if(val === 'Selesai Bersih' || val === 'Sudah Terajukan (ACC)') autoUpdateIPK('C');
+            catatLog(`Update ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); saveDB(); 
+        }
+        
+        function editRuang(idx) { let n = prompt("Nama Ruang:", db.ruang[idx].nama); if(!n) return; let d = prompt("Divisi:", db.ruang[idx].divisi); if(!d) return; catatLog(`Edit ruang: ${n}`, 'Ruang', 'badge-abu'); db.ruang[idx].nama = n; db.ruang[idx].divisi = d; saveDB(); }
+        function hapusRuang(idx) { if(confirm(`Hapus ${db.ruang[idx].nama}?`)) { db.ruang.splice(idx, 1); saveDB(); } }
+
+        function tambahAlat() { let n = document.getElementById('inputAlat').value; let asal = document.getElementById('asalAlat').value || 'BEM/Umum'; let div = document.getElementById('divisiAlat').value; let jml = document.getElementById('jumlahAlat').value; if(!n) return alert("Isi nama alat!"); db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Belum Menyediakan', hilang: 0 }); document.getElementById('inputAlat').value = ''; catatLog(`Input ${n}`, 'Alat', dptClass('Belum Menyediakan')); saveDB(); }
+        
+        function ubahStatusAlat(idx, val) { 
+            let a = db.alat[idx]; 
+            if(val === 'Hilang') { 
+                let h = prompt(`Berapa hilang dari ${a.jumlah}?`); if(!h) return renderAlat(); 
+                a.hilang = h; catatLog(`URGENT: ${h} ${a.nama} Hilang!`, 'Alat', 'badge-kritis');
+                autoUpdateIPK('E'); // Auto Error Penalty
+            } else { 
+                a.hilang = 0; catatLog(`${a.nama} ➔ ${val}`, 'Alat', dptClass(val)); 
+                if(val === 'Dikembalikan' || val === 'Tersedia') autoUpdateIPK('C'); // Auto Poin
+            } 
+            a.status = val; saveDB(); 
+        }
+        
+        function editAlat(idx) { let n = prompt("Nama Alat:", db.alat[idx].nama); if(!n) return; let j = prompt("Jumlah:", db.alat[idx].jumlah); if(!j) return; db.alat[idx].nama = n; db.alat[idx].jumlah = j; saveDB(); }
+        function hapusAlat(idx) { if(confirm(`Hapus ${db.alat[idx].nama}?`)) { db.alat.splice(idx, 1); saveDB(); } }
+
+        function tambahMaterial() { let n = document.getElementById('inputMaterial').value; let jml = document.getElementById('jumlahMaterial').value; let p = document.getElementById('kategoriProyek').value; if(!n) return alert("Isi!"); if(p==='Semua Proyek') return alert("Pilih proyek!"); db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' }); document.getElementById('inputMaterial').value = ''; saveDB(); }
+        function ubahKonstruksi(idx, col, val) { if(col === 'ket') db.konstruksi[idx].ketersediaan = val; if(col === 'beli') db.konstruksi[idx].pembelian = val; saveDB(); }
+        function editKonstruksi(idx) { let n = prompt("Nama:", db.konstruksi[idx].nama); if(!n) return; let j = prompt("Jumlah:", db.konstruksi[idx].jumlah); if(!j) return; db.konstruksi[idx].nama = n; db.konstruksi[idx].jumlah = j; saveDB(); }
+        function hapusKonstruksi(idx) { if(confirm(`Hapus?`)) { db.konstruksi.splice(idx, 1); saveDB(); } }
+        function kelolaKategori() { let a = prompt("Ketik 'tambah' atau 'hapus':"); if(a==='tambah') { let n = prompt("Nama baru:"); if(n) { db.kategori.push(n); saveDB(); } } else if(a==='hapus') { let v = document.getElementById('kategoriProyek').value; if(v!=='Semua Proyek' && confirm("Hapus?")) { db.kategori = db.kategori.filter(k=>k!==v); saveDB(); } } }
+
+        // Dashboard Calculation
         function updateDashboard() {
             if(!db.ruang || !db.alat || !db.konstruksi) return;
             const penentuWarna = (persen, total) => { if(total === 0) return 'var(--accent-green)'; if(persen >= 80) return 'var(--accent-green)'; if(persen >= 60) return 'var(--accent-yellow)'; return 'var(--accent-red)'; };
@@ -639,7 +642,7 @@
             let totalRuangScore = 0; let maxRuangScore = 0; let belumRuang = 0; let tidakTersedia = 0;
             db.ruang.forEach(r => {
                 if (r.status === 'Tidak Tersedia') { tidakTersedia++; } 
-                else { maxRuangScore += 100; if (r.status.includes('Belum')) { totalRuangScore += 0; belumRuang++; } else if (r.status.includes('Sedang')) { totalRuangScore += 50; belumRuang++; } else if (r.status.includes('ACC') || r.selesai) { totalRuangScore += 100; } }
+                else { maxRuangScore += 100; if (r.status.includes('Belum')) { totalRuangScore += 0; belumRuang++; } else if (r.status.includes('Sedang')) { totalRuangScore += 50; belumRuang++; } else if (r.status.includes('ACC') || r.status.includes('Selesai')) { totalRuangScore += 100; } }
             });
             let pRuang = maxRuangScore === 0 ? 100 : Math.floor((totalRuangScore / maxRuangScore) * 100);
             let subRuang = maxRuangScore === 0 && tidakTersedia === 0 ? 'Belum ada data' : `${belumRuang} Ruang belum ACC.`;
@@ -669,26 +672,6 @@
             document.getElementById('dashKonstruksi').innerHTML = `<span style="color:${penentuWarna(pKonstruksi, maxKScore)}">${pKonstruksi}% Siap</span>`;
             document.getElementById('dashKonstruksiSub').innerText = maxKScore === 0 ? 'Belum ada data' : `${cK} dari ${db.konstruksi.length} Material Tersedia`;
         }
-
-        // --- 6. AKSI INPUT ---
-        function catatLog(t, m, c) { if(window.isViewer) return; const d = new Date(); db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); saveDB(); }
-        function hapusLog(idx) { if(confirm("Hapus?")) { db.log.splice(idx, 1); saveDB(); } }
-
-        function tambahRuang() { let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value; if(!n) return alert("Isi nama!"); db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false }); document.getElementById('inputRuang').value = ''; catatLog(`Input: ${n}`, 'Ruang', dptClass('Belum Diajukan')); saveDB(); }
-        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; catatLog(`Update ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); saveDB(); }
-        function editRuang(idx) { let n = prompt("Nama Ruang:", db.ruang[idx].nama); if(!n) return; let d = prompt("Divisi:", db.ruang[idx].divisi); if(!d) return; catatLog(`Edit ruang: ${n}`, 'Ruang', 'badge-abu'); db.ruang[idx].nama = n; db.ruang[idx].divisi = d; saveDB(); }
-        function hapusRuang(idx) { if(confirm(`Hapus ${db.ruang[idx].nama}?`)) { db.ruang.splice(idx, 1); saveDB(); } }
-
-        function tambahAlat() { let n = document.getElementById('inputAlat').value; let asal = document.getElementById('asalAlat').value || 'BEM/Umum'; let div = document.getElementById('divisiAlat').value; let jml = document.getElementById('jumlahAlat').value; if(!n) return alert("Isi nama alat!"); db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: n, asal, divisi: div, jumlah: jml, status: 'Belum Menyediakan', hilang: 0 }); document.getElementById('inputAlat').value = ''; catatLog(`Input ${n}`, 'Alat', dptClass('Belum Menyediakan')); saveDB(); }
-        function ubahStatusAlat(idx, val) { let a = db.alat[idx]; if(val === 'Hilang') { let h = prompt(`Berapa hilang dari ${a.jumlah}?`); if(!h) return renderAlat(); a.hilang = h; catatLog(`URGENT: ${h} ${a.nama} Hilang!`, 'Alat', 'badge-kritis'); } else { a.hilang = 0; catatLog(`${a.nama} ➔ ${val}`, 'Alat', dptClass(val)); } a.status = val; saveDB(); }
-        function editAlat(idx) { let n = prompt("Nama Alat:", db.alat[idx].nama); if(!n) return; let j = prompt("Jumlah:", db.alat[idx].jumlah); if(!j) return; db.alat[idx].nama = n; db.alat[idx].jumlah = j; saveDB(); }
-        function hapusAlat(idx) { if(confirm(`Hapus ${db.alat[idx].nama}?`)) { db.alat.splice(idx, 1); saveDB(); } }
-
-        function tambahMaterial() { let n = document.getElementById('inputMaterial').value; let jml = document.getElementById('jumlahMaterial').value; let p = document.getElementById('kategoriProyek').value; if(!n) return alert("Isi!"); if(p==='Semua Proyek') return alert("Pilih proyek!"); db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' }); document.getElementById('inputMaterial').value = ''; saveDB(); }
-        function ubahKonstruksi(idx, col, val) { if(col === 'ket') db.konstruksi[idx].ketersediaan = val; if(col === 'beli') db.konstruksi[idx].pembelian = val; saveDB(); }
-        function editKonstruksi(idx) { let n = prompt("Nama:", db.konstruksi[idx].nama); if(!n) return; let j = prompt("Jumlah:", db.konstruksi[idx].jumlah); if(!j) return; db.konstruksi[idx].nama = n; db.konstruksi[idx].jumlah = j; saveDB(); }
-        function hapusKonstruksi(idx) { if(confirm(`Hapus?`)) { db.konstruksi.splice(idx, 1); saveDB(); } }
-        function kelolaKategori() { let a = prompt("Ketik 'tambah' atau 'hapus':"); if(a==='tambah') { let n = prompt("Nama baru:"); if(n) { db.kategori.push(n); saveDB(); } } else if(a==='hapus') { let v = document.getElementById('kategoriProyek').value; if(v!=='Semua Proyek' && confirm("Hapus?")) { db.kategori = db.kategori.filter(k=>k!==v); saveDB(); } } }
     </script>
 </body>
 </html>
