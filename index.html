@@ -124,7 +124,7 @@
             @page { size: landscape; margin: 0; } 
         }
 
-        /* MOBILE RESPONSIVE TACTICAL OVERHAUL */
+        /* MOBILE RESPONSIVE */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: hidden; }
             .landing-title { font-size: 1.8rem; }
@@ -202,7 +202,6 @@
         
         <div class="nav-container">
             <button class="nav-link active" onclick="bukaTab('dashboard', this)">🚀 Dash</button>
-            <!-- MENU BARU: REQ -->
             <button class="nav-link" onclick="bukaTab('req', this)">📝 REQ</button>
             <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Ruang</button>
             <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Alat</button>
@@ -231,7 +230,6 @@
             </div>
         </div>
 
-        <!-- MENU BARU: REQ -->
         <div id="req" class="tab-section">
             <h1 class="header-title">Sistem Tiket Logistik (REQ)</h1>
             <p class="header-subtitle">Buku Tamu / Permintaan Mentah dari Divisi Lain</p>
@@ -308,7 +306,6 @@
             </div>
         </div>
 
-        <!-- SISTEM IPK -->
         <div id="ipk" class="tab-section">
             <h1 class="header-title">Indeks Presisi Kinerja (IPK)</h1>
             <p class="header-subtitle">Rumus: IPK = [(0.50 × C) + (0.35 × D) − (0.15 × E)] × (1 + 0.05 × N)</p>
@@ -361,7 +358,6 @@
         </div>
     </div>
 
-    <!-- TEMPLATE SERTIFIKAT PDF PRINT MURNI -->
     <div id="sertifikatWrapper">
         <div style="font-size: 32pt; font-weight: bold; margin-bottom: 10px;">SERTIFIKAT PENGHARGAAN</div>
         <div style="font-size: 18pt; margin-bottom: 50px; color: #555;">ATP DIESNATALIS FMIPA KE-12</div>
@@ -508,10 +504,7 @@
             const nama = document.getElementById('loginName').value; const pass = document.getElementById('loginPass').value;
             if(!nama.trim()) return alert('Nama wajib diisi!');
             
-            // Validasi Password Koor
             if(window.tempRole === 'koor' && pass !== 'komandan12') return alert('Password Koor Salah!');
-            
-            // Validasi Password Pasukan
             if(window.tempRole === 'pasukan' && pass !== 'akubanggajadiatp') return alert('Password Pasukan Salah!');
             
             if(window.tempRole === 'pasukan' && !db.ipk.find(i => i.nama.toLowerCase() === nama.toLowerCase())) {
@@ -547,7 +540,7 @@
 
         function renderSemua() { renderReq(); renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); }
 
-        // --- RENDER MENU REQ ---
+        // --- RENDER MENU REQ DENGAN SISTEM POP-UP INTEROGASI KOOR ---
         function renderReq() {
             const tbody = document.getElementById('tabelReq'); tbody.innerHTML = '';
             if(!db.req) return;
@@ -556,7 +549,6 @@
                 let btnHapus = isKoor ? `<button class="btn-aksi" onclick="hapusReq(${idx})">🗑️</button>` : '';
                 let btnAcc = '';
                 
-                // Hanya Koor yang bisa ACC, dan hanya jika statusnya masih Pending
                 if(r.status === 'Pending' && isKoor) {
                     btnAcc = `<button class="btn-aksi" style="background:var(--accent-green); color:#000; border-color:var(--accent-green); font-weight:bold;" onclick="accReq(${idx})">✔️ ACC & Pindah</button>`;
                 }
@@ -592,21 +584,41 @@
             if(confirm("Hapus tiket ini?")) { db.req.splice(idx, 1); saveDB(); } 
         }
 
+        // --- SISTEM ACC DENGAN INTEROGASI POP-UP ---
         function accReq(idx) {
             let r = db.req[idx];
             if(!confirm(`ACC dan pindahkan [${r.nama}] secara otomatis ke matriks ${r.kategori}?`)) return;
             
             if(r.kategori === 'Ruang') {
                 db.ruang.push({ nama: r.nama, divisi: r.divisi, status: 'Belum Diajukan', tapped: false, selesai: false });
-            } else if(r.kategori === 'Alat') {
-                db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: r.nama, asal: 'BEM/Umum', divisi: r.divisi, jumlah: r.jumlah, status: 'Belum Menyediakan', hilang: 0 });
-            } else if(r.kategori === 'Konstruksi') {
-                db.konstruksi.push({ nama: r.nama, jumlah: r.jumlah, proyek: 'Semua Proyek', ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
+            } 
+            else if(r.kategori === 'Alat') {
+                // Interogasi Asal Alat
+                let asalInput = prompt(`Asal alat untuk [${r.nama}]?\n(Kosongkan/Klik OK jika asalnya dari BEM/Umum)`, "BEM/Umum");
+                if(asalInput === null) return; // Koor klik cancel, batal ACC
+                if(asalInput.trim() === "") asalInput = "BEM/Umum";
+                
+                db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: r.nama, asal: asalInput, divisi: r.divisi, jumlah: r.jumlah, status: 'Belum Menyediakan', hilang: 0 });
+            } 
+            else if(r.kategori === 'Konstruksi') {
+                // Interogasi Kategori Proyek
+                let listProyek = db.kategori.join(", ");
+                let proyekInput = prompt(`Kategori Proyek untuk [${r.nama}]?\n\nKetik nama proyek yang sesuai.\n(Proyek tersedia saat ini: ${listProyek})`, "Semua Proyek");
+                if(proyekInput === null) return; // Koor klik cancel, batal ACC
+                if(proyekInput.trim() === "") proyekInput = "Semua Proyek";
+
+                // Jika Koor mengetik proyek baru, otomatis tambahkan ke database kategori
+                if(proyekInput !== "Semua Proyek" && !db.kategori.includes(proyekInput)) {
+                    db.kategori.push(proyekInput);
+                }
+
+                db.konstruksi.push({ nama: r.nama, jumlah: r.jumlah, proyek: proyekInput, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
             }
             
             r.status = 'Di-ACC'; // Ubah status tiket jadi ACC
             catatLog(`ACC Tiket: ${r.nama} masuk ke ${r.kategori}`, 'REQ', 'badge-aman');
             saveDB();
+            renderSemua(); // Render ulang agar UI langsung berubah
         }
 
         function renderRuang() {
