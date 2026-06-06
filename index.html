@@ -95,47 +95,22 @@
         .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 5px; opacity: 0.5;}
 
-        /* Desain Sertifikat HTML - NATIVE PRINT ANTI BLANK */
+        /* Desain Sertifikat HTML - SANGAT SIMPEL, ANTI EROR & CLEAN */
         #sertifikatWrapper { display: none; }
         
         @media print {
-            /* Sembunyikan SEMUA elemen web saat nge-print */
-            body { background: white !important; margin: 0; padding: 0; }
+            body { background: white !important; margin: 0; padding: 0; color: black !important; }
             body > *:not(#sertifikatWrapper) { display: none !important; }
             
-            /* Munculkan khusus sertifikat, full screen */
             #sertifikatWrapper { 
-                display: flex !important; 
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                width: 100vw; 
-                height: 100vh; 
-                position: fixed; 
-                top: 0; left: 0; 
-                background-color: white !important; 
-                z-index: 999999;
-                padding: 40px;
-                box-sizing: border-box;
+                display: block !important; 
+                width: 100%; 
+                text-align: center; 
+                padding-top: 80px; /* Jarak proporsional dari atas kertas */
+                font-family: Arial, sans-serif !important;
             }
 
-            .sertif-border-luar { border: 8px solid #000; width: 100%; height: 100%; padding: 6px; box-sizing: border-box; }
-            .sertif-border-dalam { border: 2px solid #000; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; }
-
-            .sertif-title { font-size: 3rem; font-weight: bold; color: #000; margin-bottom: 5px; letter-spacing: 4px; text-transform: uppercase; }
-            .sertif-subtitle { font-size: 1.2rem; letter-spacing: 5px; margin-bottom: 30px; color: #333;}
-            .sertif-text { font-size: 1.2rem; margin-bottom: 10px; color: #000; }
-            .sertif-name { font-size: 3.5rem; font-weight: bold; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 20px; color: #000; width: 80%; display: inline-block;}
-            .sertif-desc { font-size: 1.2rem; line-height: 1.6; max-width: 800px; color: #000;}
-            
-            .sertif-score-box { margin-top: 20px; border: 2px dashed #000; padding: 15px 30px;}
-            .sertif-predikat { font-size: 1.5rem; font-weight: bold; color: #000; text-transform: uppercase; letter-spacing: 2px;}
-            .sertif-score { font-size: 1.2rem; color: #000; margin-top: 5px;}
-
-            .sertif-footer { margin-top: 50px; width: 100%; display: flex; justify-content: flex-end; padding-right: 60px; }
-            .sertif-koor-name { font-weight: bold; font-size: 1.2rem; border-bottom: 1px solid #000; padding-bottom: 2px; color: #000; margin-top: 60px;}
-            
-            @page { size: landscape; margin: 0; }
+            @page { size: landscape; margin: 1cm; }
         }
 
         /* MOBILE RESPONSIVE TACTICAL OVERHAUL */
@@ -145,7 +120,6 @@
             .triple-menu-container { flex-direction: column; align-items: center; gap: 1rem; }
             .menu-card { width: 100%; padding: 1.5rem; min-width: unset; }
             
-            /* Sidebar jadi header kecil */
             .sidebar { width: 100%; height: auto; padding: 12px 20px; flex-direction: row; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); border-right: none;}
             .logo { font-size: 1rem; margin: 0; padding: 0; border: none; }
             .user-profile { display: flex; align-items: center; margin: 0; padding: 0; background: transparent; border: none; }
@@ -153,7 +127,6 @@
             .user-name { font-size: 0.9rem; margin: 0 15px 0 0; }
             .theme-toggle { display: none; } 
             
-            /* Menu Navigasi jadi Flexbox di bawah (Anti Numupuk) */
             .nav-container { 
                 position: fixed; bottom: 0; left: 0; width: 100%; 
                 display: flex; flex-direction: row; flex-wrap: nowrap;
@@ -219,6 +192,7 @@
             <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Ruang</button>
             <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Alat</button>
             <button class="nav-link" onclick="bukaTab('konstruksi', this)">🏗️ Konstr</button>
+            <!-- IPK SELALU ADA -->
             <button class="nav-link" id="navIPK" onclick="bukaTab('ipk', this)">📊 IPK</button>
             <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">⚙️ Set</button>
         </div>
@@ -300,6 +274,7 @@
             </div>
         </div>
 
+        <!-- SISTEM IPK -->
         <div id="ipk" class="tab-section">
             <h1 class="header-title">Indeks Presisi Kinerja (IPK)</h1>
             <p class="header-subtitle">Rumus: IPK = [(0.50 × C) + (0.35 × D) − (0.15 × E)] × (1 + 0.05 × N)</p>
@@ -330,7 +305,7 @@
                 <h4 style="margin:0 0 10px 0; color:var(--text-main);">📌 Keterangan & Otomatisasi:</h4>
                 <ul style="margin:0; padding-left:20px; font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
                     <li><strong>Klik Angka (Bagi Koor):</strong> Koor dapat mengedit nilai secara paksa dengan mengeklik langsung angka C, D, atau E di tabel.</li>
-                    <li>Sistem otomatis mendeteksi siapa yang <i>login</i>. Jika Anda menuntaskan ruang/alat, nilai <strong>[C]</strong> Anda otomatis bertambah. Jika menghilangkan alat, nilai <strong>[E]</strong> otomatis bertambah.</li>
+                    <li>Sistem otomatis mendeteksi siapa yang <i>login</i>. Jika Anda menuntaskan ruang/alat, nilai <strong>[C]</strong> otomatis bertambah. Jika menghilangkan alat, <strong>[E]</strong> otomatis bertambah.</li>
                 </ul>
             </div>
         </div>
@@ -352,34 +327,27 @@
         </div>
     </div>
 
+    <!-- TEMPLATE SERTIFIKAT PDF PRINT MURNI (SUPER SIMPEL, ANTI EROR) -->
     <div id="sertifikatWrapper">
-        <div class="sertif-border-luar">
-            <div class="sertif-border-dalam">
-                <div class="sertif-title">SERTIFIKAT PENGHARGAAN</div>
-                <div class="sertif-subtitle">COMMAND CENTER LOGISTICS</div>
-                
-                <div class="sertif-text" style="margin-top:20px;">Diberikan Dengan Penuh Rasa Bangga Kepada:</div>
-                <div class="sertif-name" id="sertifNamaTeks">NAMA PASUKAN</div>
-                
-                <div class="sertif-desc">
-                    Atas dedikasi, kedisiplinan, dan eksekusi tata letak spasial yang luar biasa sebagai<br>
-                    <strong>STAF ATP DIESNAT FMIPA KE-12</strong><br>
-                    Sistem Pusat Komando mencatat performa operasional Anda dengan:
-                </div>
-                
-                <div class="sertif-score-box">
-                    <div class="sertif-predikat" id="sertifPredikatTeks">PREDIKAT</div>
-                    <div class="sertif-score">Skor Indeks Presisi Kinerja (IPK): <span id="sertifSkorTeks" style="font-weight:bold;">0.00</span></div>
-                </div>
-                
-                <div class="sertif-footer">
-                    <div style="text-align: center;">
-                        <div style="font-size:1rem; margin-bottom:10px; color:#333;">Purwokerto, Diesnatalis FMIPA 12</div>
-                        <div class="sertif-koor-name">Afdhi Abdilah</div>
-                        <div style="font-size: 1rem; color: #333; margin-top: 5px;">Koordinator Divisi ATP</div>
-                    </div>
-                </div>
-            </div>
+        <div style="font-size: 28pt; font-weight: bold; margin-bottom: 10px;">SERTIFIKAT PENGHARGAAN</div>
+        <div style="font-size: 16pt; margin-bottom: 50px; color: #555;">COMMAND CENTER LOGISTICS - DIESNAT FMIPA 12</div>
+
+        <div style="font-size: 14pt; margin-bottom: 10px;">Diberikan dengan penuh rasa bangga kepada:</div>
+        <div id="sertifNamaTeks" style="font-size: 36pt; font-weight: bold; text-transform: uppercase; margin-bottom: 30px; text-decoration: underline;">NAMA PASUKAN</div>
+
+        <div style="font-size: 14pt; max-width: 600px; margin: 0 auto; line-height: 1.5; margin-bottom: 40px;">
+            Atas dedikasi, kedisiplinan, dan eksekusi tata letak spasial yang luar biasa sebagai Staf ATP. Sistem Pusat Komando mencatat performa operasional Anda dengan:
+        </div>
+
+        <div style="border: 2px solid #000; padding: 20px; display: inline-block; margin-bottom: 50px;">
+            <div id="sertifPredikatTeks" style="font-size: 18pt; font-weight: bold; text-transform: uppercase;">PREDIKAT</div>
+            <div style="font-size: 14pt; margin-top: 10px;">Skor Indeks Presisi Kinerja (IPK): <span id="sertifSkorTeks" style="font-weight: bold;">0.00</span></div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: right; width: 80%; margin: 0 auto;">
+            <div style="font-size: 12pt; margin-bottom: 60px;">Purwokerto, Diesnatalis FMIPA 12</div>
+            <div style="font-size: 14pt; font-weight: bold; text-decoration: underline;">Afdhi Abdilah</div>
+            <div style="font-size: 12pt;">Koordinator Divisi ATP</div>
         </div>
     </div>
 
@@ -420,12 +388,10 @@
 
         function saveDB() { if(!window.isViewer) dbCloud.collection("atp").doc("data").set(db); }
 
-        // --- 2. FITUR BUKA SEGEL IPK (REVISI: HANYA MENYEMBUNYIKAN ISI TABEL) ---
         function updateIPKVisibility() {
             const wrapperTabel = document.getElementById('wrapperTabelIPK');
             const segel = document.getElementById('segelPeringatan');
 
-            // Logika Visibilitas Isi
             if(window.userRole === 'koor' || db.isIPKRevealed) {
                 if(wrapperTabel) wrapperTabel.style.display = 'block';
                 if(segel) segel.style.display = 'none';
@@ -434,7 +400,6 @@
                 if(segel) segel.style.display = 'block';
             }
 
-            // Update Tombol Pengaturan
             const btnSegel = document.getElementById('btnSegelIPK');
             if(btnSegel) {
                 if(db.isIPKRevealed) {
@@ -455,7 +420,6 @@
             saveDB();
         }
 
-        // --- 3. LOGIKA AUTO-IPK ---
         function autoUpdateIPK(tipe) {
             if(window.isViewer || window.userRole === 'koor') return;
             let myName = localStorage.getItem('atpUser');
@@ -469,7 +433,6 @@
             }
         }
 
-        // --- 4. SISTEM LOGIN & HAK AKSES ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
@@ -524,7 +487,6 @@
         function resetDatabase() { if(prompt("Ketik 'RESET' untuk menghapus data:") === 'RESET') { db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false }; saveDB(); alert('Database reset!'); location.reload(); } }
         function bukaTab(idTab, elemen) { document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active')); document.getElementById(idTab).classList.add('active'); if(elemen) elemen.classList.add('active'); }
 
-        // --- 5. RENDER DATA UTAMA ---
         function dptClass(val) { val = val.toLowerCase(); if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; if(val.includes('sedang')) return 'badge-pending'; if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; if(val.includes('transit') || val.includes('telah dipinjam')) return 'badge-biru'; return 'badge-abu'; }
         function getModulColor(m) { return m==='Ruang'?'#87cefa':m==='Alat'?'#ff69b4':m==='Konstruksi'?'#dda0dd':'var(--text-muted)'; }
 
@@ -600,7 +562,6 @@
         }
         function renderDropdownKategori() { const sel = document.getElementById('kategoriProyek'); if(!sel) return; sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>'; if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; }); }
 
-        // --- PREDIKAT IPK REVISI (DIPANGKAS) ---
         function getPredikat(skor) {
             if(skor >= 100) return "CUM LAUDE";
             if(skor >= 60) return "SANGAT MEMUASKAN";
@@ -609,7 +570,6 @@
             return "PERLU EVALUASI";
         }
 
-        // --- 6. RENDER SISTEM IPK KLIK-EDIT ---
         function renderIPK() {
             const tbody = document.getElementById('tabelIPK'); tbody.innerHTML = '';
             if(!db.ipk) return;
@@ -655,18 +615,15 @@
             }
         }
 
-        // --- GENERATOR SERTIFIKAT PDF PRINT NATIVE 100% AMAN ---
         function cetakSertifikat(nama, skor) {
             let predikat = getPredikat(skor);
             document.getElementById('sertifNamaTeks').innerText = nama.toUpperCase();
-            document.getElementById('sertifSkorTeks').innerText = skor;
+            document.getElementById('sertifSkorTeks').innerText = skor.toFixed(2);
             document.getElementById('sertifPredikatTeks').innerText = predikat;
             
-            // Panggil dialog print bawaan browser
             window.print();
         }
 
-        // --- 7. AKSI INPUT KE DATABASE ---
         function catatLog(t, m, c) { if(window.isViewer) return; const d = new Date(); db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); saveDB(); }
         function hapusLog(idx) { if(confirm("Hapus?")) { db.log.splice(idx, 1); saveDB(); } }
 
@@ -705,7 +662,7 @@
         function hapusKonstruksi(idx) { if(confirm(`Hapus?`)) { db.konstruksi.splice(idx, 1); saveDB(); } }
         function kelolaKategori() { let a = prompt("Ketik 'tambah' atau 'hapus':"); if(a==='tambah') { let n = prompt("Nama baru:"); if(n) { db.kategori.push(n); saveDB(); } } else if(a==='hapus') { let v = document.getElementById('kategoriProyek').value; if(v!=='Semua Proyek' && confirm("Hapus?")) { db.kategori = db.kategori.filter(k=>k!==v); saveDB(); } } }
 
-        // --- DASHBOARD MATH REVISION (BUG 0% FIXED) ---
+        // --- DASHBOARD MATH REVISION (BUG 100% FIXED) ---
         function updateDashboard() {
             if(!db.ruang || !db.alat || !db.konstruksi) return;
             const penentuWarna = (persen, total) => { if(total === 0) return 'var(--accent-green)'; if(persen >= 80) return 'var(--accent-green)'; if(persen >= 60) return 'var(--accent-yellow)'; return 'var(--accent-red)'; };
@@ -715,13 +672,20 @@
                 if (r.status === 'Tidak Tersedia') { tidakTersedia++; } 
                 else { 
                     maxRuangScore += 100; 
-                    if (r.status.includes('Belum')) { totalRuangScore += 0; belumRuang++; } 
-                    else if (r.status.includes('Sedang')) { totalRuangScore += 50; belumRuang++; } 
-                    else if (r.status.includes('Sudah') || r.status.includes('Selesai')) { totalRuangScore += 100; } 
+                    if (r.status === 'Belum Diajukan') { 
+                        totalRuangScore += 0; belumRuang++; 
+                    } 
+                    else if (r.status === 'Sedang Diajukan [A]') { 
+                        totalRuangScore += 50; belumRuang++; 
+                    } 
+                    else { 
+                        // Jika sudah ACC atau dipakai (Sudah Terajukan, Sedang Dipinjam, Selesai Bersih), bernilai 100%
+                        totalRuangScore += 100; 
+                    } 
                 }
             });
             let pRuang = maxRuangScore === 0 ? 100 : Math.floor((totalRuangScore / maxRuangScore) * 100);
-            let subRuang = maxRuangScore === 0 && tidakTersedia === 0 ? 'Belum ada data masuk' : `${belumRuang} Ruang belum berstatus selesai/ACC.`;
+            let subRuang = maxRuangScore === 0 && tidakTersedia === 0 ? 'Belum ada data masuk' : `${belumRuang} Ruang belum berstatus ACC.`;
             if(tidakTersedia > 0) subRuang += `<br><span style="color:var(--accent-red); font-weight:bold;">⚠️ ${tidakTersedia} Ruang Tidak Tersedia!</span>`;
             document.getElementById('dashRuang').innerHTML = `<span style="color:${penentuWarna(pRuang, maxRuangScore)}">${pRuang}% Aman</span>`;
             document.getElementById('dashRuangSub').innerHTML = subRuang;
