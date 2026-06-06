@@ -95,22 +95,32 @@
         .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 5px; opacity: 0.5;}
 
-        /* Desain Sertifikat HTML - SANGAT SIMPEL, ANTI EROR & CLEAN */
+        /* Desain Sertifikat HTML - NATIVE PRINT (FIXED 1 PAGE) */
         #sertifikatWrapper { display: none; }
         
         @media print {
-            body { background: white !important; margin: 0; padding: 0; color: black !important; }
+            html, body { 
+                height: 100%; margin: 0 !important; padding: 0 !important; 
+                background: white !important; color: black !important; overflow: hidden; 
+            }
             body > *:not(#sertifikatWrapper) { display: none !important; }
             
             #sertifikatWrapper { 
-                display: block !important; 
-                width: 100%; 
+                display: flex !important; 
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 100vw;
+                height: 100vh; /* Kunci agar tidak tumpah ke halaman 2 */
                 text-align: center; 
-                padding-top: 80px; /* Jarak proporsional dari atas kertas */
                 font-family: Arial, sans-serif !important;
+                box-sizing: border-box;
+                padding: 20px;
+                page-break-after: avoid;
+                page-break-inside: avoid;
             }
 
-            @page { size: landscape; margin: 1cm; }
+            @page { size: landscape; margin: 0; } /* Hilangkan header/footer link browser */
         }
 
         /* MOBILE RESPONSIVE TACTICAL OVERHAUL */
@@ -172,7 +182,7 @@
             <h2 id="loginJudul" style="margin-top:0; color:var(--text-main); font-size:1.5rem;">Identitas</h2>
             <p id="loginDesc" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.5rem;">Masukkan detail identitas Anda.</p>
             <input type="text" id="loginName" placeholder="Masukkan Nama Anda">
-            <input type="password" id="loginPass" placeholder="Masukkan Password Koor" style="display: none;">
+            <input type="password" id="loginPass" placeholder="Masukkan Password" style="display: none;">
             <button class="btn-primary" onclick="masukSistem()" style="width: 100%; margin-bottom: 15px;">Akses Sistem</button>
             <button onclick="batalLogin()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; font-weight:bold; text-decoration:underline;">Kembali ke Menu</button>
         </div>
@@ -327,27 +337,26 @@
         </div>
     </div>
 
-    <!-- TEMPLATE SERTIFIKAT PDF PRINT MURNI (SUPER SIMPEL, ANTI EROR) -->
+    <!-- TEMPLATE SERTIFIKAT PDF PRINT MURNI (FIXED 1 HALAMAN & TEKS BARU) -->
     <div id="sertifikatWrapper">
-        <div style="font-size: 28pt; font-weight: bold; margin-bottom: 10px;">SERTIFIKAT PENGHARGAAN</div>
-        <div style="font-size: 16pt; margin-bottom: 50px; color: #555;">COMMAND CENTER LOGISTICS - DIESNAT FMIPA 12</div>
+        <div style="font-size: 32pt; font-weight: bold; margin-bottom: 10px;">SERTIFIKAT PENGHARGAAN</div>
+        <div style="font-size: 18pt; margin-bottom: 50px; color: #555;">ATP DIESNATALIS FMIPA KE-12</div>
 
-        <div style="font-size: 14pt; margin-bottom: 10px;">Diberikan dengan penuh rasa bangga kepada:</div>
-        <div id="sertifNamaTeks" style="font-size: 36pt; font-weight: bold; text-transform: uppercase; margin-bottom: 30px; text-decoration: underline;">NAMA PASUKAN</div>
+        <div style="font-size: 16pt; margin-bottom: 10px;">Diberikan dengan penuh rasa bangga kepada:</div>
+        <div id="sertifNamaTeks" style="font-size: 40pt; font-weight: bold; text-transform: uppercase; margin-bottom: 40px; text-decoration: underline;">NAMA PASUKAN</div>
 
-        <div style="font-size: 14pt; max-width: 600px; margin: 0 auto; line-height: 1.5; margin-bottom: 40px;">
-            Atas dedikasi, kedisiplinan, dan eksekusi tata letak spasial yang luar biasa sebagai Staf ATP. Sistem Pusat Komando mencatat performa operasional Anda dengan:
+        <div style="font-size: 16pt; max-width: 800px; margin: 0 auto; line-height: 1.5; margin-bottom: 40px;">
+            Atas dedikasi, kedisiplinan, dan loyalitas yang luar biasa sebagai Staff ATP. Sistem Pusat Komando mencatat performa operasional Anda dengan:
         </div>
 
-        <div style="border: 2px solid #000; padding: 20px; display: inline-block; margin-bottom: 50px;">
-            <div id="sertifPredikatTeks" style="font-size: 18pt; font-weight: bold; text-transform: uppercase;">PREDIKAT</div>
-            <div style="font-size: 14pt; margin-top: 10px;">Skor Indeks Presisi Kinerja (IPK): <span id="sertifSkorTeks" style="font-weight: bold;">0.00</span></div>
+        <div style="border: 2px solid #000; padding: 20px 40px; display: inline-block; margin-bottom: 50px;">
+            <div id="sertifPredikatTeks" style="font-size: 20pt; font-weight: bold; text-transform: uppercase;">PREDIKAT</div>
+            <div style="font-size: 16pt; margin-top: 10px;">Skor Indeks Presisi Kinerja (IPK): <span id="sertifSkorTeks" style="font-weight: bold;">0.00</span></div>
         </div>
 
-        <div style="margin-top: 30px; text-align: right; width: 80%; margin: 0 auto;">
-            <div style="font-size: 12pt; margin-bottom: 60px;">Purwokerto, Diesnatalis FMIPA 12</div>
-            <div style="font-size: 14pt; font-weight: bold; text-decoration: underline;">Afdhi Abdilah</div>
-            <div style="font-size: 12pt;">Koordinator Divisi ATP</div>
+        <div style="text-align: center; width: 100%;">
+            <div style="font-size: 16pt; margin-bottom: 5px;">Koordinator Divisi ATP,</div>
+            <div style="font-size: 18pt; font-weight: bold;">Afdhi Abdilah.</div>
         </div>
     </div>
 
@@ -444,12 +453,29 @@
             }
         };
 
+        // --- UPDATE LOGIKA LOGIN & PASSWORD PASUKAN ---
         function siapkanLogin(role) {
             window.tempRole = role; document.getElementById('menuKasta').style.display = 'none'; document.getElementById('loginFormBox').style.display = 'block';
             let passInput = document.getElementById('loginPass');
-            if(role === 'koor') { document.getElementById('loginJudul').innerText = "Akses Komandan"; document.getElementById('loginDesc').innerText = "Masukkan Nama dan Password Rahasia."; passInput.style.display = 'block'; passInput.value = ''; } 
-            else if(role === 'pasukan') { document.getElementById('loginJudul').innerText = "Akses Pasukan"; document.getElementById('loginDesc').innerText = "Masukkan Nama Anda."; passInput.style.display = 'none'; } 
-            else { document.getElementById('loginJudul').innerText = "Akses Pemantau"; document.getElementById('loginDesc').innerText = "Masukkan Nama / Jabatan Anda."; passInput.style.display = 'none'; }
+            if(role === 'koor') { 
+                document.getElementById('loginJudul').innerText = "Akses Komandan"; 
+                document.getElementById('loginDesc').innerText = "Masukkan Nama dan Password Rahasia."; 
+                passInput.style.display = 'block'; 
+                passInput.placeholder = "Masukkan Password Koor";
+                passInput.value = ''; 
+            } 
+            else if(role === 'pasukan') { 
+                document.getElementById('loginJudul').innerText = "Akses Pasukan"; 
+                document.getElementById('loginDesc').innerText = "Masukkan Nama dan Password Pasukan."; 
+                passInput.style.display = 'block'; 
+                passInput.placeholder = "Masukkan Password Pasukan";
+                passInput.value = ''; 
+            } 
+            else { 
+                document.getElementById('loginJudul').innerText = "Akses Pemantau"; 
+                document.getElementById('loginDesc').innerText = "Masukkan Nama / Jabatan Anda."; 
+                passInput.style.display = 'none'; 
+            }
         }
 
         function batalLogin() { window.tempRole = ''; document.getElementById('loginFormBox').style.display = 'none'; document.getElementById('menuKasta').style.display = 'flex'; }
@@ -457,7 +483,12 @@
         function masukSistem() {
             const nama = document.getElementById('loginName').value; const pass = document.getElementById('loginPass').value;
             if(!nama.trim()) return alert('Nama wajib diisi!');
+            
+            // Validasi Password Koor
             if(window.tempRole === 'koor' && pass !== 'komandan12') return alert('Password Koor Salah!');
+            
+            // Validasi Password Pasukan
+            if(window.tempRole === 'pasukan' && pass !== 'akubanggajadiatp') return alert('Password Pasukan Salah!');
             
             if(window.tempRole === 'pasukan' && !db.ipk.find(i => i.nama.toLowerCase() === nama.toLowerCase())) {
                 db.ipk.push({ nama: nama, c: 0, d: 0, e: 0, n: 1 }); saveDB();
@@ -662,7 +693,6 @@
         function hapusKonstruksi(idx) { if(confirm(`Hapus?`)) { db.konstruksi.splice(idx, 1); saveDB(); } }
         function kelolaKategori() { let a = prompt("Ketik 'tambah' atau 'hapus':"); if(a==='tambah') { let n = prompt("Nama baru:"); if(n) { db.kategori.push(n); saveDB(); } } else if(a==='hapus') { let v = document.getElementById('kategoriProyek').value; if(v!=='Semua Proyek' && confirm("Hapus?")) { db.kategori = db.kategori.filter(k=>k!==v); saveDB(); } } }
 
-        // --- DASHBOARD MATH REVISION (BUG 100% FIXED) ---
         function updateDashboard() {
             if(!db.ruang || !db.alat || !db.konstruksi) return;
             const penentuWarna = (persen, total) => { if(total === 0) return 'var(--accent-green)'; if(persen >= 80) return 'var(--accent-green)'; if(persen >= 60) return 'var(--accent-yellow)'; return 'var(--accent-red)'; };
@@ -678,10 +708,7 @@
                     else if (r.status === 'Sedang Diajukan [A]') { 
                         totalRuangScore += 50; belumRuang++; 
                     } 
-                    else { 
-                        // Jika sudah ACC atau dipakai (Sudah Terajukan, Sedang Dipinjam, Selesai Bersih), bernilai 100%
-                        totalRuangScore += 100; 
-                    } 
+                    else { totalRuangScore += 100; } 
                 }
             });
             let pRuang = maxRuangScore === 0 ? 100 : Math.floor((totalRuangScore / maxRuangScore) * 100);
