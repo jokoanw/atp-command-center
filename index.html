@@ -89,11 +89,12 @@
         .badge-biru { background-color: rgba(0, 176, 255, 0.1); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
 
         .btn-aksi { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; cursor: pointer; margin-left: 5px; transition: 0.2s;}
+        .btn-aksi:hover { transform: scale(1.05); }
         .btn-aksi:active { transform: scale(0.9); }
 
         .editable-cell { cursor: pointer; transition: 0.2s; position: relative; }
         .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
-        .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 5px; opacity: 0.5;}
+        .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 0px; opacity: 0.5;}
 
         /* Desain Sertifikat HTML - NATIVE PRINT (FIXED 1 PAGE) */
         #sertifikatWrapper { display: none; }
@@ -111,7 +112,7 @@
                 justify-content: center;
                 align-items: center;
                 width: 100vw;
-                height: 100vh; /* Kunci agar tidak tumpah ke halaman 2 */
+                height: 100vh; 
                 text-align: center; 
                 font-family: Arial, sans-serif !important;
                 box-sizing: border-box;
@@ -120,7 +121,7 @@
                 page-break-inside: avoid;
             }
 
-            @page { size: landscape; margin: 0; } /* Hilangkan header/footer link browser */
+            @page { size: landscape; margin: 0; } 
         }
 
         /* MOBILE RESPONSIVE TACTICAL OVERHAUL */
@@ -202,7 +203,6 @@
             <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Ruang</button>
             <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Alat</button>
             <button class="nav-link" onclick="bukaTab('konstruksi', this)">🏗️ Konstr</button>
-            <!-- IPK SELALU ADA -->
             <button class="nav-link" id="navIPK" onclick="bukaTab('ipk', this)">📊 IPK</button>
             <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">⚙️ Set</button>
         </div>
@@ -314,7 +314,7 @@
             <div style="background:var(--surface); border-left:4px solid var(--accent-blue); padding:1.5rem; border-radius:8px; margin-top:2rem;">
                 <h4 style="margin:0 0 10px 0; color:var(--text-main);">📌 Keterangan & Otomatisasi:</h4>
                 <ul style="margin:0; padding-left:20px; font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
-                    <li><strong>Klik Angka (Bagi Koor):</strong> Koor dapat mengedit nilai secara paksa dengan mengeklik langsung angka C, D, atau E di tabel.</li>
+                    <li><strong>Aksi Koor:</strong> Koor dapat mengedit nama/nilai dengan mengkliknya, atau menghapus anak buah dengan tombol tempat sampah.</li>
                     <li>Sistem otomatis mendeteksi siapa yang <i>login</i>. Jika Anda menuntaskan ruang/alat, nilai <strong>[C]</strong> otomatis bertambah. Jika menghilangkan alat, <strong>[E]</strong> otomatis bertambah.</li>
                 </ul>
             </div>
@@ -611,6 +611,16 @@
                 let predikat = getPredikat(skor);
                 let isKoor = (window.userRole === 'koor');
                 
+                let medal = idx === 0 ? '🏆 ' : idx === 1 ? '🥈 ' : idx === 2 ? '🥉 ' : '';
+                
+                // --- UPDATE: BISA KLIK EDIT NAMA & HAPUS ---
+                let tdNama = isKoor ? 
+                    `<td style="font-weight:bold; color:var(--text-main); font-size:1.05rem;">
+                        ${medal} <span class="editable-cell" style="padding-right:12px; display:inline-block;" onclick="editNamaIPK('${p.nama}')" title="Edit Nama">${p.nama}</span>
+                        <button class="btn-aksi" style="padding: 3px 6px; font-size: 0.6rem; margin-left: 5px; background: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red);" onclick="hapusDataIPK('${p.nama}')" title="Hapus Data">🗑️</button>
+                    </td>` : 
+                    `<td style="font-weight:bold; color:var(--text-main); font-size:1.05rem;">${medal}${p.nama}</td>`;
+
                 let tdC = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'c')" title="Edit Nilai C">${p.c}</td>` : `<td>${p.c}</td>`;
                 let tdD = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'd')" title="Edit Nilai D" style="color:var(--accent-blue);">${p.d}</td>` : `<td style="color:var(--accent-blue);">${p.d}</td>`;
                 let tdE = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'e')" title="Edit Nilai E" style="color:var(--accent-red); font-weight:bold;">${p.e}</td>` : `<td style="color:var(--accent-red); font-weight:bold;">${p.e}</td>`;
@@ -619,9 +629,7 @@
                 let btnCetak = `<button class="btn-primary" style="padding:0.4rem 0.8rem; font-size:0.7rem;" onclick="cetakSertifikat('${p.nama}', ${skor.toFixed(2)})">Cetak PDF</button>`;
                 
                 tbody.innerHTML += `<tr>
-                    <td style="font-weight:bold; color:var(--text-main); font-size:1.05rem;">
-                        ${idx === 0 ? '🏆 ' : ''}${idx === 1 ? '🥈 ' : ''}${idx === 2 ? '🥉 ' : ''}${p.nama}
-                    </td>
+                    ${tdNama}
                     ${tdC}${tdD}${tdE}${tdN}
                     <td>
                         <div style="font-weight:bold; font-size:1.3rem; color:var(--accent-green);">${skor.toFixed(2)}</div>
@@ -630,6 +638,26 @@
                     <td>${btnCetak}</td>
                 </tr>`;
             });
+        }
+
+        // --- FUNGSI BARU UNTUK EDIT & HAPUS NAMA ---
+        function editNamaIPK(oldName) {
+            let pIdx = db.ipk.findIndex(i => i.nama === oldName);
+            if(pIdx === -1) return;
+            let newName = prompt(`Ubah nama Pasukan:`, oldName);
+            if(newName && newName.trim() !== "" && newName !== oldName) {
+                db.ipk[pIdx].nama = newName.trim();
+                catatLog(`Update Nama IPK ${oldName} ➔ ${newName}`, 'Sistem', 'badge-aman');
+                saveDB(); renderIPK();
+            }
+        }
+
+        function hapusDataIPK(nama) {
+            if(confirm(`Hapus data IPK atas nama ${nama}? Tindakan ini tidak bisa dibatalkan.`)) {
+                db.ipk = db.ipk.filter(i => i.nama !== nama);
+                catatLog(`Hapus data IPK: ${nama}`, 'Sistem', 'badge-kritis');
+                saveDB(); renderIPK();
+            }
         }
 
         function hitungSkorIPK(c, d, e, n) { let skor = ((0.50 * c) + (0.35 * d) - (0.15 * e)) * (1 + (0.05 * n)); return skor > 0 ? skor : 0; }
