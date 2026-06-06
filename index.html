@@ -50,7 +50,7 @@
         .user-name { font-size: 1rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-main); word-wrap: break-word;}
         .logout-btn { font-size: 0.75rem; color: var(--accent-red); cursor: pointer; background: rgba(255, 23, 68, 0.1); border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold;}
 
-        .nav-container { display: flex; flex-direction: column; width: 100%; }
+        .nav-container { display: flex; flex-direction: column; width: 100%; overflow-y: auto; scrollbar-width: none; }
         .nav-link { background: none; border: none; color: var(--text-muted); text-align: left; padding: 0.8rem 1rem; margin-bottom: 0.5rem; font-size: 0.95rem; cursor: pointer; transition: 0.3s; border-radius: 8px; font-family: inherit;}
         .nav-link:hover { background: var(--bg-dark); color: var(--text-main); }
         .nav-link.active { background: var(--bg-dark); color: var(--text-main); border-left: 4px solid var(--accent-green); font-weight: bold; }
@@ -142,10 +142,12 @@
                 position: fixed; bottom: 0; left: 0; width: 100%; 
                 display: flex; flex-direction: row; flex-wrap: nowrap;
                 background: var(--surface); border-top: 1px solid var(--border-color); 
-                z-index: 1000; overflow-x: auto; 
+                z-index: 1000; overflow-x: auto; scrollbar-width: none;
             }
+            .nav-container::-webkit-scrollbar { display: none; }
+            
             .nav-link { 
-                flex: 1; min-width: 65px; height: 60px; margin: 0; padding: 5px; 
+                flex: 1 0 auto; min-width: 65px; height: 60px; margin: 0; padding: 5px 10px; 
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 border: none; border-radius: 0; font-size: 0.65rem; text-align: center;
             }
@@ -200,6 +202,8 @@
         
         <div class="nav-container">
             <button class="nav-link active" onclick="bukaTab('dashboard', this)">🚀 Dash</button>
+            <!-- MENU BARU: REQ -->
+            <button class="nav-link" onclick="bukaTab('req', this)">📝 REQ</button>
             <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Ruang</button>
             <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Alat</button>
             <button class="nav-link" onclick="bukaTab('konstruksi', this)">🏗️ Konstr</button>
@@ -223,6 +227,26 @@
                 <table>
                     <thead><tr><th>Waktu</th><th>Oleh</th><th>Tindakan / Status Baru</th><th>Modul</th><th>Aksi</th></tr></thead>
                     <tbody id="tabelLog"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MENU BARU: REQ -->
+        <div id="req" class="tab-section">
+            <h1 class="header-title">Sistem Tiket Logistik (REQ)</h1>
+            <p class="header-subtitle">Buku Tamu / Permintaan Mentah dari Divisi Lain</p>
+            <div class="form-container">
+                <div class="form-group"><label>Nama Permintaan</label><input type="text" id="reqNama" placeholder="Cth: HT, Kabel Roll, Lab Fisika"></div>
+                <div class="form-group"><label>Kategori</label><select id="reqKategori"><option>Alat</option><option>Ruang</option><option>Konstruksi</option></select></div>
+                <div class="form-group"><label>Peminta</label><select id="reqDivisi"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select></div>
+                <div class="form-group" style="flex: 0.5;"><label>Jml</label><input type="number" id="reqJml" min="1" value="1"></div>
+                <div class="form-group"><label>Ket / Urgensi</label><input type="text" id="reqKet" placeholder="Cth: Buat H-1 / Mendesak"></div>
+                <button class="btn-primary" onclick="tambahReq()">Catat Tiket</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Item / Ruangan</th><th>Kategori</th><th>Peminta</th><th>Keterangan</th><th>Status</th><th>Aksi Koor</th></tr></thead>
+                    <tbody id="tabelReq"></tbody>
                 </table>
             </div>
         </div>
@@ -337,7 +361,7 @@
         </div>
     </div>
 
-    <!-- TEMPLATE SERTIFIKAT PDF PRINT MURNI (FIXED 1 HALAMAN & TEKS BARU) -->
+    <!-- TEMPLATE SERTIFIKAT PDF PRINT MURNI -->
     <div id="sertifikatWrapper">
         <div style="font-size: 32pt; font-weight: bold; margin-bottom: 10px;">SERTIFIKAT PENGHARGAAN</div>
         <div style="font-size: 18pt; margin-bottom: 50px; color: #555;">ATP DIESNATALIS FMIPA KE-12</div>
@@ -380,7 +404,7 @@
             { nama: "Chelsea", c: 0, d: 0, e: 0, n: 2 }
         ];
 
-        let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false };
+        let db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false, req: [] };
         window.userRole = ''; window.isViewer = false; window.tempRole = '';
 
         dbCloud.collection("atp").doc("data").onSnapshot((doc) => {
@@ -388,6 +412,7 @@
                 db = doc.data(); 
                 if(!db.ipk) db.ipk = defaultIPK; 
                 if(db.isIPKRevealed === undefined) db.isIPKRevealed = false;
+                if(!db.req) db.req = [];
             } else { dbCloud.collection("atp").doc("data").set(db); }
             
             if(document.getElementById('landingPage').style.display === 'none') {
@@ -453,7 +478,6 @@
             }
         };
 
-        // --- UPDATE LOGIKA LOGIN & PASSWORD PASUKAN ---
         function siapkanLogin(role) {
             window.tempRole = role; document.getElementById('menuKasta').style.display = 'none'; document.getElementById('loginFormBox').style.display = 'block';
             let passInput = document.getElementById('loginPass');
@@ -515,13 +539,75 @@
 
         function keluarSistem() { localStorage.removeItem('atpUser'); localStorage.removeItem('atpRole'); location.reload(); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
-        function resetDatabase() { if(prompt("Ketik 'RESET' untuk menghapus data:") === 'RESET') { db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false }; saveDB(); alert('Database reset!'); location.reload(); } }
+        function resetDatabase() { if(prompt("Ketik 'RESET' untuk menghapus data:") === 'RESET') { db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false, req: [] }; saveDB(); alert('Database reset!'); location.reload(); } }
         function bukaTab(idTab, elemen) { document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active')); document.getElementById(idTab).classList.add('active'); if(elemen) elemen.classList.add('active'); }
 
-        function dptClass(val) { val = val.toLowerCase(); if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; if(val.includes('sedang')) return 'badge-pending'; if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; if(val.includes('transit') || val.includes('telah dipinjam')) return 'badge-biru'; return 'badge-abu'; }
-        function getModulColor(m) { return m==='Ruang'?'#87cefa':m==='Alat'?'#ff69b4':m==='Konstruksi'?'#dda0dd':'var(--text-muted)'; }
+        function dptClass(val) { val = val.toLowerCase(); if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; if(val.includes('sedang') || val.includes('pending')) return 'badge-pending'; if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; if(val.includes('transit') || val.includes('telah dipinjam')) return 'badge-biru'; return 'badge-abu'; }
+        function getModulColor(m) { return m==='Ruang'?'#87cefa':m==='Alat'?'#ff69b4':m==='Konstruksi'?'#dda0dd':m==='REQ'?'#ffb6c1':'var(--text-muted)'; }
 
-        function renderSemua() { renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); }
+        function renderSemua() { renderReq(); renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); }
+
+        // --- RENDER MENU REQ ---
+        function renderReq() {
+            const tbody = document.getElementById('tabelReq'); tbody.innerHTML = '';
+            if(!db.req) return;
+            db.req.forEach((r, idx) => {
+                let isKoor = (window.userRole === 'koor');
+                let btnHapus = isKoor ? `<button class="btn-aksi" onclick="hapusReq(${idx})">🗑️</button>` : '';
+                let btnAcc = '';
+                
+                // Hanya Koor yang bisa ACC, dan hanya jika statusnya masih Pending
+                if(r.status === 'Pending' && isKoor) {
+                    btnAcc = `<button class="btn-aksi" style="background:var(--accent-green); color:#000; border-color:var(--accent-green); font-weight:bold;" onclick="accReq(${idx})">✔️ ACC & Pindah</button>`;
+                }
+
+                tbody.innerHTML += `<tr>
+                    <td style="font-weight:bold;">${r.nama}</td>
+                    <td>${r.kategori}</td>
+                    <td>${r.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${r.jumlah}x)</span></td>
+                    <td>${r.ket}</td>
+                    <td><span class="status-badge ${dptClass(r.status)}">${r.status}</span></td>
+                    <td>${btnAcc}${btnHapus}</td>
+                </tr>`;
+            });
+        }
+
+        function tambahReq() { 
+            let n = document.getElementById('reqNama').value; 
+            let k = document.getElementById('reqKategori').value; 
+            let d = document.getElementById('reqDivisi').value; 
+            let j = document.getElementById('reqJml').value; 
+            let ket = document.getElementById('reqKet').value || '-'; 
+            
+            if(!n) return alert("Isi nama item!"); 
+            db.req.push({ nama: n, kategori: k, divisi: d, jumlah: j, ket: ket, status: 'Pending' }); 
+            
+            document.getElementById('reqNama').value = ''; 
+            document.getElementById('reqKet').value = ''; 
+            catatLog(`Tiket Baru: ${n} (${d})`, 'REQ', 'badge-pending'); 
+            saveDB(); 
+        }
+
+        function hapusReq(idx) { 
+            if(confirm("Hapus tiket ini?")) { db.req.splice(idx, 1); saveDB(); } 
+        }
+
+        function accReq(idx) {
+            let r = db.req[idx];
+            if(!confirm(`ACC dan pindahkan [${r.nama}] secara otomatis ke matriks ${r.kategori}?`)) return;
+            
+            if(r.kategori === 'Ruang') {
+                db.ruang.push({ nama: r.nama, divisi: r.divisi, status: 'Belum Diajukan', tapped: false, selesai: false });
+            } else if(r.kategori === 'Alat') {
+                db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: r.nama, asal: 'BEM/Umum', divisi: r.divisi, jumlah: r.jumlah, status: 'Belum Menyediakan', hilang: 0 });
+            } else if(r.kategori === 'Konstruksi') {
+                db.konstruksi.push({ nama: r.nama, jumlah: r.jumlah, proyek: 'Semua Proyek', ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
+            }
+            
+            r.status = 'Di-ACC'; // Ubah status tiket jadi ACC
+            catatLog(`ACC Tiket: ${r.nama} masuk ke ${r.kategori}`, 'REQ', 'badge-aman');
+            saveDB();
+        }
 
         function renderRuang() {
             const tbody = document.getElementById('tabelRuang'); tbody.innerHTML = '';
@@ -613,7 +699,6 @@
                 
                 let medal = idx === 0 ? '🏆 ' : idx === 1 ? '🥈 ' : idx === 2 ? '🥉 ' : '';
                 
-                // --- UPDATE: BISA KLIK EDIT NAMA & HAPUS ---
                 let tdNama = isKoor ? 
                     `<td style="font-weight:bold; color:var(--text-main); font-size:1.05rem;">
                         ${medal} <span class="editable-cell" style="padding-right:12px; display:inline-block;" onclick="editNamaIPK('${p.nama}')" title="Edit Nama">${p.nama}</span>
@@ -640,7 +725,6 @@
             });
         }
 
-        // --- FUNGSI BARU UNTUK EDIT & HAPUS NAMA ---
         function editNamaIPK(oldName) {
             let pIdx = db.ipk.findIndex(i => i.nama === oldName);
             if(pIdx === -1) return;
