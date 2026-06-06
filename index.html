@@ -236,7 +236,8 @@
             <div class="form-container">
                 <div class="form-group"><label>Nama Permintaan</label><input type="text" id="reqNama" placeholder="Cth: HT, Kabel Roll, Lab Fisika"></div>
                 <div class="form-group"><label>Kategori</label><select id="reqKategori"><option>Alat</option><option>Ruang</option><option>Konstruksi</option></select></div>
-                <div class="form-group"><label>Peminta</label><select id="reqDivisi"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select></div>
+                <!-- Opsi ATP Ditambahkan -->
+                <div class="form-group"><label>Peminta</label><select id="reqDivisi"><option>ATP</option><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select></div>
                 <div class="form-group" style="flex: 0.5;"><label>Jml</label><input type="number" id="reqJml" min="1" value="1"></div>
                 <div class="form-group"><label>Ket / Urgensi</label><input type="text" id="reqKet" placeholder="Cth: Buat H-1 / Mendesak"></div>
                 <button class="btn-primary" onclick="tambahReq()">Catat Tiket</button>
@@ -255,7 +256,8 @@
                 <div class="form-group"><label>Nama Ruang</label><input type="text" id="inputRuang"></div>
                 <div class="form-group">
                     <label>Divisi Pengguna</label>
-                    <select id="divisiRuang"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select>
+                    <!-- Opsi ATP Ditambahkan -->
+                    <select id="divisiRuang"><option>ATP</option><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select>
                 </div>
                 <button class="btn-primary" onclick="tambahRuang()">Tambah Ruang</button>
             </div>
@@ -272,7 +274,11 @@
             <div class="form-container">
                 <div class="form-group"><label>Nama Alat</label><input type="text" id="inputAlat"></div>
                 <div class="form-group"><label>Asal Alat</label><input type="text" id="asalAlat" placeholder="BEM/Sewa"></div>
-                <div class="form-group"><label>Peminjam</label><select id="divisiAlat"><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option></select></div>
+                <div class="form-group">
+                    <label>Peminjam</label>
+                    <!-- Opsi ATP Ditambahkan -->
+                    <select id="divisiAlat"><option>ATP</option><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option></select>
+                </div>
                 <div class="form-group" style="flex: 0.5;"><label>Jml</label><input type="number" id="jumlahAlat" min="1" value="1"></div>
                 <button class="btn-primary" onclick="tambahAlat()">Catat Pinjaman</button>
             </div>
@@ -306,6 +312,7 @@
             </div>
         </div>
 
+        <!-- SISTEM IPK -->
         <div id="ipk" class="tab-section">
             <h1 class="header-title">Indeks Presisi Kinerja (IPK)</h1>
             <p class="header-subtitle">Rumus: IPK = [(0.50 × C) + (0.35 × D) − (0.15 × E)] × (1 + 0.05 × N)</p>
@@ -358,6 +365,7 @@
         </div>
     </div>
 
+    <!-- TEMPLATE SERTIFIKAT PDF PRINT MURNI -->
     <div id="sertifikatWrapper">
         <div style="font-size: 32pt; font-weight: bold; margin-bottom: 10px;">SERTIFIKAT PENGHARGAAN</div>
         <div style="font-size: 18pt; margin-bottom: 50px; color: #555;">ATP DIESNATALIS FMIPA KE-12</div>
@@ -416,7 +424,10 @@
             }
         });
 
-        function saveDB() { if(!window.isViewer) dbCloud.collection("atp").doc("data").set(db); }
+        // --- UPDATE FUNGSI SAVE: PAKSA SAVE MESKIPUN VIEWER JIKA LOGGING MASUK ---
+        function saveDB(force = false) { 
+            if(!window.isViewer || force) dbCloud.collection("atp").doc("data").set(db); 
+        }
 
         function updateIPKVisibility() {
             const wrapperTabel = document.getElementById('wrapperTabelIPK');
@@ -463,6 +474,7 @@
             }
         }
 
+        // --- SISTEM RADAR: DETEKSI AUTO-LOGIN ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
@@ -470,7 +482,12 @@
             if(savedUser && savedRole) {
                 document.getElementById('landingPage').style.display = 'none';
                 document.getElementById('displayUserName').innerText = savedUser;
-                terapkanHakAkses(savedRole); renderSemua(); updateDashboard(); renderDropdownKategori(); updateIPKVisibility();
+                terapkanHakAkses(savedRole); 
+                
+                // CATATAN LOG MEMATIKAN: Deteksi Siapapun yang Membuka Web
+                catatLog('Masuk Radar (Auto-Login)', 'Sistem', 'badge-biru', true);
+                
+                renderSemua(); updateDashboard(); renderDropdownKategori(); updateIPKVisibility();
             }
         };
 
@@ -500,6 +517,7 @@
 
         function batalLogin() { window.tempRole = ''; document.getElementById('loginFormBox').style.display = 'none'; document.getElementById('menuKasta').style.display = 'flex'; }
 
+        // --- SISTEM RADAR: DETEKSI MANUAL LOGIN ---
         function masukSistem() {
             const nama = document.getElementById('loginName').value; const pass = document.getElementById('loginPass').value;
             if(!nama.trim()) return alert('Nama wajib diisi!');
@@ -513,7 +531,12 @@
 
             localStorage.setItem('atpUser', nama); localStorage.setItem('atpRole', window.tempRole);
             document.getElementById('displayUserName').innerText = nama; document.getElementById('landingPage').style.display = 'none';
-            if(window.tempRole === 'koor') catatLog('Koor masuk', 'Sistem', 'badge-aman'); else if(window.tempRole === 'pasukan') catatLog('Pasukan siap', 'Sistem', 'badge-aman');
+            
+            // Catat log manual login dengan Force = true agar SC/PO tetap terdata
+            if(window.tempRole === 'koor') catatLog('Koor Masuk Manual', 'Sistem', 'badge-aman', true); 
+            else if(window.tempRole === 'pasukan') catatLog('Pasukan Siap', 'Sistem', 'badge-aman', true);
+            else catatLog('Pemantau Masuk Manual', 'Sistem', 'badge-biru', true);
+            
             terapkanHakAkses(window.tempRole); renderSemua(); updateDashboard(); renderDropdownKategori(); updateIPKVisibility();
         }
 
@@ -540,7 +563,6 @@
 
         function renderSemua() { renderReq(); renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); }
 
-        // --- RENDER MENU REQ DENGAN SISTEM POP-UP INTEROGASI KOOR ---
         function renderReq() {
             const tbody = document.getElementById('tabelReq'); tbody.innerHTML = '';
             if(!db.req) return;
@@ -584,7 +606,6 @@
             if(confirm("Hapus tiket ini?")) { db.req.splice(idx, 1); saveDB(); } 
         }
 
-        // --- SISTEM ACC DENGAN INTEROGASI POP-UP ---
         function accReq(idx) {
             let r = db.req[idx];
             if(!confirm(`ACC dan pindahkan [${r.nama}] secara otomatis ke matriks ${r.kategori}?`)) return;
@@ -593,21 +614,18 @@
                 db.ruang.push({ nama: r.nama, divisi: r.divisi, status: 'Belum Diajukan', tapped: false, selesai: false });
             } 
             else if(r.kategori === 'Alat') {
-                // Interogasi Asal Alat
                 let asalInput = prompt(`Asal alat untuk [${r.nama}]?\n(Kosongkan/Klik OK jika asalnya dari BEM/Umum)`, "BEM/Umum");
-                if(asalInput === null) return; // Koor klik cancel, batal ACC
+                if(asalInput === null) return; 
                 if(asalInput.trim() === "") asalInput = "BEM/Umum";
                 
                 db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: r.nama, asal: asalInput, divisi: r.divisi, jumlah: r.jumlah, status: 'Belum Menyediakan', hilang: 0 });
             } 
             else if(r.kategori === 'Konstruksi') {
-                // Interogasi Kategori Proyek
                 let listProyek = db.kategori.join(", ");
                 let proyekInput = prompt(`Kategori Proyek untuk [${r.nama}]?\n\nKetik nama proyek yang sesuai.\n(Proyek tersedia saat ini: ${listProyek})`, "Semua Proyek");
-                if(proyekInput === null) return; // Koor klik cancel, batal ACC
+                if(proyekInput === null) return; 
                 if(proyekInput.trim() === "") proyekInput = "Semua Proyek";
 
-                // Jika Koor mengetik proyek baru, otomatis tambahkan ke database kategori
                 if(proyekInput !== "Semua Proyek" && !db.kategori.includes(proyekInput)) {
                     db.kategori.push(proyekInput);
                 }
@@ -615,10 +633,10 @@
                 db.konstruksi.push({ nama: r.nama, jumlah: r.jumlah, proyek: proyekInput, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
             }
             
-            r.status = 'Di-ACC'; // Ubah status tiket jadi ACC
+            r.status = 'Di-ACC'; 
             catatLog(`ACC Tiket: ${r.nama} masuk ke ${r.kategori}`, 'REQ', 'badge-aman');
             saveDB();
-            renderSemua(); // Render ulang agar UI langsung berubah
+            renderSemua(); 
         }
 
         function renderRuang() {
@@ -681,105 +699,16 @@
             });
         }
 
-        function renderLog() { 
-            const tbody = document.getElementById('tabelLog'); tbody.innerHTML = ''; if(!db.log) return;
-            db.log.slice(0, 30).forEach((l, idx) => {
-                let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.3rem 0.6rem; font-size:0.75rem;">${l.tindakan}</span>` : l.tindakan;
-                let btnHapus = (window.userRole === 'koor') ? `<button class="btn-aksi hapus" onclick="hapusLog(${idx})">🗑️</button>` : '-';
-                tbody.innerHTML += `<tr><td>${l.tanggal}<br><span style="color:var(--text-muted); font-size:0.8rem;">${l.waktu}</span></td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td><td>${btnHapus}</td></tr>`;
-            });
-        }
-        function renderDropdownKategori() { const sel = document.getElementById('kategoriProyek'); if(!sel) return; sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>'; if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; }); }
-
-        function getPredikat(skor) {
-            if(skor >= 100) return "CUM LAUDE";
-            if(skor >= 60) return "SANGAT MEMUASKAN";
-            if(skor >= 30) return "MEMUASKAN";
-            if(skor >= 10) return "CUKUP";
-            return "PERLU EVALUASI";
-        }
-
-        function renderIPK() {
-            const tbody = document.getElementById('tabelIPK'); tbody.innerHTML = '';
-            if(!db.ipk) return;
-            let sortedIPK = [...db.ipk].sort((a,b) => hitungSkorIPK(b.c, b.d, b.e, b.n) - hitungSkorIPK(a.c, a.d, a.e, a.n));
-
-            sortedIPK.forEach((p, idx) => {
-                let skor = hitungSkorIPK(p.c, p.d, p.e, p.n);
-                let predikat = getPredikat(skor);
-                let isKoor = (window.userRole === 'koor');
-                
-                let medal = idx === 0 ? '🏆 ' : idx === 1 ? '🥈 ' : idx === 2 ? '🥉 ' : '';
-                
-                let tdNama = isKoor ? 
-                    `<td style="font-weight:bold; color:var(--text-main); font-size:1.05rem;">
-                        ${medal} <span class="editable-cell" style="padding-right:12px; display:inline-block;" onclick="editNamaIPK('${p.nama}')" title="Edit Nama">${p.nama}</span>
-                        <button class="btn-aksi" style="padding: 3px 6px; font-size: 0.6rem; margin-left: 5px; background: rgba(255, 23, 68, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red);" onclick="hapusDataIPK('${p.nama}')" title="Hapus Data">🗑️</button>
-                    </td>` : 
-                    `<td style="font-weight:bold; color:var(--text-main); font-size:1.05rem;">${medal}${p.nama}</td>`;
-
-                let tdC = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'c')" title="Edit Nilai C">${p.c}</td>` : `<td>${p.c}</td>`;
-                let tdD = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'd')" title="Edit Nilai D" style="color:var(--accent-blue);">${p.d}</td>` : `<td style="color:var(--accent-blue);">${p.d}</td>`;
-                let tdE = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'e')" title="Edit Nilai E" style="color:var(--accent-red); font-weight:bold;">${p.e}</td>` : `<td style="color:var(--accent-red); font-weight:bold;">${p.e}</td>`;
-                let tdN = isKoor ? `<td class="editable-cell" onclick="editVarIPK('${p.nama}', 'n')" title="Edit Nilai N">${p.n}</td>` : `<td>${p.n}</td>`;
-                
-                let btnCetak = `<button class="btn-primary" style="padding:0.4rem 0.8rem; font-size:0.7rem;" onclick="cetakSertifikat('${p.nama}', ${skor.toFixed(2)})">Cetak PDF</button>`;
-                
-                tbody.innerHTML += `<tr>
-                    ${tdNama}
-                    ${tdC}${tdD}${tdE}${tdN}
-                    <td>
-                        <div style="font-weight:bold; font-size:1.3rem; color:var(--accent-green);">${skor.toFixed(2)}</div>
-                        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px;">${predikat}</div>
-                    </td>
-                    <td>${btnCetak}</td>
-                </tr>`;
-            });
-        }
-
-        function editNamaIPK(oldName) {
-            let pIdx = db.ipk.findIndex(i => i.nama === oldName);
-            if(pIdx === -1) return;
-            let newName = prompt(`Ubah nama Pasukan:`, oldName);
-            if(newName && newName.trim() !== "" && newName !== oldName) {
-                db.ipk[pIdx].nama = newName.trim();
-                catatLog(`Update Nama IPK ${oldName} ➔ ${newName}`, 'Sistem', 'badge-aman');
-                saveDB(); renderIPK();
-            }
-        }
-
-        function hapusDataIPK(nama) {
-            if(confirm(`Hapus data IPK atas nama ${nama}? Tindakan ini tidak bisa dibatalkan.`)) {
-                db.ipk = db.ipk.filter(i => i.nama !== nama);
-                catatLog(`Hapus data IPK: ${nama}`, 'Sistem', 'badge-kritis');
-                saveDB(); renderIPK();
-            }
-        }
-
-        function hitungSkorIPK(c, d, e, n) { let skor = ((0.50 * c) + (0.35 * d) - (0.15 * e)) * (1 + (0.05 * n)); return skor > 0 ? skor : 0; }
-
-        function editVarIPK(nama, varType) {
-            let pIdx = db.ipk.findIndex(i => i.nama === nama);
-            if(pIdx === -1) return;
-            let currentVal = db.ipk[pIdx][varType];
-            let newVal = prompt(`Ubah nilai [${varType.toUpperCase()}] untuk ${nama}:`, currentVal);
-            if(newVal !== null && !isNaN(newVal)) {
-                db.ipk[pIdx][varType] = Number(newVal);
-                catatLog(`Update IPK (${varType.toUpperCase()}) ${nama} ➔ ${newVal}`, 'Sistem', 'badge-aman');
-                saveDB(); renderIPK();
-            }
-        }
-
-        function cetakSertifikat(nama, skor) {
-            let predikat = getPredikat(skor);
-            document.getElementById('sertifNamaTeks').innerText = nama.toUpperCase();
-            document.getElementById('sertifSkorTeks').innerText = skor.toFixed(2);
-            document.getElementById('sertifPredikatTeks').innerText = predikat;
+        // --- UPDATE FUNGSI CATAT LOG DENGAN BYPASS RADAR ---
+        function catatLog(t, m, c, forceLog = false) { 
+            // Jika ini Viewer dan bukan kejadian paksa (login radar), hentikan pencatatan.
+            if(window.isViewer && !forceLog) return; 
             
-            window.print();
+            const d = new Date(); 
+            db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); 
+            saveDB(forceLog); // Izinkan save paksa untuk Viewer yang kena radar
         }
 
-        function catatLog(t, m, c) { if(window.isViewer) return; const d = new Date(); db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); saveDB(); }
         function hapusLog(idx) { if(confirm("Hapus?")) { db.log.splice(idx, 1); saveDB(); } }
 
         function tambahRuang() { let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value; if(!n) return alert("Isi nama!"); db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false }); document.getElementById('inputRuang').value = ''; catatLog(`Input: ${n}`, 'Ruang', dptClass('Belum Diajukan')); saveDB(); }
