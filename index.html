@@ -28,7 +28,6 @@
             transition: background-color 0.3s, color 0.3s; 
         }
 
-        /* Landing Page */
         #landingPage { position: fixed; inset: 0; background: var(--bg-dark); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; overflow-y: auto; padding: 2rem;}
         .landing-title { font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-main); text-align: center; letter-spacing: 2px;}
         .landing-subtitle { color: var(--accent-green); margin-bottom: 2.5rem; font-weight: bold; letter-spacing: 1px; text-align: center;}
@@ -42,7 +41,6 @@
         #loginFormBox { display: none; background: var(--surface); border: 1px solid var(--border-color); padding: 2.5rem; border-radius: 12px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 2rem; }
         #loginFormBox input { width: 100%; box-sizing: border-box; margin-bottom: 1rem; text-align: center; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-dark); color: var(--text-main); outline: none; font-size: 1rem;}
         
-        /* Sidebar & Nav */
         .sidebar { width: 260px; background-color: var(--surface); border-right: 1px solid var(--border-color); padding: 2rem 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; z-index: 100; position: relative;}
         .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; color: var(--text-main); margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .user-profile { background-color: var(--bg-dark); border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; }
@@ -56,7 +54,6 @@
         .nav-link.active { background: var(--bg-dark); color: var(--text-main); border-left: 4px solid var(--accent-green); font-weight: bold; }
         .theme-toggle { margin-top: auto; margin-bottom: 1rem; padding: 0.8rem; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: bold;}
         
-        /* Main Content */
         .main-content { flex: 1; padding: 3rem; box-sizing: border-box; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
         .tab-section { display: none; animation: fadeIn 0.4s; }
         .tab-section.active { display: block; }
@@ -75,7 +72,6 @@
         button.btn-primary { background-color: var(--text-main); color: var(--bg-dark); border: none; padding: 0.8rem 2rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: 0.2s;}
         button.btn-primary:active { transform: scale(0.95); }
 
-        /* Tables */
         .table-responsive { width: 100%; overflow-x: auto; padding-bottom: 20px;}
         table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 2rem; }
         th, td { text-align: left; padding: 1.2rem 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; vertical-align: middle; }
@@ -96,14 +92,11 @@
         .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 0px; opacity: 0.5;}
 
-        /* CHECKBOX LOGS */
         .log-check { transform: scale(1.2); cursor: pointer; accent-color: var(--accent-red); }
 
-        /* MODAL POPUP */
         .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:1rem; }
         .modal-box { background:var(--surface); padding:2rem; border-radius:12px; max-width:500px; width:100%; border:1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
 
-        /* Desain Sertifikat NATIVE PRINT (1 PAGE) */
         #sertifikatWrapper { display: none; }
         @media print {
             html, body { height: 100%; margin: 0 !important; padding: 0 !important; background: white !important; color: black !important; overflow: hidden; }
@@ -112,14 +105,12 @@
             @page { size: landscape; margin: 0; } 
         }
 
-        /* MOBILE RESPONSIVE - FIXED THEME BUTTON OVERLAP */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: hidden; }
             .landing-title { font-size: 1.8rem; }
             .triple-menu-container { flex-direction: column; align-items: center; gap: 1rem; }
             .menu-card { width: 100%; padding: 1.5rem; min-width: unset; }
             
-            /* Sidebar dirapikan posisinya */
             .sidebar { 
                 width: 100%; height: auto; padding: 10px 15px; 
                 flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px;
@@ -131,7 +122,6 @@
             .user-profile label { display: none; } 
             .user-name { font-size: 0.9rem; margin: 0 10px 0 0; }
             
-            /* Tombol tema dipindah ke KIRI, terpisah jauh dari Logout yang di kanan */
             .theme-toggle { display: block; margin: 0; padding: 5px 10px; font-size: 0.7rem; border-radius: 4px; order: -1; }
             
             .nav-container { 
@@ -318,7 +308,7 @@
             <div class="form-container">
                 <div class="form-group" style="flex:0.5;">
                     <label>📸 Ambil/Pilih Foto</label>
-                    <input type="file" id="dokumFile" accept="image/*" capture="environment" onchange="prosesUploadDokum(event)" style="padding:0.6rem;">
+                    <input type="file" id="dokumFile" accept="image/*" onchange="prosesUploadDokum(event)" style="padding:0.6rem;">
                 </div>
                 <div class="form-group" style="flex:2;">
                     <label>Keterangan Bukti Otentik</label>
@@ -414,7 +404,6 @@
 
 
     <script>
-        // --- 1. KONFIGURASI FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyCksEKeVfZ39valn9SGLFYySslqoFTczEI",
             authDomain: "atpdiesnatfmipa12.firebaseapp.com",
@@ -428,7 +417,7 @@
 
         let db = null; 
         let isDataLoaded = false;
-        let tempBase64 = null; // untuk foto arsip
+        let tempBase64 = null; 
         
         const defaultIPK = [
             { nama: "Shafa", c: 0, d: 0, e: 0, n: 1 }, { nama: "Yehezkiel", c: 0, d: 0, e: 0, n: 1 },
@@ -442,7 +431,6 @@
                 db = doc.data(); 
                 isDataLoaded = true;
                 
-                // MIGRATION & SAFETY CHECKS
                 if(!db.ipk) db.ipk = defaultIPK; 
                 if(db.isIPKRevealed === undefined) db.isIPKRevealed = false;
                 if(!db.ruang) db.ruang = [];
@@ -451,10 +439,8 @@
                 if(!db.log) db.log = [];
                 if(!db.dokum) db.dokum = [];
                 
-                // KATEGORI KONSTRUKSI KOSONG DARI AWAL
                 if(!db.kategori) db.kategori = []; 
                 
-                // REQ MIGRATION (Supaya data lama otomatis jadi Induk)
                 if(!db.req) db.req = [];
                 db.req.forEach(r => {
                     if(!r.id) r.id = Date.now() + Math.floor(Math.random()*1000);
@@ -477,7 +463,6 @@
             if(isDataLoaded && (!window.isViewer || forceLog)) { dbCloud.collection("atp").doc("data").set(db); }
         }
 
-        // --- SISTEM RADAR LOG 1x ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
@@ -562,9 +547,6 @@
 
         function renderSemua() { if(!db) return; renderReq(); renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); renderDokum(); }
 
-        // ==========================================
-        // SISTEM REQ BARU (INDUK & SUB-ITEM)
-        // ==========================================
         function renderReq() {
             const tbody = document.getElementById('tabelReq'); tbody.innerHTML = '';
             if(!db.req) return;
@@ -579,16 +561,11 @@
                 let btnAddSub = (!window.isViewer) ? `<button class="btn-aksi" style="background:var(--accent-blue); color:#fff; border-color:var(--accent-blue); font-weight:bold;" onclick="bukaModalSub(${r.id})">➕ Sub</button>` : '';
                 let btnEdit = (!window.isViewer) ? `<button class="btn-aksi" onclick="editReqNama(${r.id})">✏️</button>` : '';
                 
-                // BARIS INDUK
-                tbody.innerHTML += `<tr style="background: rgba(255,255,255,0.03);">
-                    <td style="font-weight:bold; font-size:1.05rem;">📦 ${r.kebutuhan}</td>
-                    <td>${r.kategori}</td><td>${r.acara}</td>
-                    <td>${r.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${r.jumlah || r.jml || 1}x)</span></td>
-                    <td>${r.ket}</td><td><span class="status-badge ${dptClass(r.status)}">${r.status}</span></td>
-                    <td>${btnAcc}${btnEdit}${btnAddSub}${btnHapus}</td>
-                </tr>`;
+                let namaInduk = `<span style="font-weight:bold; font-size:1.05rem;">${r.event}</span>`;
+                let namaSub = (r.nama && r.nama !== '-') ? `<br><span style="font-size:0.8rem; color:var(--accent-blue);">↳ ${r.nama}</span>` : '';
+                
+                tbody.innerHTML += `<tr style="background: rgba(255,255,255,0.03);"><td>${namaInduk} ${namaSub}</td><td>${r.kategori}</td><td>${r.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${r.jumlah || r.jml || 1}x)</span></td><td>${r.ket}</td><td><span class="status-badge ${dptClass(r.status)}">${r.status}</span></td><td>${btnAcc}${btnEdit}${btnAddSub}${btnHapus}</td></tr>`;
 
-                // BARIS ANAK-ANAKNYA
                 let mySubs = subs.filter(s => s.parentId === r.id);
                 mySubs.forEach((s) => {
                     let btnHapusSub = isKoor ? `<button class="btn-aksi" onclick="hapusReqSub(${s.id})">🗑️</button>` : '';
@@ -605,7 +582,6 @@
                 });
             });
             
-            // RENDER ANAK YATIM (YANG INDUKNYA DIHAPUS DAN JADI HEADER SENDIRI)
             let validIndukIds = induks.map(i => i.id);
             let orphans = subs.filter(s => !validIndukIds.includes(s.parentId));
             orphans.forEach((s) => {
@@ -625,18 +601,18 @@
 
         function tambahReqInduk() { 
             if(!db) return; 
-            let n = document.getElementById('reqKebutuhan').value; 
+            let ev = document.getElementById('reqKebutuhan').value; 
             let k = document.getElementById('reqKategori').value; 
             let a = document.getElementById('reqAcara').value || '-'; 
             let d = document.getElementById('reqDivisi').value; 
             let j = document.getElementById('reqJml').value; 
             let ket = document.getElementById('reqKet').value || '-'; 
             
-            if(!n) return alert("Isi Kebutuhan Induk!"); 
-            db.req.push({ id: Date.now(), parentId: null, kebutuhan: n, kategori: k, acara: a, divisi: d, jml: j, ket: ket, status: 'Pending' }); 
+            if(!ev) return alert("Isi Kebutuhan Induk!"); 
+            db.req.push({ id: Date.now(), parentId: null, event: ev, nama: '-', kategori: k, acara: a, divisi: d, jml: j, ket: ket, status: 'Pending' }); 
             
             document.getElementById('reqKebutuhan').value = ''; document.getElementById('reqAcara').value = ''; document.getElementById('reqKet').value = ''; 
-            catatLog(`Tiket Induk Baru: ${n}`, 'REQ', 'badge-pending'); saveDB(); renderReq(); updateDashboard();
+            catatLog(`Tiket Induk Baru: ${ev}`, 'REQ', 'badge-pending'); saveDB(); renderReq(); updateDashboard();
         }
 
         function bukaModalSub(indukId) {
@@ -666,9 +642,14 @@
         function editReqNama(id) {
             let item = db.req.find(r => r.id === id);
             if(!item) return;
-            let n = prompt("Ubah Nama Kebutuhan/Item:", item.kebutuhan);
+            let currentName = item.parentId === null ? item.event : item.kebutuhan;
+            let n = prompt("Ubah Nama:", currentName);
             if(n && n.trim() !== "") {
-                item.kebutuhan = n;
+                if (item.parentId === null) {
+                    item.event = n;
+                } else {
+                    item.kebutuhan = n;
+                }
                 saveDB(); renderReq();
             }
         }
@@ -703,13 +684,10 @@
                 catatLog("Hapus Induk & Seluruh Anaknya", 'REQ', 'badge-kritis');
             } else if(aksi === 'selamatkan') {
                 let namaBaru = prompt("Masukkan Nama Header/Folder Baru untuk anak-anak ini:");
-                if(!namaBaru) return; // batal
+                if(!namaBaru) return; 
                 let newId = Date.now();
-                // Buat Header baru (bukan barang)
-                db.req.push({ id: newId, parentId: null, kebutuhan: `📁 ${namaBaru}`, kategori: '-', acara: '-', divisi: '-', jml: '-', ket: 'Folder Transisi', status: 'Pending' });
-                // Pindahkan anak ke header baru
+                db.req.push({ id: newId, parentId: null, event: `📁 ${namaBaru}`, nama: '-', kategori: '-', acara: '-', divisi: '-', jml: '-', ket: 'Folder Transisi', status: 'Pending' });
                 db.req.forEach(r => { if(r.parentId === id) r.parentId = newId; });
-                // Hapus induk lama
                 db.req = db.req.filter(r => r.id !== id);
                 catatLog(`Header diganti jadi: ${namaBaru}`, 'REQ', 'badge-aman');
             }
@@ -720,24 +698,24 @@
         function accReq(id) {
             let r = db.req.find(x => x.id === id);
             if(!r) return;
-            if(!confirm(`ACC [${r.kebutuhan}] ke matriks ${r.kategori}?`)) return;
+            let finalName = (r.parentId === null) ? r.event : r.kebutuhan; 
+            if(!confirm(`ACC dan pindahkan [${finalName}] ke matriks ${r.kategori}?`)) return;
             
             if(r.kategori === 'Ruang') {
-                db.ruang.push({ nama: r.kebutuhan, divisi: r.divisi, status: 'Belum Diajukan', tapped: false, selesai: false });
+                db.ruang.push({ nama: finalName, divisi: r.divisi, status: 'Belum Diajukan', tapped: false, selesai: false });
             } else if(r.kategori === 'Alat') {
-                let asalInput = prompt(`Asal alat [${r.kebutuhan}]?\n(Kosongkan/Klik OK jika dari BEM/Umum)`, "BEM/Umum");
+                let asalInput = prompt(`Asal alat untuk [${finalName}]?\n(Kosongkan/Klik OK jika asalnya dari BEM/Umum)`, "BEM/Umum");
                 if(asalInput === null) return; if(asalInput.trim() === "") asalInput = "BEM/Umum";
-                db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: r.kebutuhan, asal: asalInput, divisi: r.divisi, jumlah: (r.jumlah||r.jml||1), status: 'Belum Menyediakan', hilang: 0 });
+                db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: finalName, asal: asalInput, divisi: r.divisi, jumlah: (r.jumlah||r.jml||1), status: 'Belum Menyediakan', hilang: 0 });
             } else if(r.kategori === 'Konstruksi') {
                 let listProyek = db.kategori.join(", ");
-                let proyekInput = prompt(`Kategori Proyek untuk [${r.kebutuhan}]?\n\n(Proyek tersedia: ${listProyek || 'Belum ada'})`, r.acara !== '-' ? r.acara : "Semua Proyek");
+                let proyekInput = prompt(`Kategori Proyek untuk [${finalName}]?\n\nKetik nama proyek yang sesuai.\n(Proyek tersedia: ${listProyek})`, r.acara !== '-' ? r.acara : "Semua Proyek");
                 if(proyekInput === null) return; if(proyekInput.trim() === "") proyekInput = "Semua Proyek";
                 if(proyekInput !== "Semua Proyek" && !db.kategori.includes(proyekInput)) { db.kategori.push(proyekInput); }
-                db.konstruksi.push({ nama: r.kebutuhan, jumlah: (r.jumlah||r.jml||1), proyek: proyekInput, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
+                db.konstruksi.push({ nama: finalName, jumlah: (r.jumlah||r.jml||1), proyek: proyekInput, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
             }
-            r.status = 'Di-ACC'; catatLog(`ACC Tiket: ${r.kebutuhan}`, 'REQ', 'badge-aman'); saveDB(); renderSemua(); updateDashboard();
+            r.status = 'Di-ACC'; catatLog(`ACC Tiket: ${finalName}`, 'REQ', 'badge-aman'); saveDB(); renderSemua(); updateDashboard();
         }
-        // ==========================================
 
         function renderRuang() {
             const tbody = document.getElementById('tabelRuang'); tbody.innerHTML = '';
@@ -802,12 +780,9 @@
                 } else if (v) {
                     alert("Gagal! Nama kategori tidak ditemukan. Pastikan huruf besar/kecilnya sama.");
                 }
-            }
+            } 
         }
 
-        // ==========================================
-        // SISTEM DOKUMENTASI (CAMERA/GALLERY)
-        // ==========================================
         function prosesUploadDokum(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -816,13 +791,13 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800; // Kompresi aman untuk Firebase
+                    const MAX_WIDTH = 800; 
                     let width = img.width; let height = img.height;
                     if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // Kompresi JPEG
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); 
                     window.tempBase64 = dataUrl;
                     document.getElementById('previewDokum').src = dataUrl;
                     document.getElementById('previewDokum').style.display = 'block';
@@ -874,9 +849,7 @@
                 </div>`;
             });
         }
-        // ==========================================
 
-        // --- SISTEM HAPUS LOG MASSAL (DASHBOARD) ---
         function toggleAllLogs(cb) {
             document.querySelectorAll('.log-check').forEach(el => el.checked = cb.checked);
             toggleBtnHapusMassal();
@@ -892,7 +865,6 @@
             let checks = document.querySelectorAll('.log-check:checked');
             if(checks.length === 0) return;
             if(confirm(`Hapus ${checks.length} log terpilih secara permanen?`)) {
-                // Ambil index lalu sort descending agar tidak geser array saat hapus
                 let indices = Array.from(checks).map(c => parseInt(c.value)).sort((a,b) => b-a);
                 indices.forEach(idx => db.log.splice(idx, 1));
                 document.getElementById('checkAllLogs').checked = false;
@@ -914,12 +886,11 @@
                 let btnHapus = isKoor ? `<button class="btn-aksi hapus" onclick="hapusLog(${idx})">🗑️</button>` : '-'; 
                 tbody.innerHTML += `<tr><td>${checkbox}</td><td>${l.tanggal}<br><span style="color:var(--text-muted); font-size:0.8rem;">${l.waktu}</span></td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td><td>${btnHapus}</td></tr>`; 
             }); 
-            toggleBtnHapusMassal(); // update button state
+            toggleBtnHapusMassal(); 
         }
         
         function renderDropdownKategori() { const sel = document.getElementById('kategoriProyek'); if(!sel) return; sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>'; if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; }); }
 
-        // --- DASHBOARD TEXT TETAP ORIGINAL ---
         function updateDashboard() {
             if(!db || !db.ruang || !db.alat || !db.konstruksi) return;
             const penentuWarna = (persen, total) => { if(total === 0) return 'var(--accent-green)'; if(persen >= 80) return 'var(--accent-green)'; if(persen >= 60) return 'var(--accent-yellow)'; return 'var(--accent-red)'; };
@@ -943,7 +914,7 @@
             let totalAlatScore = 0; let maxAlatScore = 0; let badAlat = 0;
             db.alat.forEach(a => { 
                 let j = Number(a.jumlah) || 0; 
-                if (a.status === 'Transit' || a.status === 'Telah Dipinjam' || a.status === 'Sedang dipinjam [B]') { /* Abaikan */ } 
+                if (a.status === 'Transit' || a.status === 'Telah Dipinjam' || a.status === 'Sedang dipinjam [B]') { } 
                 else if (a.status === 'Belum Menyediakan' || a.status === 'Hilang') { maxAlatScore += (j * 100); badAlat += (a.status === 'Hilang' ? Number(a.hilang || 0) : j); } 
                 else { maxAlatScore += (j * 100); totalAlatScore += (j * 100); }
             });
@@ -963,7 +934,6 @@
             document.getElementById('dashKonstruksiSub').innerText = maxKScore === 0 ? 'Belum ada data masuk' : `${cK} dari ${db.konstruksi.length} Material Tersedia`;
         }
 
-        // --- SISTEM IPK ---
         function updateIPKVisibility() {
             if(!db) return;
             const wrapperTabel = document.getElementById('wrapperTabelIPK');
@@ -994,7 +964,7 @@
         function toggleSegelIPK() {
             db.isIPKRevealed = !db.isIPKRevealed;
             catatLog(db.isIPKRevealed ? 'Membuka Segel Menu IPK' : 'Menutup Segel Menu IPK', 'Sistem', db.isIPKRevealed ? 'badge-aman' : 'badge-kritis');
-            saveDB(); updateIPKVisibility(); // Fixed BUG nyangkut
+            saveDB(); updateIPKVisibility(); 
         }
 
         function autoUpdateIPK(tipe) {
@@ -1023,7 +993,6 @@
         function hitungSkorIPK(c, d, e, n) { let skor = ((0.50 * c) + (0.35 * d) - (0.15 * e)) * (1 + (0.05 * n)); return skor > 0 ? skor : 0; }
         function editVarIPK(nama, varType) { let pIdx = db.ipk.findIndex(i => i.nama === nama); if(pIdx === -1) return; let currentVal = db.ipk[pIdx][varType]; let newVal = prompt(`Ubah nilai [${varType.toUpperCase()}] untuk ${nama}:`, currentVal); if(newVal !== null && !isNaN(newVal)) { db.ipk[pIdx][varType] = Number(newVal); catatLog(`Update IPK (${varType.toUpperCase()}) ${nama} ➔ ${newVal}`, 'Sistem', 'badge-aman'); saveDB(); renderIPK(); } }
 
-        // --- SISTEM CETAK SERTIFIKAT POP-UP BARU (FIX HP PRINT) ---
         function cetakSertifikat(nama, skor) {
             let predikat = getPredikat(skor);
             let printContent = `
