@@ -78,7 +78,7 @@
         /* Tables */
         .table-responsive { width: 100%; overflow-x: auto; padding-bottom: 20px;}
         table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 2rem; }
-        th, td { text-align: left; padding: 1.2rem 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; }
+        th, td { text-align: left; padding: 1.2rem 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; white-space: nowrap; vertical-align: middle; }
         th { color: var(--text-muted); font-weight: bold; text-transform: uppercase; font-size: 0.75rem; background: var(--surface); position: sticky; top: 0; z-index: 10;}
         
         .status-badge { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; border: none; outline: none; cursor: pointer; appearance: auto; font-family: inherit; }
@@ -95,6 +95,13 @@
         .editable-cell { cursor: pointer; transition: 0.2s; position: relative; }
         .editable-cell:hover { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         .editable-cell::after { content: "✏️"; font-size: 0.6rem; position: absolute; top: 5px; right: 0px; opacity: 0.5;}
+
+        /* CHECKBOX LOGS */
+        .log-check { transform: scale(1.2); cursor: pointer; accent-color: var(--accent-red); }
+
+        /* MODAL POPUP */
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:1rem; }
+        .modal-box { background:var(--surface); padding:2rem; border-radius:12px; max-width:500px; width:100%; border:1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
 
         /* Desain Sertifikat NATIVE PRINT (1 PAGE) */
         #sertifikatWrapper { display: none; }
@@ -195,6 +202,7 @@
             <button class="nav-link" onclick="bukaTab('ruang', this)">🚪 Ruang</button>
             <button class="nav-link" onclick="bukaTab('alat', this)">🔌 Alat</button>
             <button class="nav-link" onclick="bukaTab('konstruksi', this)">🏗️ Konstr</button>
+            <button class="nav-link" onclick="bukaTab('dokum', this)">📸 Dokum</button>
             <button class="nav-link" id="navIPK" onclick="bukaTab('ipk', this)">📊 IPK</button>
             <button class="nav-link" id="navPengaturan" onclick="bukaTab('pengaturan', this)">⚙️ Set</button>
         </div>
@@ -210,10 +218,18 @@
                 <div class="card"><div class="card-title">Sirkulasi Alat</div><p class="card-value" id="dashAlat">0% Aman</p><p class="card-subtext" id="dashAlatSub">Belum ada data masuk</p></div>
                 <div class="card"><div class="card-title">Konstruksi</div><p class="card-value" id="dashKonstruksi">0% Siap</p><p class="card-subtext" id="dashKonstruksiSub">Belum ada data masuk</p></div>
             </div>
-            <h3 style="font-weight: bold; margin-bottom: 1rem; color:var(--text-main);">Log Aktivitas Lapangan</h3>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; flex-wrap:wrap; gap:10px;">
+                <h3 style="font-weight: bold; margin: 0; color:var(--text-main);">Log Aktivitas Lapangan</h3>
+                <button id="btnHapusMassalLog" class="btn-aksi" style="display:none; background:var(--accent-red); color:white; border:none; padding:10px 15px; font-weight:bold;" onclick="hapusLogMassal()">🗑️ Hapus Terpilih</button>
+            </div>
+            
             <div class="table-responsive">
                 <table>
-                    <thead><tr><th>Waktu</th><th>Oleh</th><th>Tindakan / Status Baru</th><th>Modul</th><th>Aksi</th></tr></thead>
+                    <thead><tr>
+                        <th style="width:30px;"><input type="checkbox" id="checkAllLogs" class="log-check" onchange="toggleAllLogs(this)"></th>
+                        <th>Waktu</th><th>Oleh</th><th>Tindakan / Status Baru</th><th>Modul</th><th>Aksi</th>
+                    </tr></thead>
                     <tbody id="tabelLog"></tbody>
                 </table>
             </div>
@@ -223,18 +239,17 @@
             <h1 class="header-title">Sistem Tiket Logistik (REQ)</h1>
             <p class="header-subtitle">Buku Tamu / Permintaan Mentah dari Divisi Lain</p>
             <div class="form-container">
-                <div class="form-group"><label>Kebutuhan Induk / Acara</label><input type="text" id="reqEvent" placeholder="Cth: Panggung Utama"></div>
-                <div class="form-group"><label>Nama Sub-Item (Alat)</label><input type="text" id="reqNama" placeholder="Cth: Kayu, HT"></div>
-                
+                <div class="form-group"><label>Kebutuhan (Induk)</label><input type="text" id="reqKebutuhan" placeholder="Cth: Panggung Utama"></div>
                 <div class="form-group"><label>Kategori</label><select id="reqKategori"><option>Alat</option><option>Ruang</option><option>Konstruksi</option></select></div>
+                <div class="form-group"><label>Acara</label><input type="text" id="reqAcara" placeholder="Cth: Malam Puncak"></div>
                 <div class="form-group"><label>Peminta</label><select id="reqDivisi"><option>ATP</option><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select></div>
                 <div class="form-group" style="flex: 0.5;"><label>Jml</label><input type="number" id="reqJml" min="1" value="1"></div>
                 <div class="form-group"><label>Ket / Urgensi</label><input type="text" id="reqKet" placeholder="Cth: Mendesak"></div>
-                <button class="btn-primary" onclick="tambahReq()">Catat Tiket</button>
+                <button class="btn-primary" onclick="tambahReqInduk()">Catat Induk</button>
             </div>
             <div class="table-responsive">
                 <table>
-                    <thead><tr><th>Kebutuhan & Sub-Item</th><th>Kategori</th><th>Peminta</th><th>Keterangan</th><th>Status</th><th>Aksi Koor</th></tr></thead>
+                    <thead><tr><th>Kebutuhan & Sub-Item</th><th>Kategori</th><th>Acara</th><th>Peminta</th><th>Keterangan</th><th>Status</th><th>Aksi</th></tr></thead>
                     <tbody id="tabelReq"></tbody>
                 </table>
             </div>
@@ -297,6 +312,26 @@
             </div>
         </div>
 
+        <div id="dokum" class="tab-section">
+            <h1 class="header-title">Arsip & Dokumentasi Lapangan</h1>
+            <p class="header-subtitle">Bukti Otentik / Laporan Visual Operasional</p>
+            <div class="form-container">
+                <div class="form-group" style="flex:0.5;">
+                    <label>📸 Ambil/Pilih Foto</label>
+                    <input type="file" id="dokumFile" accept="image/*" capture="environment" onchange="prosesUploadDokum(event)" style="padding:0.6rem;">
+                </div>
+                <div class="form-group" style="flex:2;">
+                    <label>Keterangan Bukti Otentik</label>
+                    <input type="text" id="dokumKet" placeholder="Wajib isi: Cth. Kondisi HT rusak, atau Nota Serah Terima...">
+                </div>
+                <button class="btn-primary" onclick="tambahDokum()">Unggah Arsip</button>
+            </div>
+            <img id="previewDokum" style="display:none; max-width:200px; max-height:200px; margin-bottom:20px; border-radius:8px; border:2px solid var(--accent-blue);">
+            
+            <div class="grid-container" id="gridDokum" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+                </div>
+        </div>
+
         <div id="ipk" class="tab-section">
             <h1 class="header-title">Indeks Presisi Kinerja (IPK)</h1>
             <p class="header-subtitle">Rumus: IPK = [(0.50 × C) + (0.35 × D) − (0.15 × E)] × (1 + 0.05 × N)</p>
@@ -349,6 +384,35 @@
         </div>
     </div>
 
+    <div id="modalSubItem" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="margin-top:0; color:var(--text-main); margin-bottom:1.5rem;">➕ Tambah Sub-Item</h3>
+            <input type="hidden" id="subParentId">
+            <div class="form-group" style="margin-bottom:15px;"><label>Nama Sub-Item (Alat)</label><input type="text" id="subKebutuhan" style="width:100%;" placeholder="Cth: Kayu, Paku, Lightning"></div>
+            <div class="form-group" style="margin-bottom:15px;"><label>Kategori</label><select id="subKategori" style="width:100%;"><option>Alat</option><option>Ruang</option><option>Konstruksi</option></select></div>
+            <div class="form-group" style="margin-bottom:15px;"><label>Acara</label><input type="text" id="subAcara" style="width:100%;" placeholder="Cth: Malam Puncak"></div>
+            <div class="form-group" style="margin-bottom:15px;"><label>Peminta</label><select id="subDivisi" style="width:100%;"><option>ATP</option><option>Acara</option><option>DDD</option><option>Lapangan</option><option>Sponsorship</option><option>Humpub</option><option>Usda</option><option>Sekretaris</option><option>Bendahara</option></select></div>
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <div class="form-group" style="flex:0.4;"><label>Jml</label><input type="number" id="subJml" value="1" style="width:100%;"></div>
+                <div class="form-group" style="flex:1;"><label>Ket</label><input type="text" id="subKet" style="width:100%;"></div>
+            </div>
+            <button class="btn-primary" style="width:100%; margin-bottom:10px;" onclick="simpanSubItem()">Simpan Anak</button>
+            <button style="width:100%; background:rgba(255,255,255,0.1); border:1px solid var(--border-color); color:var(--text-main); padding:0.8rem; border-radius:8px; cursor:pointer;" onclick="document.getElementById('modalSubItem').style.display='none'">Batal</button>
+        </div>
+    </div>
+
+    <div id="modalHapusInduk" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="margin-top:0; color:var(--accent-red); margin-bottom:1rem;">⚠️ Induk memiliki Sub-Item!</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.5;">Anda akan menghapus sebuah Induk/Header. Pilih nasib untuk anak/sub-item di bawahnya:</p>
+            <input type="hidden" id="deleteIndukId">
+            <button class="btn-primary" style="width:100%; background:var(--accent-red); margin-bottom:10px;" onclick="eksekusiHapusInduk('semua')">🗑️ Hapus Semua (Induk & Anaknya)</button>
+            <button class="btn-primary" style="width:100%; background:var(--accent-blue); margin-bottom:20px;" onclick="eksekusiHapusInduk('selamatkan')">📁 Hapus Induk Saja (Beri Nama Induk Baru)</button>
+            <button style="width:100%; background:rgba(255,255,255,0.1); border:1px solid var(--border-color); color:var(--text-main); padding:0.8rem; border-radius:8px; cursor:pointer;" onclick="document.getElementById('modalHapusInduk').style.display='none'">Batal</button>
+        </div>
+    </div>
+
+
     <script>
         // --- 1. KONFIGURASI FIREBASE ---
         const firebaseConfig = {
@@ -362,9 +426,9 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const dbCloud = firebase.firestore();
 
-        // --- SISTEM KEAMANAN ANTI-RESET FIREBASE ---
         let db = null; 
         let isDataLoaded = false;
+        let tempBase64 = null; // untuk foto arsip
         
         const defaultIPK = [
             { nama: "Shafa", c: 0, d: 0, e: 0, n: 1 }, { nama: "Yehezkiel", c: 0, d: 0, e: 0, n: 1 },
@@ -377,33 +441,43 @@
             if (doc.exists) { 
                 db = doc.data(); 
                 isDataLoaded = true;
+                
+                // MIGRATION & SAFETY CHECKS
                 if(!db.ipk) db.ipk = defaultIPK; 
                 if(db.isIPKRevealed === undefined) db.isIPKRevealed = false;
-                if(!db.req) db.req = [];
                 if(!db.ruang) db.ruang = [];
                 if(!db.alat) db.alat = [];
                 if(!db.konstruksi) db.konstruksi = [];
                 if(!db.log) db.log = [];
-                if(!db.kategori) db.kategori = ['Gate In', 'Gate Out'];
+                if(!db.dokum) db.dokum = [];
+                
+                // KATEGORI KONSTRUKSI KOSONG DARI AWAL
+                if(!db.kategori) db.kategori = []; 
+                
+                // REQ MIGRATION (Supaya data lama otomatis jadi Induk)
+                if(!db.req) db.req = [];
+                db.req.forEach(r => {
+                    if(!r.id) r.id = Date.now() + Math.floor(Math.random()*1000);
+                    if(r.parentId === undefined) r.parentId = null;
+                    if(!r.kebutuhan) r.kebutuhan = r.nama || r.event || '-';
+                    if(!r.acara) r.acara = r.event || '-';
+                });
                 
                 if(document.getElementById('landingPage').style.display === 'none') {
                     renderSemua(); updateDashboard(); renderDropdownKategori(); updateIPKVisibility();
                 }
             } else { 
-                db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false, req: [] };
+                db = { ruang: [], alat: [], konstruksi: [], log: [], dokum: [], kategori: [], ipk: defaultIPK, isIPKRevealed: false, req: [] };
                 isDataLoaded = true;
                 dbCloud.collection("atp").doc("data").set(db); 
             }
         });
 
-        // --- FUNGSI SAVE AMAN ---
         function saveDB(forceLog = false) { 
-            if(isDataLoaded && (!window.isViewer || forceLog)) {
-                dbCloud.collection("atp").doc("data").set(db); 
-            }
+            if(isDataLoaded && (!window.isViewer || forceLog)) { dbCloud.collection("atp").doc("data").set(db); }
         }
 
-        // --- SISTEM RADAR: DETEKSI LOG HANYA 1x PER SESI ---
+        // --- SISTEM RADAR LOG 1x ---
         window.onload = function() {
             if(localStorage.getItem('atpTheme') === 'light') document.body.classList.add('light-mode');
             const savedUser = localStorage.getItem('atpUser');
@@ -413,7 +487,6 @@
                 document.getElementById('displayUserName').innerText = savedUser;
                 terapkanHakAkses(savedRole); 
                 
-                // Cek Session: Hanya catat 1 kali selama browser belum diclose
                 if(!sessionStorage.getItem('atp_logged_in')) {
                     setTimeout(() => {
                         catatLog('Masuk Radar (Auto-Login)', 'Sistem', 'badge-biru', true);
@@ -423,14 +496,12 @@
             }
         };
 
-        // --- SISTEM LOGGING UNIVERSAL DENGAN RE-RENDER ---
         function catatLog(t, m, c, forceLog = false) { 
             if(!db) return;
             if(window.isViewer && !forceLog) return; 
             const d = new Date(); 
             db.log.unshift({ tanggal: d.toLocaleDateString('id-ID'), waktu: d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}), user: localStorage.getItem('atpUser') || 'Anonim', tindakan: t, modul: m, statusClass: c }); 
-            saveDB(forceLog); 
-            renderLog(); 
+            saveDB(forceLog); renderLog(); 
         }
 
         function masukSistem() {
@@ -484,59 +555,189 @@
         }
         function keluarSistem() { sessionStorage.removeItem('atp_logged_in'); localStorage.removeItem('atpUser'); localStorage.removeItem('atpRole'); location.reload(); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('atpTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); }
-        function resetDatabase() { if(prompt("Ketik 'RESET' untuk menghapus data:") === 'RESET') { db = { ruang: [], alat: [], konstruksi: [], log: [], kategori: ['Gate In', 'Gate Out'], ipk: defaultIPK, isIPKRevealed: false, req: [] }; saveDB(true); alert('Database reset!'); location.reload(); } }
+        function resetDatabase() { if(prompt("Ketik 'RESET' untuk menghapus data:") === 'RESET') { db = { ruang: [], alat: [], konstruksi: [], log: [], dokum: [], kategori: [], ipk: defaultIPK, isIPKRevealed: false, req: [] }; saveDB(true); alert('Database reset!'); location.reload(); } }
         function bukaTab(idTab, elemen) { document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active')); document.getElementById(idTab).classList.add('active'); if(elemen) elemen.classList.add('active'); }
         function dptClass(val) { val = val.toLowerCase(); if(val.includes('tidak tersedia') || val.includes('belum') || val.includes('hilang')) return 'badge-kritis'; if(val.includes('sedang dipinjam [b]') || val.includes('sedang') || val.includes('pending')) return 'badge-pending'; if(val.includes('sudah') || val.includes('tersedia') || val.includes('dikembalikan') || val.includes('acc') || val.includes('selesai') || val.includes('tidak membeli')) return 'badge-aman'; if(val.includes('transit') || val.includes('telah dipinjam')) return 'badge-biru'; return 'badge-abu'; }
-        function getModulColor(m) { return m==='Ruang'?'#87cefa':m==='Alat'?'#ff69b4':m==='Konstruksi'?'#dda0dd':m==='REQ'?'#ffb6c1':'var(--text-muted)'; }
+        function getModulColor(m) { return m==='Ruang'?'#87cefa':m==='Alat'?'#ff69b4':m==='Konstruksi'?'#dda0dd':m==='REQ'?'#ffb6c1':m==='Dokumentasi'?'#ffd700':'var(--text-muted)'; }
 
-        function renderSemua() { if(!db) return; renderReq(); renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); }
+        function renderSemua() { if(!db) return; renderReq(); renderRuang(); renderAlat(); renderKonstruksi(); renderLog(); renderIPK(); renderDokum(); }
 
-        // --- RENDER MENU REQ (KEPALA & SUB-ITEM ALAT) DIBALIK POSISINYA ---
+        // ==========================================
+        // SISTEM REQ BARU (INDUK & SUB-ITEM)
+        // ==========================================
         function renderReq() {
             const tbody = document.getElementById('tabelReq'); tbody.innerHTML = '';
             if(!db.req) return;
-            db.req.forEach((r, idx) => {
+            
+            let induks = db.req.filter(r => r.parentId === null);
+            let subs = db.req.filter(r => r.parentId !== null);
+
+            induks.forEach((r) => {
                 let isKoor = (window.userRole === 'koor');
-                let btnHapus = isKoor ? `<button class="btn-aksi" onclick="hapusReq(${idx})">🗑️</button>` : '';
-                let btnAcc = (r.status === 'Pending' && isKoor) ? `<button class="btn-aksi" style="background:var(--accent-green); color:#000; border-color:var(--accent-green); font-weight:bold;" onclick="accReq(${idx})">✔️ ACC & Pindah</button>` : '';
+                let btnHapus = isKoor ? `<button class="btn-aksi" onclick="siapkanHapusInduk(${r.id})">🗑️</button>` : '';
+                let btnAcc = (r.status === 'Pending' && isKoor) ? `<button class="btn-aksi" style="background:var(--accent-green); color:#000; border-color:var(--accent-green); font-weight:bold;" onclick="accReq(${r.id})">✔️ ACC</button>` : '';
+                let btnAddSub = (!window.isViewer) ? `<button class="btn-aksi" style="background:var(--accent-blue); color:#fff; border-color:var(--accent-blue); font-weight:bold;" onclick="bukaModalSub(${r.id})">➕ Sub</button>` : '';
+                let btnEdit = (!window.isViewer) ? `<button class="btn-aksi" onclick="editReqNama(${r.id})">✏️</button>` : '';
                 
-                // EVENT (INDUK) CETAK TEBAL, NAMA ALAT (SUB) ADA PANAH DI BAWAHNYA
-                let namaInduk = `<span style="font-weight:bold; font-size:1.05rem;">${r.event}</span>`;
-                let namaSub = (r.nama && r.nama !== '-') ? `<br><span style="font-size:0.8rem; color:var(--accent-blue);">↳ ${r.nama}</span>` : '';
-                
-                tbody.innerHTML += `<tr><td>${namaInduk} ${namaSub}</td><td>${r.kategori}</td><td>${r.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${r.jumlah}x)</span></td><td>${r.ket}</td><td><span class="status-badge ${dptClass(r.status)}">${r.status}</span></td><td>${btnAcc}${btnHapus}</td></tr>`;
+                // BARIS INDUK
+                tbody.innerHTML += `<tr style="background: rgba(255,255,255,0.03);">
+                    <td style="font-weight:bold; font-size:1.05rem;">📦 ${r.kebutuhan}</td>
+                    <td>${r.kategori}</td><td>${r.acara}</td>
+                    <td>${r.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${r.jumlah || r.jml || 1}x)</span></td>
+                    <td>${r.ket}</td><td><span class="status-badge ${dptClass(r.status)}">${r.status}</span></td>
+                    <td>${btnAcc}${btnEdit}${btnAddSub}${btnHapus}</td>
+                </tr>`;
+
+                // BARIS ANAK-ANAKNYA
+                let mySubs = subs.filter(s => s.parentId === r.id);
+                mySubs.forEach((s) => {
+                    let btnHapusSub = isKoor ? `<button class="btn-aksi" onclick="hapusReqSub(${s.id})">🗑️</button>` : '';
+                    let btnAccSub = (s.status === 'Pending' && isKoor) ? `<button class="btn-aksi" style="background:var(--accent-green); color:#000; border-color:var(--accent-green); font-weight:bold;" onclick="accReq(${s.id})">✔️ ACC</button>` : '';
+                    let btnEditSub = (!window.isViewer) ? `<button class="btn-aksi" onclick="editReqNama(${s.id})">✏️</button>` : '';
+                    
+                    tbody.innerHTML += `<tr>
+                        <td style="padding-left: 2rem; color:var(--text-main);">↳ ${s.kebutuhan}</td>
+                        <td style="font-size:0.85rem;">${s.kategori}</td><td style="font-size:0.85rem;">${s.acara}</td>
+                        <td style="font-size:0.85rem;">${s.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${s.jumlah || s.jml || 1}x)</span></td>
+                        <td style="font-size:0.85rem;">${s.ket}</td><td><span class="status-badge ${dptClass(s.status)}">${s.status}</span></td>
+                        <td>${btnAccSub}${btnEditSub}${btnHapusSub}</td>
+                    </tr>`;
+                });
+            });
+            
+            // RENDER ANAK YATIM (YANG INDUKNYA DIHAPUS DAN JADI HEADER SENDIRI)
+            let validIndukIds = induks.map(i => i.id);
+            let orphans = subs.filter(s => !validIndukIds.includes(s.parentId));
+            orphans.forEach((s) => {
+                 let isKoor = (window.userRole === 'koor');
+                 let btnHapusSub = isKoor ? `<button class="btn-aksi" onclick="hapusReqSub(${s.id})">🗑️</button>` : '';
+                 let btnAccSub = (s.status === 'Pending' && isKoor) ? `<button class="btn-aksi" style="background:var(--accent-green); color:#000; border-color:var(--accent-green); font-weight:bold;" onclick="accReq(${s.id})">✔️ ACC</button>` : '';
+                 
+                 tbody.innerHTML += `<tr>
+                    <td style="font-weight:bold; color:var(--accent-yellow);">⚠️ (Mandiri) ${s.kebutuhan}</td>
+                    <td>${s.kategori}</td><td>${s.acara}</td>
+                    <td>${s.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${s.jumlah || s.jml || 1}x)</span></td>
+                    <td>${s.ket}</td><td><span class="status-badge ${dptClass(s.status)}">${s.status}</span></td>
+                    <td>${btnAccSub}${btnHapusSub}</td>
+                 </tr>`;
             });
         }
-        function tambahReq() { 
-            if(!db) return; let ev = document.getElementById('reqEvent').value; let n = document.getElementById('reqNama').value || '-'; let k = document.getElementById('reqKategori').value; let d = document.getElementById('reqDivisi').value; let j = document.getElementById('reqJml').value; let ket = document.getElementById('reqKet').value || '-'; 
-            if(!ev) return alert("Isi Kebutuhan Induk / Acara!"); 
-            db.req.push({ nama: n, event: ev, kategori: k, divisi: d, jumlah: j, ket: ket, status: 'Pending' }); 
-            document.getElementById('reqNama').value = ''; document.getElementById('reqEvent').value = ''; document.getElementById('reqKet').value = ''; 
-            catatLog(`Tiket Baru: ${ev}`, 'REQ', 'badge-pending'); saveDB(); renderReq(); updateDashboard();
+
+        function tambahReqInduk() { 
+            if(!db) return; 
+            let n = document.getElementById('reqKebutuhan').value; 
+            let k = document.getElementById('reqKategori').value; 
+            let a = document.getElementById('reqAcara').value || '-'; 
+            let d = document.getElementById('reqDivisi').value; 
+            let j = document.getElementById('reqJml').value; 
+            let ket = document.getElementById('reqKet').value || '-'; 
+            
+            if(!n) return alert("Isi Kebutuhan Induk!"); 
+            db.req.push({ id: Date.now(), parentId: null, kebutuhan: n, kategori: k, acara: a, divisi: d, jml: j, ket: ket, status: 'Pending' }); 
+            
+            document.getElementById('reqKebutuhan').value = ''; document.getElementById('reqAcara').value = ''; document.getElementById('reqKet').value = ''; 
+            catatLog(`Tiket Induk Baru: ${n}`, 'REQ', 'badge-pending'); saveDB(); renderReq(); updateDashboard();
         }
-        function hapusReq(idx) { 
-            if(confirm("Hapus tiket ini?")) { catatLog(`Hapus Tiket: ${db.req[idx].event}`, 'REQ', 'badge-kritis'); db.req.splice(idx, 1); saveDB(); renderReq(); updateDashboard(); } 
+
+        function bukaModalSub(indukId) {
+            document.getElementById('subParentId').value = indukId;
+            document.getElementById('subKebutuhan').value = '';
+            document.getElementById('subAcara').value = '';
+            document.getElementById('subKet').value = '';
+            document.getElementById('modalSubItem').style.display = 'flex';
         }
-        function accReq(idx) {
-            let r = db.req[idx];
-            let finalName = (r.nama !== '-') ? r.nama : r.event; // Yg masuk ke Matriks adalah nama alat/ruangnya
-            if(!confirm(`ACC dan pindahkan [${finalName}] ke matriks ${r.kategori}?`)) return;
+
+        function simpanSubItem() {
+            let pid = parseInt(document.getElementById('subParentId').value);
+            let n = document.getElementById('subKebutuhan').value;
+            let k = document.getElementById('subKategori').value;
+            let a = document.getElementById('subAcara').value || '-';
+            let d = document.getElementById('subDivisi').value;
+            let j = document.getElementById('subJml').value;
+            let ket = document.getElementById('subKet').value || '-';
+
+            if(!n) return alert("Isi Nama Sub-Item!");
+            db.req.push({ id: Date.now(), parentId: pid, kebutuhan: n, kategori: k, acara: a, divisi: d, jml: j, ket: ket, status: 'Pending' }); 
+            
+            document.getElementById('modalSubItem').style.display = 'none';
+            catatLog(`Tambah Sub: ${n}`, 'REQ', 'badge-pending'); saveDB(); renderReq(); updateDashboard();
+        }
+
+        function editReqNama(id) {
+            let item = db.req.find(r => r.id === id);
+            if(!item) return;
+            let n = prompt("Ubah Nama Kebutuhan/Item:", item.kebutuhan);
+            if(n && n.trim() !== "") {
+                item.kebutuhan = n;
+                saveDB(); renderReq();
+            }
+        }
+
+        function hapusReqSub(id) {
+            if(confirm("Hapus sub-item ini?")) {
+                let item = db.req.find(r => r.id === id);
+                catatLog(`Hapus Sub-item: ${item.kebutuhan}`, 'REQ', 'badge-kritis');
+                db.req = db.req.filter(r => r.id !== id);
+                saveDB(); renderReq(); updateDashboard();
+            }
+        }
+
+        function siapkanHapusInduk(id) {
+            let mySubs = db.req.filter(r => r.parentId === id);
+            if(mySubs.length > 0) {
+                document.getElementById('deleteIndukId').value = id;
+                document.getElementById('modalHapusInduk').style.display = 'flex';
+            } else {
+                if(confirm("Hapus Induk ini?")) {
+                    db.req = db.req.filter(r => r.id !== id);
+                    catatLog("Hapus Induk Kosong", 'REQ', 'badge-kritis');
+                    saveDB(); renderReq(); updateDashboard();
+                }
+            }
+        }
+
+        function eksekusiHapusInduk(aksi) {
+            let id = parseInt(document.getElementById('deleteIndukId').value);
+            if(aksi === 'semua') {
+                db.req = db.req.filter(r => r.id !== id && r.parentId !== id);
+                catatLog("Hapus Induk & Seluruh Anaknya", 'REQ', 'badge-kritis');
+            } else if(aksi === 'selamatkan') {
+                let namaBaru = prompt("Masukkan Nama Header/Folder Baru untuk anak-anak ini:");
+                if(!namaBaru) return; // batal
+                let newId = Date.now();
+                // Buat Header baru (bukan barang)
+                db.req.push({ id: newId, parentId: null, kebutuhan: `📁 ${namaBaru}`, kategori: '-', acara: '-', divisi: '-', jml: '-', ket: 'Folder Transisi', status: 'Pending' });
+                // Pindahkan anak ke header baru
+                db.req.forEach(r => { if(r.parentId === id) r.parentId = newId; });
+                // Hapus induk lama
+                db.req = db.req.filter(r => r.id !== id);
+                catatLog(`Header diganti jadi: ${namaBaru}`, 'REQ', 'badge-aman');
+            }
+            document.getElementById('modalHapusInduk').style.display = 'none';
+            saveDB(); renderReq(); updateDashboard();
+        }
+
+        function accReq(id) {
+            let r = db.req.find(x => x.id === id);
+            if(!r) return;
+            if(!confirm(`ACC [${r.kebutuhan}] ke matriks ${r.kategori}?`)) return;
             
             if(r.kategori === 'Ruang') {
-                db.ruang.push({ nama: finalName, divisi: r.divisi, status: 'Belum Diajukan', tapped: false, selesai: false });
+                db.ruang.push({ nama: r.kebutuhan, divisi: r.divisi, status: 'Belum Diajukan', tapped: false, selesai: false });
             } else if(r.kategori === 'Alat') {
-                let asalInput = prompt(`Asal alat untuk [${finalName}]?\n(Kosongkan/Klik OK jika asalnya dari BEM/Umum)`, "BEM/Umum");
+                let asalInput = prompt(`Asal alat [${r.kebutuhan}]?\n(Kosongkan/Klik OK jika dari BEM/Umum)`, "BEM/Umum");
                 if(asalInput === null) return; if(asalInput.trim() === "") asalInput = "BEM/Umum";
-                db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: finalName, asal: asalInput, divisi: r.divisi, jumlah: r.jumlah, status: 'Belum Menyediakan', hilang: 0 });
+                db.alat.push({ id: 'ATP-'+Math.floor(Math.random()*900+100), nama: r.kebutuhan, asal: asalInput, divisi: r.divisi, jumlah: (r.jumlah||r.jml||1), status: 'Belum Menyediakan', hilang: 0 });
             } else if(r.kategori === 'Konstruksi') {
                 let listProyek = db.kategori.join(", ");
-                let proyekInput = prompt(`Kategori Proyek untuk [${finalName}]?\n\nKetik nama proyek yang sesuai.\n(Proyek tersedia: ${listProyek})`, r.event !== '-' ? r.event : "Semua Proyek");
+                let proyekInput = prompt(`Kategori Proyek untuk [${r.kebutuhan}]?\n\n(Proyek tersedia: ${listProyek || 'Belum ada'})`, r.acara !== '-' ? r.acara : "Semua Proyek");
                 if(proyekInput === null) return; if(proyekInput.trim() === "") proyekInput = "Semua Proyek";
                 if(proyekInput !== "Semua Proyek" && !db.kategori.includes(proyekInput)) { db.kategori.push(proyekInput); }
-                db.konstruksi.push({ nama: finalName, jumlah: r.jumlah, proyek: proyekInput, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
+                db.konstruksi.push({ nama: r.kebutuhan, jumlah: (r.jumlah||r.jml||1), proyek: proyekInput, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' });
             }
-            r.status = 'Di-ACC'; catatLog(`ACC Tiket: ${finalName}`, 'REQ', 'badge-aman'); saveDB(); renderSemua(); updateDashboard();
+            r.status = 'Di-ACC'; catatLog(`ACC Tiket: ${r.kebutuhan}`, 'REQ', 'badge-aman'); saveDB(); renderSemua(); updateDashboard();
         }
+        // ==========================================
 
         function renderRuang() {
             const tbody = document.getElementById('tabelRuang'); tbody.innerHTML = '';
@@ -548,7 +749,7 @@
             });
         }
         function tambahRuang() { let n = document.getElementById('inputRuang').value; let d = document.getElementById('divisiRuang').value; if(!n) return alert("Isi nama!"); db.ruang.push({ nama: n, divisi: d, status: 'Belum Diajukan', tapped: false, selesai: false }); document.getElementById('inputRuang').value = ''; catatLog(`Input: ${n}`, 'Ruang', dptClass('Belum Diajukan')); saveDB(); renderRuang(); updateDashboard(); }
-        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; if(val.includes('Selesai Bersih') || val.includes('Sudah Terajukan')) autoUpdateIPK('C'); catatLog(`Update ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); saveDB(); updateDashboard(); }
+        function ubahStatusRuang(idx, val) { db.ruang[idx].status = val; if(val.includes('Selesai Bersih') || val.includes('Sudah Terajukan')) autoUpdateIPK('C'); catatLog(`Update ${db.ruang[idx].nama} ➔ ${val}`, 'Ruang', dptClass(val)); saveDB(); updateDashboard(); renderRuang(); }
         function editRuang(idx) { let n = prompt("Nama Ruang:", db.ruang[idx].nama); if(!n) return; let d = prompt("Divisi:", db.ruang[idx].divisi); if(!d) return; catatLog(`Edit ruang: ${n}`, 'Ruang', 'badge-abu'); db.ruang[idx].nama = n; db.ruang[idx].divisi = d; saveDB(); renderRuang(); }
         function hapusRuang(idx) { if(confirm(`Hapus ${db.ruang[idx].nama}?`)) { catatLog(`Hapus Ruang: ${db.ruang[idx].nama}`, 'Ruang', 'badge-kritis'); db.ruang.splice(idx, 1); saveDB(); renderRuang(); updateDashboard(); } }
 
@@ -579,39 +780,136 @@
             });
         }
         function tambahMaterial() { let n = document.getElementById('inputMaterial').value; let jml = document.getElementById('jumlahMaterial').value; let p = document.getElementById('kategoriProyek').value; if(!n) return alert("Isi!"); if(p==='Semua Proyek') return alert("Pilih proyek!"); db.konstruksi.push({ nama: n, jumlah: jml, proyek: p, ketersediaan: 'Belum Tersedia', pembelian: 'Belum Dibeli' }); document.getElementById('inputMaterial').value = ''; catatLog(`Input: ${n} (${p})`, 'Konstruksi', 'badge-pending'); saveDB(); renderKonstruksi(); updateDashboard(); }
-        function ubahKonstruksi(idx, col, val) { if(col === 'ket') db.konstruksi[idx].ketersediaan = val; if(col === 'beli') db.konstruksi[idx].pembelian = val; catatLog(`Update ${db.konstruksi[idx].nama} ➔ ${val}`, 'Konstruksi', dptClass(val)); saveDB(); updateDashboard(); }
+        function ubahKonstruksi(idx, col, val) { if(col === 'ket') db.konstruksi[idx].ketersediaan = val; if(col === 'beli') db.konstruksi[idx].pembelian = val; catatLog(`Update ${db.konstruksi[idx].nama} ➔ ${val}`, 'Konstruksi', dptClass(val)); saveDB(); updateDashboard(); renderKonstruksi(); }
         function editKonstruksi(idx) { let n = prompt("Nama:", db.konstruksi[idx].nama); if(!n) return; let j = prompt("Jumlah:", db.konstruksi[idx].jumlah); if(!j) return; db.konstruksi[idx].nama = n; db.konstruksi[idx].jumlah = j; saveDB(); renderKonstruksi(); updateDashboard(); }
         function hapusKonstruksi(idx) { if(confirm(`Hapus material ini?`)) { catatLog(`Hapus Material: ${db.konstruksi[idx].nama}`, 'Konstruksi', 'badge-kritis'); db.konstruksi.splice(idx, 1); saveDB(); renderKonstruksi(); updateDashboard(); } }
         
         function kelolaKategori() { 
-            let a = prompt("Ketik 'tambah' atau 'hapus':"); 
+            let a = prompt("Ketik 'tambah' atau 'hapus':\n(Kategori saat ini: " + db.kategori.join(", ") + ")"); 
             if(a==='tambah') { 
-                let n = prompt("Nama baru:"); 
-                if(n) { 
-                    db.kategori.push(n); 
-                    catatLog(`Tambah Proyek: ${n}`, 'Konstruksi', 'badge-aman'); 
-                    saveDB(); renderDropdownKategori(); 
-                } 
+                let n = prompt("Nama Kategori Baru:"); 
+                if(n) { db.kategori.push(n); catatLog(`Tambah Proyek: ${n}`, 'Konstruksi', 'badge-aman'); saveDB(); renderDropdownKategori(); } 
             } else if(a==='hapus') { 
                 let v = document.getElementById('kategoriProyek').value; 
-                if(v!=='Semua Proyek' && confirm(`Hapus kategori ${v}?`)) { 
+                if(v!=='Semua Proyek' && confirm(`Hapus kategori master ${v}?`)) { 
                     db.kategori = db.kategori.filter(k=>k!==v); 
-                    catatLog(`Hapus Proyek: ${v}`, 'Konstruksi', 'badge-kritis'); 
-                    saveDB(); renderDropdownKategori(); renderKonstruksi(); 
+                    catatLog(`Hapus Proyek: ${v}`, 'Konstruksi', 'badge-kritis'); saveDB(); renderDropdownKategori(); renderKonstruksi(); 
                 } 
             } 
         }
 
-        // --- SISTEM HAPUS LOG AKTIVITAS DENGAN RENDER ULANG ---
-        function hapusLog(idx) { 
-            if(confirm("Hapus catatan log ini?")) { 
-                db.log.splice(idx, 1); 
-                saveDB(); 
-                renderLog(); // Panggil ulang agar hilang dari layar
-            } 
+        // ==========================================
+        // SISTEM DOKUMENTASI (CAMERA/GALLERY)
+        // ==========================================
+        function prosesUploadDokum(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; // Kompresi aman untuk Firebase
+                    let width = img.width; let height = img.height;
+                    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // Kompresi JPEG
+                    window.tempBase64 = dataUrl;
+                    document.getElementById('previewDokum').src = dataUrl;
+                    document.getElementById('previewDokum').style.display = 'block';
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
         }
 
-        function renderLog() { const tbody = document.getElementById('tabelLog'); tbody.innerHTML = ''; if(!db.log) return; db.log.slice(0, 30).forEach((l, idx) => { let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.3rem 0.6rem; font-size:0.75rem;">${l.tindakan}</span>` : l.tindakan; let btnHapus = (window.userRole === 'koor') ? `<button class="btn-aksi hapus" onclick="hapusLog(${idx})">🗑️</button>` : '-'; tbody.innerHTML += `<tr><td>${l.tanggal}<br><span style="color:var(--text-muted); font-size:0.8rem;">${l.waktu}</span></td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td><td>${btnHapus}</td></tr>`; }); }
+        function tambahDokum() {
+            if(!db) return;
+            let ket = document.getElementById('dokumKet').value;
+            let foto = window.tempBase64;
+            if(!foto) return alert("Pilih atau ambil foto terlebih dahulu!");
+            if(!ket.trim()) return alert("Keterangan wajib diisi sebagai bukti otentik!");
+            
+            const d = new Date();
+            db.dokum.unshift({ foto: foto, ket: ket, user: localStorage.getItem('atpUser') || 'Anonim', waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) });
+            
+            document.getElementById('dokumKet').value = '';
+            document.getElementById('dokumFile').value = '';
+            document.getElementById('previewDokum').style.display = 'none';
+            window.tempBase64 = null;
+            
+            catatLog(`Upload Arsip: ${ket}`, 'Dokumentasi', 'badge-aman');
+            saveDB(); renderDokum();
+        }
+
+        function hapusDokum(idx) {
+            if(confirm("Hapus arsip foto ini?")) {
+                db.dokum.splice(idx, 1);
+                catatLog("Menghapus Arsip Bukti", "Dokumentasi", "badge-kritis");
+                saveDB(); renderDokum();
+            }
+        }
+
+        function renderDokum() {
+            const grid = document.getElementById('gridDokum');
+            if(!grid) return; grid.innerHTML = '';
+            if(!db.dokum) return;
+            db.dokum.forEach((d, idx) => {
+                let isKoor = (window.userRole === 'koor');
+                let btnHapus = isKoor ? `<button style="background:var(--accent-red); color:#fff; border:none; padding:8px 10px; border-radius:5px; cursor:pointer; width:100%; margin-top:10px; font-weight:bold;" onclick="hapusDokum(${idx})">🗑️ Hapus Arsip</button>` : '';
+                grid.innerHTML += `<div style="background:var(--surface); border:1px solid var(--border-color); border-radius:8px; padding:10px; text-align:center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                    <img src="${d.foto}" style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:10px; border: 1px solid var(--border-color);">
+                    <div style="font-size:0.9rem; font-weight:bold; color:var(--text-main); margin-bottom:5px; word-wrap: break-word;">${d.ket}</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted);">Diunggah: ${d.user} <br> ${d.waktu}</div>
+                    ${btnHapus}
+                </div>`;
+            });
+        }
+        // ==========================================
+
+        // --- SISTEM HAPUS LOG MASSAL (DASHBOARD) ---
+        function toggleAllLogs(cb) {
+            document.querySelectorAll('.log-check').forEach(el => el.checked = cb.checked);
+            toggleBtnHapusMassal();
+        }
+
+        function toggleBtnHapusMassal() {
+            let checkedCount = document.querySelectorAll('.log-check:checked').length;
+            let isKoor = (window.userRole === 'koor');
+            document.getElementById('btnHapusMassalLog').style.display = (checkedCount > 0 && isKoor) ? 'block' : 'none';
+        }
+
+        function hapusLogMassal() {
+            let checks = document.querySelectorAll('.log-check:checked');
+            if(checks.length === 0) return;
+            if(confirm(`Hapus ${checks.length} log terpilih secara permanen?`)) {
+                // Ambil index lalu sort descending agar tidak geser array saat hapus
+                let indices = Array.from(checks).map(c => parseInt(c.value)).sort((a,b) => b-a);
+                indices.forEach(idx => db.log.splice(idx, 1));
+                document.getElementById('checkAllLogs').checked = false;
+                saveDB(); renderLog();
+            }
+        }
+
+        function hapusLog(idx) { 
+            if(confirm("Hapus catatan log ini?")) { db.log.splice(idx, 1); saveDB(); renderLog(); } 
+        }
+
+        function renderLog() { 
+            const tbody = document.getElementById('tabelLog'); tbody.innerHTML = ''; 
+            if(!db.log) return; 
+            db.log.slice(0, 30).forEach((l, idx) => { 
+                let badge = l.statusClass ? `<span class="status-badge ${l.statusClass}" style="padding:0.3rem 0.6rem; font-size:0.75rem;">${l.tindakan}</span>` : l.tindakan; 
+                let isKoor = (window.userRole === 'koor');
+                let checkbox = isKoor ? `<input type="checkbox" class="log-check" value="${idx}" onchange="toggleBtnHapusMassal()">` : '-';
+                let btnHapus = isKoor ? `<button class="btn-aksi hapus" onclick="hapusLog(${idx})">🗑️</button>` : '-'; 
+                tbody.innerHTML += `<tr><td>${checkbox}</td><td>${l.tanggal}<br><span style="color:var(--text-muted); font-size:0.8rem;">${l.waktu}</span></td><td style="color:var(--text-main); font-weight:bold;">${l.user}</td><td>${badge}</td><td style="color: ${getModulColor(l.modul)}; font-weight:bold;">${l.modul}</td><td>${btnHapus}</td></tr>`; 
+            }); 
+            toggleBtnHapusMassal(); // update button state
+        }
+        
         function renderDropdownKategori() { const sel = document.getElementById('kategoriProyek'); if(!sel) return; sel.innerHTML = '<option value="Semua Proyek">-- Semua Proyek --</option>'; if(db.kategori) db.kategori.forEach(k => { sel.innerHTML += `<option value="${k}">${k}</option>`; }); }
 
         // --- DASHBOARD TEXT TETAP ORIGINAL ---
@@ -659,6 +957,47 @@
         }
 
         // --- SISTEM IPK ---
+        function updateIPKVisibility() {
+            if(!db) return;
+            const wrapperTabel = document.getElementById('wrapperTabelIPK');
+            const segel = document.getElementById('segelPeringatan');
+            const btnSegel = document.getElementById('btnSegelIPK');
+
+            if(window.userRole === 'koor' || db.isIPKRevealed) {
+                if(wrapperTabel) wrapperTabel.style.display = 'block';
+                if(segel) segel.style.display = 'none';
+            } else {
+                if(wrapperTabel) wrapperTabel.style.display = 'none';
+                if(segel) segel.style.display = 'block';
+            }
+
+            if(btnSegel) {
+                if(db.isIPKRevealed) {
+                    btnSegel.innerText = "TUTUP SEGEL KEMBALI";
+                    btnSegel.style.background = "var(--accent-red)";
+                    btnSegel.style.color = "white";
+                } else {
+                    btnSegel.innerText = "🔓 BUKA SEGEL IPK SEKARANG";
+                    btnSegel.style.background = "var(--accent-yellow)";
+                    btnSegel.style.color = "black";
+                }
+            }
+        }
+
+        function toggleSegelIPK() {
+            db.isIPKRevealed = !db.isIPKRevealed;
+            catatLog(db.isIPKRevealed ? 'Membuka Segel Menu IPK' : 'Menutup Segel Menu IPK', 'Sistem', db.isIPKRevealed ? 'badge-aman' : 'badge-kritis');
+            saveDB(); updateIPKVisibility(); // Fixed BUG nyangkut
+        }
+
+        function autoUpdateIPK(tipe) {
+            if(window.isViewer || window.userRole === 'koor' || !db) return;
+            let myName = localStorage.getItem('atpUser');
+            if(!myName) return;
+            let p = db.ipk.find(i => i.nama.toLowerCase() === myName.toLowerCase());
+            if(p) { if(tipe === 'C') p.c += 1; if(tipe === 'E') p.e += 1; if(tipe === 'D') p.d += 1; saveDB(); }
+        }
+
         function getPredikat(skor) { if(skor >= 100) return "CUM LAUDE"; if(skor >= 60) return "SANGAT MEMUASKAN"; if(skor >= 30) return "MEMUASKAN"; if(skor >= 10) return "CUKUP"; return "PERLU EVALUASI"; }
         function renderIPK() {
             const tbody = document.getElementById('tabelIPK'); tbody.innerHTML = '';
@@ -709,10 +1048,7 @@
                         <div style="font-size: 18pt; font-weight: bold;">Afdhi Abdilah.</div>
                     </div>
                     <script>
-                        window.onload = function() {
-                            window.print();
-                            window.onafterprint = function(){ window.close(); }
-                        }
+                        window.onload = function() { window.print(); window.onafterprint = function(){ window.close(); } }
                     <\/script>
                 </body></html>
             `;
