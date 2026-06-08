@@ -790,12 +790,19 @@
                 let n = prompt("Nama Kategori Baru:"); 
                 if(n) { db.kategori.push(n); catatLog(`Tambah Proyek: ${n}`, 'Konstruksi', 'badge-aman'); saveDB(); renderDropdownKategori(); } 
             } else if(a==='hapus') { 
-                let v = document.getElementById('kategoriProyek').value; 
-                if(v!=='Semua Proyek' && confirm(`Hapus kategori master ${v}?`)) { 
-                    db.kategori = db.kategori.filter(k=>k!==v); 
-                    catatLog(`Hapus Proyek: ${v}`, 'Konstruksi', 'badge-kritis'); saveDB(); renderDropdownKategori(); renderKonstruksi(); 
-                } 
-            } 
+                let v = prompt("Ketik persis nama kategori yang ingin dihapus:\n(Pilihan: " + db.kategori.join(", ") + ")"); 
+                if(v && db.kategori.includes(v)) {
+                    if(confirm(`Yakin ingin menghapus kategori proyek [ ${v} ] secara permanen?`)) { 
+                        db.kategori = db.kategori.filter(k=>k!==v); 
+                        catatLog(`Hapus Proyek: ${v}`, 'Konstruksi', 'badge-kritis'); 
+                        saveDB(); 
+                        renderDropdownKategori(); 
+                        renderKonstruksi(); 
+                    }
+                } else if (v) {
+                    alert("Gagal! Nama kategori tidak ditemukan. Pastikan huruf besar/kecilnya sama.");
+                }
+            }
         }
 
         // ==========================================
