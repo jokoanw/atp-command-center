@@ -431,6 +431,7 @@
                 db = doc.data(); 
                 isDataLoaded = true;
                 
+                // MIGRATION & SAFETY CHECKS
                 if(!db.ipk) db.ipk = defaultIPK; 
                 if(db.isIPKRevealed === undefined) db.isIPKRevealed = false;
                 if(!db.ruang) db.ruang = [];
@@ -438,7 +439,6 @@
                 if(!db.konstruksi) db.konstruksi = [];
                 if(!db.log) db.log = [];
                 if(!db.dokum) db.dokum = [];
-                
                 if(!db.kategori) db.kategori = []; 
                 
                 if(!db.req) db.req = [];
@@ -453,9 +453,11 @@
                     renderSemua(); updateDashboard(); renderDropdownKategori(); updateIPKVisibility();
                 }
             } else { 
+                // JIKA DATABASE KOSONG/SINYAL JELEK, SISTEM HANYA MENYIAPKAN WADAH LOKAL
+                // TIDAK ADA LAGI PERINTAH .set(db) KE FIREBASE DI SINI!
                 db = { ruang: [], alat: [], konstruksi: [], log: [], dokum: [], kategori: [], ipk: defaultIPK, isIPKRevealed: false, req: [] };
                 isDataLoaded = true;
-                dbCloud.collection("atp").doc("data").set(db); 
+                console.warn("Menunggu data dari Firebase atau Database memang kosong.");
             }
         });
 
