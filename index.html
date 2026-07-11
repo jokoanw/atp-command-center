@@ -566,8 +566,7 @@
                 let namaInduk = `<span style="font-weight:bold; font-size:1.05rem;">${r.event}</span>`;
                 let namaSub = (r.nama && r.nama !== '-') ? `<br><span style="font-size:0.8rem; color:var(--accent-blue);">↳ ${r.nama}</span>` : '';
                 
-                tbody.innerHTML += `<tr style="background: rgba(255,255,255,0.03);"><td>${namaInduk} ${namaSub}</td><td>${r.kategori}</td><td>${r.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${r.jumlah || r.jml || 1}x)</span></td><td>${r.ket}</td><td><span class="status-badge ${dptClass(r.status)}">${r.status}</span></td><td>${btnAcc}${btnEdit}${btnAddSub}${btnHapus}</td></tr>`;
-
+                tbody.innerHTML += `<tr style="background: rgba(255,255,255,0.03);"><td>${namaInduk} ${namaSub}</td><td>${r.kategori}</td><td>${r.acara}</td><td>${r.divisi} <span style="color:var(--text-muted); font-size:0.8rem;">(${r.jumlah || r.jml || 1}x)</span></td><td>${r.ket}</td><td><span class="status-badge ${dptClass(r.status)}">${r.status}</span></td><td>${btnAcc}${btnEdit}${btnAddSub}${btnHapus}</td></tr>`;
                 let mySubs = subs.filter(s => s.parentId === r.id);
                 mySubs.forEach((s) => {
                     let btnHapusSub = isKoor ? `<button class="btn-aksi" onclick="hapusReqSub(${s.id})">🗑️</button>` : '';
